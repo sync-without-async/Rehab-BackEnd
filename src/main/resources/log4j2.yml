@@ -1,0 +1,30 @@
+Configuration:
+  name: Default
+  status: info
+
+  Properties:
+    Property:
+      name: log-path
+      value: "logs"
+
+  Appends:
+    Console_Appender:
+      type: Console
+      target: SYSTEM_OUT
+      Layout:
+        type: PatternLayout
+        pattern: "%style{%d{yyyy-MM-dd HH:mm:ss.SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red,
+            ERROR=red, INFO=green, DEBUG=blue, TRACE=bg_yellow} [%C] %style{[%t]}{yellow}- %m%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: Console_Appender
+
+    Logger:
+      - name: com.likelion.hackathonbackend
+        level: debug
+        additivity: false
+        AppenderRef:
+          - ref: Console_Appender
