@@ -1,4 +1,4 @@
-package com.hallym.rehab.repository;
+package com.hallym.rehab.domain.member;
 
 
 import com.hallym.rehab.domain.user.entity.Member;

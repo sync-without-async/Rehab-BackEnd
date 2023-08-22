@@ -1,4 +1,4 @@
-package com.hallym.rehab.repository;
+package com.hallym.rehab.domain.program;
 
 import com.hallym.rehab.domain.program.entity.Category;
 import com.hallym.rehab.domain.program.entity.Program;
