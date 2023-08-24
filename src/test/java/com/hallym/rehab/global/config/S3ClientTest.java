@@ -18,6 +18,8 @@ class S3ClientTest {
     @Autowired
     S3Client s3Client;
 
+    private String baseUploadURL = "https://kr.object.ncloudstorage.com/rehab/";
+
     @Test
     public void 버킷목록조회() {
         AmazonS3 s3 = s3Client.getAmazonS3();

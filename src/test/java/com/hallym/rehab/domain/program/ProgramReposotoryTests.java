@@ -46,7 +46,8 @@ public class ProgramReposotoryTests {
         log.info(program.toString());
 
 
-        ProgramVideo programVideo = new ProgramVideo(1L,"tes-a2asd-videotest.mp4","satarew-asf-awe.json",program);
+        ProgramVideo programVideo =
+                new ProgramVideo(1L,"tes-a2asd-videotest.mp4","satarew-asf-awe.json", "O1", "O2", program);
 
         programVideoRepository.save(programVideo);
 
