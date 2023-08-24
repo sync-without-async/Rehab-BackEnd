@@ -2,7 +2,11 @@ package com.hallym.rehab.domain.program.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GroupGrantee;
+import com.amazonaws.services.s3.model.Permission;
+import com.hallym.rehab.domain.program.dto.ProgramDTO;
 import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.ProgramVideo;
@@ -11,8 +15,10 @@ import com.hallym.rehab.domain.program.repository.ProgramVideoRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.config.S3Client;
+import com.hallym.rehab.global.pageDTO.PageRequestDTO;
+import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,15 +28,60 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
-@Service
+@Log4j2
 @RequiredArgsConstructor
+@Service
 public class ProgramServiceImpl implements ProgramService{
 
     private final S3Client s3Client;
     private final MemberRepository memberRepository;
     private final ProgramRepository programRepository;
     private final ProgramVideoRepository programVideoRepository;
+
+    @Override
+    public ProgramDTO getProgramOne(Long bno) {
+
+        Program program = programRepository.findById(bno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+
+        ProgramDTO programDTO = entityToDTO(program);
+        log.info("-------ProgramDTO: " + programDTO);
+
+        return programDTO;
+    }
+
+    @Override
+    public String modifyProgramOne(Long bno, ProgramDTO programDTO) {
+
+        Program program = programRepository.findById(bno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+
+        program.modifyProgram(programDTO.getProgramTitle(), programDTO.getDescription(), programDTO.getCategory(), programDTO.getPosition());
+
+        program.clearProgramVideo();
+
+        programRepository.save(program);
+
+        return "Program modify successfully.";
+    }
+
+    @Override
+    public String deleteProgramOne(Long bno) {
+
+        Program program = programRepository.findById(bno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+
+        program.setIs_deleted(Boolean.TRUE);
+        programRepository.save(program);
+
+        return "Program delete successfully.";
+    }
+
+    @Override
+    public PageResponseDTO<ProgramDTO> getProgramList(PageRequestDTO pageRequestDTO) {
+
+        return null;
+    }
 
     @Override
     public void uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile, Program program) {
@@ -120,7 +171,7 @@ public class ProgramServiceImpl implements ProgramService{
 
         return Program.builder()
                 .programTitle(programRequestDTO.getProgramTitle())
-                .Category(programRequestDTO.getCategory())
+                .category(programRequestDTO.getCategory())
                 .description(programRequestDTO.getDescription())
                 .member(byId.get())
                 .build();

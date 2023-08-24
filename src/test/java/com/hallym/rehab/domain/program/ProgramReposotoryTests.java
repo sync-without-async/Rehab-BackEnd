@@ -1,6 +1,7 @@
-package com.hallym.rehab.domain.program;
+package com.hallym.rehab.repository;
 
 import com.hallym.rehab.domain.program.entity.Category;
+import com.hallym.rehab.domain.program.entity.Position;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.ProgramVideo;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
@@ -23,13 +24,14 @@ public class ProgramReposotoryTests {
 
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
     private ProgramVideoRepository programVideoRepository;
 
     @Test
-    public void resgisterProgram() throws Exception{
+    public void resisterProgram() throws Exception{
 
-        String id = "testuser";
+        String id = "adminuser";
         Optional<Member> result = memberRepository.findById(id);
 
         Member member = result.orElseThrow();
@@ -37,21 +39,20 @@ public class ProgramReposotoryTests {
         Program program = Program.builder()
                 .member(member)
                 .programTitle("sample title")
-                .Category(Category.UPPER)
                 .description("Program test")
+                .category(Category.ARMS)
+                .position(Position.SITTING)
                 .build();
 
         programRepository.save(program);
 
         log.info(program.toString());
 
-
-        ProgramVideo programVideo =
-                new ProgramVideo(1L,"tes-a2asd-videotest.mp4","satarew-asf-awe.json", "O1", "O2", program);
-
-        programVideoRepository.save(programVideo);
-
-        log.info(programVideo.toString());
+//        ProgramVideo programVideo = new ProgramVideo(1L,"tes-a2asd-videotest.mp4","satarew-asf-awe.json",program);
+//
+//        programVideoRepository.save(programVideo);
+//
+//        log.info(programVideo.toString());
     }
 
 }
