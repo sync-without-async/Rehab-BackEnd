@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 
 @Getter
+@Builder
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor
@@ -18,10 +19,16 @@ public class ProgramVideo extends BaseTimeEntity {
     private Long vno;
 
     @Column(name = "guideVideo")
-    private String GuideVideoPath;
+    private String GuideVideoURL; // 동영상 URL로 접근할 URL
 
     @Column(name = "guideJson")
-    private String JsonPath;
+    private String JsonURL; // JSON 파일 접근할 URL
+
+    @Column(name = "videoObjectName")
+    private String GuideVideoObjectPath; // Video 파일 삭제하기 위한 ObjectPath
+
+    @Column(name = "jsonObjectName")
+    private String JsonObjectPath; // Json 파일 삭제하기 위한 ObjectPath
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
