@@ -1,9 +1,14 @@
 package com.hallym.rehab.domain.program.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.hallym.rehab.domain.program.dto.ProgramDTO;
+import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 public interface ProgramService {
 
@@ -14,6 +19,12 @@ public interface ProgramService {
     String deleteProgramOne(Long bno);
 
     PageResponseDTO<ProgramDTO> getProgramList(PageRequestDTO pageRequestDTO);
+
+    public void uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile, Program program);
+    public Program createProgram(ProgramRequestDTO programRequestDTO);
+    public File convertMultipartFileToFile(MultipartFile multipartFile, String fileName);
+    public void setAcl(AmazonS3 s3, String ucketName, String guideVideoObjectPath);
+    public Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO);
 
     default Program dtoToEntity(ProgramDTO programDTO){
 
