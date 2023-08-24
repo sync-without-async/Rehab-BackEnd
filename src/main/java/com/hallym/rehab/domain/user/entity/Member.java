@@ -43,8 +43,15 @@ public class Member extends BaseTimeEntity {
         this.roleSet.add(memberRole);
     }
 
-    public void setPassword(String password) {
+    public void changePassword(String password) {
         this.password = password;
     }
 
+    public void addUser(String mid, String password, String name, String phone, Set<MemberRole> roleSet) {
+        this.mid = mid;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.roleSet = roleSet;
+    }
 }
