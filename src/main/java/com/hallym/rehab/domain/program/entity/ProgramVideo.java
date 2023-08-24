@@ -34,4 +34,8 @@ public class ProgramVideo extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pno", nullable = false)
     private Program program;
+
+    public void changeProgram(Program program ){ //Program 엔티티 삭제 시 ProgramVideo 객체의 참조도 변경하기 위한 메소드
+        this.program = program;
+    }
 }
