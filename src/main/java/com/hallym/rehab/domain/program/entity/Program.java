@@ -51,14 +51,16 @@ public class Program extends BaseTimeEntity {
         this.position = position;
     }
 
-    public void addProgramVideo(String GuideVideoPath, String JsonPath){} //비디오 파일 추가 메소드
-
-    public void clearProgramVideo(){ //비디오 파일 변경 시 사용할 메소드
-
-        programVideo.forEach(programVideo -> programVideo.changeProgram(null));
-
-        this.programVideo.clear();
-    }
+//    public void addProgramVideo(ProgramVideo programVideo){
+//        this.programVideo.add(programVideo);
+//    } //비디오 파일 추가 메소드
+//
+//    public void clearProgramVideo(){ //비디오 파일 변경 시 사용할 메소드
+//
+//        programVideo.forEach(programVideo -> programVideo.changeProgram(null));
+//
+//        this.programVideo.clear();
+//    }
 
     public void setIs_deleted(Boolean is_deleted){ //soft delete
         this.is_deleted = is_deleted;
