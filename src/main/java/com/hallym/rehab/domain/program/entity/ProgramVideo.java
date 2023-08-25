@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "program")
 @NoArgsConstructor
 @Entity
 public class ProgramVideo extends BaseTimeEntity {
@@ -35,7 +35,14 @@ public class ProgramVideo extends BaseTimeEntity {
     @JoinColumn(name = "pno", nullable = false)
     private Program program;
 
-    public void changeProgram(Program program ){ //Program 엔티티 삭제 시 ProgramVideo 객체의 참조도 변경하기 위한 메소드
+    public void changeProgramVideo(String GuideVideoURL, String JsonURL, String GuideVideoObjectPath, String JsonObjectPath) {
+        this.GuideVideoURL = GuideVideoURL;
+        this.JsonURL = JsonURL;
+        this.GuideVideoObjectPath = GuideVideoObjectPath;
+        this.JsonObjectPath = JsonObjectPath;
+    }
+
+    public void changeProgram(Program program){ //Program 엔티티 삭제 시 ProgramVideo 객체의 참조도 변경하기 위한 메소드
         this.program = program;
     }
 }

@@ -12,28 +12,28 @@ import java.io.File;
 
 public interface ProgramService {
 
-    ProgramDTO getProgramOne(Long bno);
+    ProgramDTO getProgramOne(Long pno);
 
-    String modifyProgramOne(Long bno, ProgramDTO programDTO);
+    String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO, MultipartFile videoFile, MultipartFile jsonFile);
 
-    String deleteProgramOne(Long bno);
+    String deleteProgramOne(Long pno);
 
     PageResponseDTO<ProgramDTO> getProgramList(PageRequestDTO pageRequestDTO);
 
     public void uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile, Program program);
-    public Program createProgram(ProgramRequestDTO programRequestDTO);
+    public String createProgram(ProgramRequestDTO programRequestDTO, MultipartFile  videoFile, MultipartFile jsonFile);
     public File convertMultipartFileToFile(MultipartFile multipartFile, String fileName);
-    public void setAcl(AmazonS3 s3, String ucketName, String guideVideoObjectPath);
+    public void setAcl(AmazonS3 s3, String ObjectPath);
     public Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO);
+    void deleteFileFromS3(String guideVideoObjectPath, String jsonObjectPath);
 
-    default Program dtoToEntity(ProgramDTO programDTO){
+    default Program dtoToEntity(ProgramRequestDTO programRequestDTO){
 
         return Program.builder()
-                .pno(programDTO.getPno())
-                .programTitle(programDTO.getProgramTitle())
-                .description(programDTO.getDescription())
-                .category(programDTO.getCategory())
-                .position(programDTO.getPosition())
+                .programTitle(programRequestDTO.getProgramTitle())
+                .description(programRequestDTO.getDescription())
+                .category(programRequestDTO.getCategory())
+                .position(programRequestDTO.getPosition())
                 .build();
     }
 

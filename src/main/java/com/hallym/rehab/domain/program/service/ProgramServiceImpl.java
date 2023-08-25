@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.program.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AccessControlList;
@@ -19,12 +20,14 @@ import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,32 +36,45 @@ import java.util.UUID;
 @Service
 public class ProgramServiceImpl implements ProgramService{
 
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
     private final S3Client s3Client;
     private final MemberRepository memberRepository;
     private final ProgramRepository programRepository;
     private final ProgramVideoRepository programVideoRepository;
 
     @Override
-    public ProgramDTO getProgramOne(Long bno) {
+    public ProgramDTO getProgramOne(Long pno) {
 
-        Program program = programRepository.findById(bno)
-                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
-        ProgramDTO programDTO = entityToDTO(program);
-        log.info("-------ProgramDTO: " + programDTO);
+        ProgramDTO programRequestDTO = entityToDTO(program);
+        log.info("-------ProgramDTO: " + programRequestDTO);
 
-        return programDTO;
+        return programRequestDTO;
     }
 
     @Override
-    public String modifyProgramOne(Long bno, ProgramDTO programDTO) {
+    public String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO, MultipartFile videoFile, MultipartFile jsonFile) {
 
-        Program program = programRepository.findById(bno)
-                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+        log.info(pno);
 
-        program.modifyProgram(programDTO.getProgramTitle(), programDTO.getDescription(), programDTO.getCategory(), programDTO.getPosition());
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
-        program.clearProgramVideo();
+        log.info(program + "------------------------------------------------------");
+
+        program.modifyProgram(programRequestDTO.getProgramTitle(), programRequestDTO.getDescription(), programRequestDTO.getCategory(), programRequestDTO.getPosition());
+
+        List<ProgramVideo> byProgram = programVideoRepository.findByProgram(program);
+
+        byProgram.forEach(programVideo -> {
+            deleteFileFromS3(programVideo.getGuideVideoObjectPath(), programVideo.getJsonObjectPath());
+        });
+
+        uploadFileToS3(videoFile, jsonFile, program);
 
         programRepository.save(program);
 
@@ -66,10 +82,19 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String deleteProgramOne(Long bno) {
+    public String deleteProgramOne(Long pno) {
 
-        Program program = programRepository.findById(bno)
-                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + bno));
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
+
+//        List<ProgramVideo> byProgram = programVideoRepository.findByProgram(program);
+//
+//
+//        byProgram.forEach(programVideo -> {
+//            deleteFileFromS3(programVideo.getGuideVideoObjectPath(), programVideo.getJsonObjectPath());
+//            programVideoRepository.delete(programVideo);
+//        });
+
 
         program.setIs_deleted(Boolean.TRUE);
         programRepository.save(program);
@@ -98,50 +123,70 @@ public class ProgramServiceImpl implements ProgramService{
             uploadVideoFile = convertMultipartFileToFile(videoFile, videoFileName);
             uploadJsonFile = convertMultipartFileToFile(jsonFile, jsonFileName);
 
-            String bucketName = "rehab";
             String guideVideoObjectPath = "video/" + videoFileName;
             String jsonObjectPath = "json/" + jsonFileName;
 
             s3.putObject(bucketName, guideVideoObjectPath, uploadVideoFile);
             s3.putObject(bucketName, jsonObjectPath, uploadJsonFile);
 
-            String guideVideoURL = "https://kr.object.ncloudstorage.com/rehab/" + guideVideoObjectPath;
-            String jsonURL = "https://kr.object.ncloudstorage.com/rehab/" + jsonObjectPath;
+            String baseUploadURL = "https://kr.object.ncloudstorage.com/rehab/";
+            String guideVideoURL = baseUploadURL + guideVideoObjectPath;
+            String jsonURL = baseUploadURL + jsonObjectPath;
 
             log.info(guideVideoURL);
             log.info(jsonURL);
 
-            setAcl(s3, bucketName, guideVideoObjectPath);
-            setAcl(s3, bucketName, jsonObjectPath);
+            setAcl(s3, guideVideoObjectPath);
+            setAcl(s3, jsonObjectPath);
 
-            ProgramVideo programVideo = ProgramVideo.builder()
-                    .GuideVideoURL(guideVideoURL)
-                    .JsonURL(jsonURL)
-                    .GuideVideoObjectPath(guideVideoObjectPath)
-                    .JsonObjectPath(jsonObjectPath)
-                    .program(program)
-                    .build();
+            List<ProgramVideo> byProgram = programVideoRepository.findByProgram(program);
 
-            programVideoRepository.save(programVideo);
+            if (byProgram.isEmpty()) {
+                ProgramVideo programVideo = ProgramVideo.builder()
+                        .GuideVideoURL(guideVideoURL)
+                        .JsonURL(jsonURL)
+                        .GuideVideoObjectPath(guideVideoObjectPath)
+                        .JsonObjectPath(jsonObjectPath)
+                        .program(program)
+                        .build();
+                programVideoRepository.save(programVideo);
+            } else {
+                ProgramVideo programVideo = byProgram.get(0);
+                programVideo.changeProgramVideo(guideVideoURL, jsonURL, guideVideoObjectPath, jsonObjectPath);
+                programVideoRepository.save(programVideo);
+            }
+
+//            program.addProgramVideo(programVideo);
 
         } catch (AmazonS3Exception e) { // ACL Exception
             System.err.println(e.getErrorMessage());
             System.exit(1);
         } finally {
             // 업로드에 사용한 임시 파일을 삭제합니다.
-            if (uploadVideoFile != null) {
-                uploadVideoFile.delete();
-            }
-            if (uploadJsonFile != null) {
-                uploadJsonFile.delete();
-            }
+            if (uploadVideoFile != null) uploadVideoFile.delete();
+            if (uploadJsonFile != null) uploadJsonFile.delete();
         }
     }
 
     @Override
-    public Program createProgram(ProgramRequestDTO programRequestDTO) {
+    public String createProgram(ProgramRequestDTO programRequestDTO,MultipartFile videoFile,MultipartFile jsonFile) {
         Program program = programRequestDtoToProgram(programRequestDTO);
-        return programRepository.save(program);
+        programRepository.save(program);
+        uploadFileToS3(videoFile, jsonFile, program);
+        return "Program create successfully.";
+    }
+
+    @Override
+    public void deleteFileFromS3(String guideVideoObjectPath, String jsonObjectPath) {
+        AmazonS3 s3 = s3Client.getAmazonS3();
+
+        try {
+            s3.deleteObject(bucketName, guideVideoObjectPath);
+            s3.deleteObject(bucketName, jsonObjectPath);
+            log.info("Delete Object successfully");
+        } catch(SdkClientException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -156,7 +201,7 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public void setAcl(AmazonS3 s3, String bucketName, String objectPath) {
+    public void setAcl(AmazonS3 s3, String objectPath) {
         AccessControlList objectAcl = s3.getObjectAcl(bucketName, objectPath);
         objectAcl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
         s3.setObjectAcl(bucketName, objectPath, objectAcl);
@@ -164,16 +209,13 @@ public class ProgramServiceImpl implements ProgramService{
 
     @Override
     public Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO) {
-        Optional<Member> byId = memberRepository.findById(programRequestDTO.getMid());
-        if (byId.isEmpty()) {
-            throw new NotFoundException("존재하지 않는 유저입니다.");
-        }
+//        Optional<Member> byId = memberRepository.findById(programRequestDTO.getMid());
+//        if (byId.isEmpty()) {
+//            throw new NotFoundException("User is Not Found");
+//        }
 
-        return Program.builder()
-                .programTitle(programRequestDTO.getProgramTitle())
-                .category(programRequestDTO.getCategory())
-                .description(programRequestDTO.getDescription())
-                .member(byId.get())
-                .build();
+        Program program = dtoToEntity(programRequestDTO);
+
+        return program;
     }
 }
