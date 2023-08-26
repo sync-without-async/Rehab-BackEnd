@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.program.dto;
+package com.hallym.rehab.domain.program.dto.program;
 
 import com.hallym.rehab.domain.program.entity.Category;
 import com.hallym.rehab.domain.program.entity.Position;
@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ProgramRequestDTO {
-    private String mid; // 어떤 Admin이 등록했는지
     private String programTitle;
     private String description;
     private Category category;
