@@ -7,12 +7,15 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.Permission;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
+import com.hallym.rehab.domain.program.dto.video.MatrixRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.Video;
+import com.hallym.rehab.domain.program.entity.Video_Member;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.program.repository.VideoRepository;
+import com.hallym.rehab.domain.program.repository.Video_MemberRepository;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.config.S3Client;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +40,7 @@ public class VideoServiceImpl implements VideoService{
     private final S3Client s3Client;
     private final VideoRepository videoRepository;
     private final ProgramRepository programRepository;
+    private final Video_MemberRepository videoMemberRepository;
 
     @Override // 프로그램 등록 후 영상 등록
     public String createVideo(Long pno, Long ord, VideoRequestDTO videoRequestDTO) {
@@ -91,6 +95,24 @@ public class VideoServiceImpl implements VideoService{
 
         videoRepository.delete(video);
         return "Success delete Video";
+    }
+
+    @Override
+    public String saveMatrix(Long vno, MatrixRequestDTO matrixRequestDTO) {
+        videoRepository.findById(vno)
+                .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
+
+        String mid = matrixRequestDTO.getMid();
+        double matrix = matrixRequestDTO.getMatrix();
+
+        Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, vno);
+        if (byMemberAndVideo.isEmpty()) return "findByMemberAndVideo error";
+
+        Video_Member videoMember = byMemberAndVideo.get();
+        videoMember.changeMatrix(matrix);
+        videoMemberRepository.save(videoMember);
+
+        return "Matrix saved";
     }
 
     @Override // 비디오의 순서만을 바꿈.

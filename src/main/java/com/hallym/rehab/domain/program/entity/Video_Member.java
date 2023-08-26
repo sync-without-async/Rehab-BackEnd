@@ -28,4 +28,8 @@ public class Video_Member {
     private Video video;
 
     private double matrix = 0;
+
+    public void changeMatrix(double matrix) {
+        this.matrix = matrix;
+    }
 }
