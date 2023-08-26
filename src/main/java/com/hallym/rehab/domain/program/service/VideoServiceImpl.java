@@ -10,17 +10,14 @@ import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
 import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.ProgramVideo;
+import com.hallym.rehab.domain.program.entity.Video;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.program.repository.ProgramVideoRepository;
+import com.hallym.rehab.domain.program.repository.VideoRepository;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.config.S3Client;
-import com.hallym.rehab.global.pageDTO.PageRequestDTO;
-import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Log4j2
@@ -39,9 +35,8 @@ public class VideoServiceImpl implements VideoService{
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
     private final S3Client s3Client;
-    private final MemberRepository memberRepository;
+    private final VideoRepository videoRepository;
     private final ProgramRepository programRepository;
-    private final ProgramVideoRepository programVideoRepository;
 
     @Override // 프로그램 등록 후 영상 등록
     public String createVideo(Long pno, Long ord, VideoRequestDTO videoRequestDTO) {
@@ -55,13 +50,13 @@ public class VideoServiceImpl implements VideoService{
 
         if (videoFile.isEmpty() || jsonFile.isEmpty()) return "Please select files to upload";
 
-        Optional<ProgramVideo> byPno = programVideoRepository.findByPno(pno, ord);
+        Optional<Video> byPno = videoRepository.findByPno(pno, ord);
 
         if (byPno.isPresent()) return "already exists ord";
 
         UploadFileDTO uploadFileDTO = uploadFileToS3(videoFile, jsonFile, program);
 
-        ProgramVideo programVideo = ProgramVideo.builder()
+        Video video = Video.builder()
                     .GuideVideoURL(uploadFileDTO.getGuideVideoURL())
                     .JsonURL(uploadFileDTO.getJsonURL())
                     .GuideVideoObjectPath(uploadFileDTO.getGuideVideoObjectPath())
@@ -71,11 +66,11 @@ public class VideoServiceImpl implements VideoService{
                     .ActName(actName)
                     .build();
 
-        programVideoRepository.save(programVideo);
+        videoRepository.save(video);
 
-        program.addProgramVideo(programVideo);
+        program.addProgramVideo(video);
 
-        log.info(program.getProgramVideo().size());
+        log.info(program.getVideo().size());
 
         return "Success create Video";
     }
@@ -85,16 +80,16 @@ public class VideoServiceImpl implements VideoService{
         programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
-        Optional<ProgramVideo> byPno = programVideoRepository.findByPno(pno, ord);
+        Optional<Video> byPno = videoRepository.findByPno(pno, ord);
         if (byPno.isEmpty()) return "Please Select Valid Ord";
 
-        ProgramVideo programVideo = byPno.get();
-        String guideVideoObjectPath = programVideo.getGuideVideoObjectPath();
-        String jsonObjectPath = programVideo.getJsonObjectPath();
+        Video video = byPno.get();
+        String guideVideoObjectPath = video.getGuideVideoObjectPath();
+        String jsonObjectPath = video.getJsonObjectPath();
 
         deleteFileFromS3(guideVideoObjectPath, jsonObjectPath);
 
-        programVideoRepository.delete(programVideo);
+        videoRepository.delete(video);
         return "Success delete Video";
     }
 
@@ -107,20 +102,20 @@ public class VideoServiceImpl implements VideoService{
         Long ord2 = swapOrdRequestDTO.getOrd_2();
 
 
-        Optional<ProgramVideo> byPno_1 = programVideoRepository.findByPno(pno, ord1);
-        Optional<ProgramVideo> byPno_2 = programVideoRepository.findByPno(pno, ord2);
+        Optional<Video> byPno_1 = videoRepository.findByPno(pno, ord1);
+        Optional<Video> byPno_2 = videoRepository.findByPno(pno, ord2);
 
         // 만약 ord1과 ord2 의 video 객체가 둘다 없다면 에러처리
         if (byPno_1.isEmpty() && byPno_2.isEmpty()) return "Please Select Valid Ord";
         // 하나라도 있다면
         if (byPno_1.isPresent()) {
-            ProgramVideo pv1 = byPno_1.get();
+            Video pv1 = byPno_1.get();
             pv1.setOrd(ord2);
-            programVideoRepository.save(pv1);
+            videoRepository.save(pv1);
         } else {
-            ProgramVideo pv2 = byPno_2.get();
+            Video pv2 = byPno_2.get();
             pv2.setOrd(ord1);
-            programVideoRepository.save(pv2);
+            videoRepository.save(pv2);
         }
 
         return "Success modify Video Ord";

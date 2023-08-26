@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ProgramVideo_Member {
+public class Video_Member {
     /**
      * 유저마다 한 운동영상에 대한 Matrix 정보를 표시하기 위해 생성한 테이블
      */
@@ -25,7 +25,7 @@ public class ProgramVideo_Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vno")
-    private ProgramVideo programVideo;
+    private Video video;
 
     private double matrix = 0;
 }
