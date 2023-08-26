@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -36,10 +37,11 @@ public class Program extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
-    private Set<ProgramVideo> programVideo = new HashSet<>();
+    private Set<ProgramVideo> programVideo = new HashSet<>(); // 한 프로그램에 어떤 운동 동작 비디오들이 있는지
 
-    @ManyToOne
-    private Member member;
+    @JsonBackReference
+    @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
+    private Set<Program_Member> programMember = new HashSet<>(); // 유저 프로그램 신청 여부
 
     @ColumnDefault("false") //삭제 여부
     private boolean is_deleted;
@@ -51,9 +53,10 @@ public class Program extends BaseTimeEntity {
         this.position = position;
     }
 
-//    public void addProgramVideo(ProgramVideo programVideo){
-//        this.programVideo.add(programVideo);
-//    } //비디오 파일 추가 메소드
+    public void addProgramVideo(ProgramVideo programVideo){
+        programVideo.setProgram(this);
+        this.programVideo.add(programVideo);
+    }
 //
 //    public void clearProgramVideo(){ //비디오 파일 변경 시 사용할 메소드
 //
@@ -61,7 +64,6 @@ public class Program extends BaseTimeEntity {
 //
 //        this.programVideo.clear();
 //    }
-
     public void setIs_deleted(Boolean is_deleted){ //soft delete
         this.is_deleted = is_deleted;
     }
