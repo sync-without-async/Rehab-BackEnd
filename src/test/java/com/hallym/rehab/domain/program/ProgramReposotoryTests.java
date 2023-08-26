@@ -3,9 +3,8 @@ package com.hallym.rehab.repository;
 import com.hallym.rehab.domain.program.entity.Category;
 import com.hallym.rehab.domain.program.entity.Position;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.ProgramVideo;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.program.repository.ProgramVideoRepository;
+import com.hallym.rehab.domain.program.repository.VideoRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +25,7 @@ public class ProgramReposotoryTests {
     private MemberRepository memberRepository;
 
     @Autowired
-    private ProgramVideoRepository programVideoRepository;
+    private VideoRepository videoRepository;
 
     @Test
     public void resisterProgram() throws Exception{
@@ -37,7 +36,7 @@ public class ProgramReposotoryTests {
         Member member = result.orElseThrow();
 
         Program program = Program.builder()
-                .member(member)
+//                .member(member)
                 .programTitle("sample title")
                 .description("Program test")
                 .category(Category.ARMS)
