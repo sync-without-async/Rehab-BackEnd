@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -29,7 +28,4 @@ public class Program_Member {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pno")
     private Program program;
-
-    @ColumnDefault("false")
-    private boolean is_register;
 }

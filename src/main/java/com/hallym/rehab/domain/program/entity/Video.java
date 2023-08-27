@@ -14,7 +14,7 @@ import java.util.List;
 @ToString(exclude = {"program", "programVideo_members"})
 @NoArgsConstructor
 @Entity
-public class ProgramVideo extends BaseTimeEntity {
+public class Video extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,8 +38,8 @@ public class ProgramVideo extends BaseTimeEntity {
     @Column(name = "jsonObjectName")
     private String JsonObjectPath; // Json 파일 삭제하기 위한 ObjectPath
 
-    @OneToMany(mappedBy = "programVideo")
-    private List<ProgramVideo_Member> programVideo_members = new ArrayList<>();
+    @OneToMany(mappedBy = "video", cascade = CascadeType.ALL)
+    private List<Video_Member> video_members = new ArrayList<>();
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)

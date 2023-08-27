@@ -6,6 +6,7 @@ import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +30,20 @@ public class ProgramUserController {
     }
 
     @GetMapping("/{pno}")
-    public ProgramDetailResponseDTO getProgramOne(@PathVariable Long pno) {
+    public ProgramDetailResponseDTO getProgramOne(@PathVariable Long pno, String mid) {
+        return programService.getProgramOne(pno, mid);
+    }
 
-        return null;
+    @PostMapping("/register/{pno}")
+    public ResponseEntity<String> programRegister(@PathVariable Long pno, String mid) {
+        String result = programService.registerProgram(pno, mid);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/cancel/{pno}")
+    public ResponseEntity<String> programCancel(@PathVariable Long pno, String mid) {
+        String result = programService.cancelProgram(pno, mid);
+        return ResponseEntity.ok(result);
     }
 
 }
