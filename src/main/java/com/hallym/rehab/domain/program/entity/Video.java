@@ -23,6 +23,9 @@ public class Video extends BaseTimeEntity {
     @Column(name = "actName")
     private String ActName; // 동작 이름
 
+    @Column(name = "frame")
+    private Long frame; // 영상 몇 프레임인지
+
     @Column(name = "ord")
     private Long ord; // 한 프로그램에서 몇번째 동작인지
 
