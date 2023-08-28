@@ -10,13 +10,13 @@ import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
 import com.hallym.rehab.domain.program.dto.video.MatrixRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.Video;
 import com.hallym.rehab.domain.program.entity.Video_Member;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.program.repository.VideoRepository;
 import com.hallym.rehab.domain.program.repository.Video_MemberRepository;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.config.S3Client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class VideoServiceImpl implements VideoService{
 
         if (videoFile.isEmpty() || jsonFile.isEmpty()) return "Please select files to upload";
 
-        Optional<Video> byPno = videoRepository.findByPno(pno, ord);
+        Optional<Video> byPno = videoRepository.findByPnoAndOrd(pno, ord);
 
         if (byPno.isPresent()) return "already exists ord";
 
@@ -86,7 +87,7 @@ public class VideoServiceImpl implements VideoService{
         programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
-        Optional<Video> byPno = videoRepository.findByPno(pno, ord);
+        Optional<Video> byPno = videoRepository.findByPnoAndOrd(pno, ord);
         if (byPno.isEmpty()) return "Please Select Valid Ord";
 
         Video video = byPno.get();
@@ -97,6 +98,16 @@ public class VideoServiceImpl implements VideoService{
 
         videoRepository.delete(video);
         return "Success delete Video";
+    }
+
+    @Override
+    public VideoResponseDTO getVideoList(Long pno) {
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
+
+        List<Video> videoList = videoRepository.findByPno(pno);
+
+        return videoToVideoResponseDTO(videoList, program);
     }
 
     @Override
@@ -117,6 +128,12 @@ public class VideoServiceImpl implements VideoService{
         return "Matrix saved";
     }
 
+    /**
+     * @param swapOrdRequestDTO
+     * DTO의 ord1 -> 바꿀 video의 원래 번호
+     * DTO의 ord2 -> ord1이 ord2로 바꿔져야함
+     * 만약 ord2에 객체가 있다면 서로의 번호를 swap하고 객체가 없다면 ord1만 ord2로 이동
+     */
     @Override // 비디오의 순서만을 바꿈.
     public String swapVideoOrd(Long pno, SwapOrdRequestDTO swapOrdRequestDTO) {
         programRepository.findById(pno)
@@ -126,22 +143,24 @@ public class VideoServiceImpl implements VideoService{
         Long ord2 = swapOrdRequestDTO.getOrd_2();
 
 
-        Optional<Video> byPno_1 = videoRepository.findByPno(pno, ord1);
-        Optional<Video> byPno_2 = videoRepository.findByPno(pno, ord2);
+        Optional<Video> byPno_1 = videoRepository.findByPnoAndOrd(pno, ord1);
+        Optional<Video> byPno_2 = videoRepository.findByPnoAndOrd(pno, ord2);
 
-        // 만약 ord1과 ord2 의 video 객체가 둘다 없다면 에러처리
-        if (byPno_1.isEmpty() && byPno_2.isEmpty()) return "Please Select Valid Ord";
-        // 하나라도 있다면
-        if (byPno_1.isPresent()) {
+        // 만약 ord1 자체가 없을 경우
+        if (byPno_1.isEmpty()) return "Please Select Valid Ord";
+        // ord2가 있다면 ord1과 ord2를 서로 swap
+        if (byPno_2.isPresent()) {
+            Video pv1 = byPno_1.get();
+            Video pv2 = byPno_2.get();
+            pv1.setOrd(ord2);
+            pv2.setOrd(ord1);
+            videoRepository.save(pv1);
+            videoRepository.save(pv2);
+        } else { // ord2가 없다면 ord1을 ord2로 변경
             Video pv1 = byPno_1.get();
             pv1.setOrd(ord2);
             videoRepository.save(pv1);
-        } else {
-            Video pv2 = byPno_2.get();
-            pv2.setOrd(ord1);
-            videoRepository.save(pv2);
         }
-
         return "Success modify Video Ord";
     }
 

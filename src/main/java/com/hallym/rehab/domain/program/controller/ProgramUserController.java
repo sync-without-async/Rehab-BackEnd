@@ -2,7 +2,6 @@ package com.hallym.rehab.domain.program.controller;
 
 import com.hallym.rehab.domain.program.dto.program.ProgramDetailResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramMainResponseDTO;
-import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.service.ProgramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
