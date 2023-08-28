@@ -49,6 +49,7 @@ public class VideoServiceImpl implements VideoService{
 
         MultipartFile[] files = videoRequestDTO.getFiles();
         String actName =  videoRequestDTO.getActName();
+        Long frame = videoRequestDTO.getFrame();
         MultipartFile videoFile =  files[0];
         MultipartFile jsonFile =  files[1];
 
@@ -68,6 +69,7 @@ public class VideoServiceImpl implements VideoService{
                     .program(program)
                     .ord(ord)
                     .ActName(actName)
+                    .frame(frame)
                     .build();
 
         videoRepository.save(video);

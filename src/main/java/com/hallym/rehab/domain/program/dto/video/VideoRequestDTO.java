@@ -6,5 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class VideoRequestDTO {
     private String actName;
+    private Long frame;
     private MultipartFile[] files = new MultipartFile[2];
 }
