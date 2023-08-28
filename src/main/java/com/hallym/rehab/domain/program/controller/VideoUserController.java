@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/video")
@@ -19,9 +17,8 @@ public class VideoUserController {
     private final VideoService videoService;
 
     @GetMapping("/{pno}") // pno로 Video List 반환
-    public List<VideoResponseDTO> getVideo(@PathVariable Long pno) {
-
-        return null;
+    public VideoResponseDTO getVideoList(@PathVariable Long pno) {
+        return videoService.getVideoList(pno);
     }
 
     @PutMapping("/modify/matrix/{vno}")

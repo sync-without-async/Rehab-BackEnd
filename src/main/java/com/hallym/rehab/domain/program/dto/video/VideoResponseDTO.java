@@ -23,5 +23,5 @@ public class VideoResponseDTO {
 
     private Position position;
 
-    private List<String> programVideoFile;
+    private List<String> programVideoFile; // 영상 URL
 }
