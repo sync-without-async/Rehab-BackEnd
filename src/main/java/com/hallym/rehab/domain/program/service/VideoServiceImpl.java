@@ -116,13 +116,13 @@ public class VideoServiceImpl implements VideoService{
                 .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
 
         String mid = matrixRequestDTO.getMid();
-        double matrix = matrixRequestDTO.getMatrix();
+        double metrics = matrixRequestDTO.getMetrics();
 
         Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, vno);
         if (byMemberAndVideo.isEmpty()) return "findByMemberAndVideo error";
 
         Video_Member videoMember = byMemberAndVideo.get();
-        videoMember.changeMatrix(matrix);
+        videoMember.changeMetrics(metrics);
         videoMemberRepository.save(videoMember);
 
         return "Matrix saved";

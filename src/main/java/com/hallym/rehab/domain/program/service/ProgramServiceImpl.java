@@ -46,7 +46,7 @@ public class ProgramServiceImpl implements ProgramService{
         List<ActResponseDTO> actResponseDTOList = new ArrayList<>();
 
         video.forEach(v -> {
-            double matrix = 0;
+            double metrics = 0;
             Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, v.getVno());
             if (byMemberAndVideo.isEmpty()) { // 비디오랑 멤버랑 연관 테이블이 없으면 생성
                 videoMemberRepository.save(
@@ -55,14 +55,14 @@ public class ProgramServiceImpl implements ProgramService{
                         .video(v).build());
             } else { // 비디오랑 멤버랑 연관 테이블이 있으면 matrix 값 변경
                 Video_Member videoMember = byMemberAndVideo.get();
-                matrix = videoMember.getMatrix();
+                metrics = videoMember.getMetrics();
             }
 
             actResponseDTOList.add(
                     ActResponseDTO.builder()
                             .vno(v.getVno())
                             .actName(v.getActName())
-                            .matrix(matrix).build()
+                            .metrics(metrics).build()
             );
         });
 

@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class MatrixRequestDTO {
     private String mid;
-    private double matrix;
+    private double metrics;
 }

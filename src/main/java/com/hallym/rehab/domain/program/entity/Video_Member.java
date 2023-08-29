@@ -30,7 +30,7 @@ public class Video_Member {
     @Builder.Default
     private double metrics = 0;
 
-    public void changeMatrix(double matrix) {
-        this.matrix = matrix;
+    public void changeMetrics(double metrics) {
+        this.metrics = metrics;
     }
 }
