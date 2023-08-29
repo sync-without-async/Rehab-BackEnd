@@ -99,10 +99,12 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String createProgram(ProgramRequestDTO programRequestDTO) {
+    public Long createProgram(ProgramRequestDTO programRequestDTO) {
         Program program = programRequestDtoToProgram(programRequestDTO);
+
         programRepository.save(program);
-        return "Program create successfully.";
+
+        return program.getPno();
     }
 
     @Override

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/auth/program")
@@ -17,9 +19,9 @@ public class ProgramAdminController {
 
 //    @PreAuthorize("authentication.principal.username == #passwordChangeDTO.mid or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<String> createProgram(@ModelAttribute ProgramRequestDTO programRequestDTO) {
-        String result = programService.createProgram(programRequestDTO);
-        return ResponseEntity.ok(result);
+    public Map<String, Long> createProgram(@ModelAttribute ProgramRequestDTO programRequestDTO) {
+        Long result = programService.createProgram(programRequestDTO);
+        return Map.of("Program number : ", result);
     }
 
     @PutMapping("/modify/{pno}")
