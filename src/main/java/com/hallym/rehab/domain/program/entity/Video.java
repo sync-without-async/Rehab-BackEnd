@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString(exclude = {"program", "programVideo_members"})
+@ToString(exclude = {"program", "video_members"})
 @NoArgsConstructor
 @Entity
 public class Video extends BaseTimeEntity {

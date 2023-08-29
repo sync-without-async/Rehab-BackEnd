@@ -14,6 +14,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "programMember")
 @Entity
 public class Program extends BaseTimeEntity {
 
