@@ -10,5 +10,5 @@ import lombok.*;
 public class ActResponseDTO {
     private Long vno;
     private String actName;
-    private double matrix;
+    private double metrics;
 }

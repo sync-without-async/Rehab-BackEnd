@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-@ToString(exclude = {"program", "programVideo_members"})
+@ToString(exclude = {"program", "video_members"})
 @NoArgsConstructor
 @Entity
 public class Video extends BaseTimeEntity {
@@ -41,6 +41,7 @@ public class Video extends BaseTimeEntity {
     @Column(name = "jsonObjectName")
     private String JsonObjectPath; // Json 파일 삭제하기 위한 ObjectPath
 
+    @Builder.Default
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL)
     private List<Video_Member> video_members = new ArrayList<>();
 
