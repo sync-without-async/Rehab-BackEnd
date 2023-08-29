@@ -20,7 +20,7 @@ public interface ProgramService {
     PageResponseDTO<ProgramMainResponseDTO> getProgramList(PageRequestDTO pageRequestDTO);
     String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO);
     String deleteProgramOne(Long pno);
-    String createProgram(ProgramRequestDTO programRequestDTO);
+    Long createProgram(ProgramRequestDTO programRequestDTO);
     String registerProgram(Long pno, String mid);
     String cancelProgram(Long pno, String mid);
     default Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO){

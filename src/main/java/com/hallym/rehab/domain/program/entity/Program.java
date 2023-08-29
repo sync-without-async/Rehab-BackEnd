@@ -1,7 +1,6 @@
 package com.hallym.rehab.domain.program.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,8 +13,8 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "programMember")
 @Entity
-@ToString(exclude = "member")
 public class Program extends BaseTimeEntity {
 
     @Id
@@ -38,6 +37,7 @@ public class Program extends BaseTimeEntity {
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
     private Set<Video> video = new HashSet<>(); // 한 프로그램에 어떤 운동 동작 비디오들이 있는지
 
+    @Builder.Default
     @JsonBackReference
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
     private Set<Program_Member> programMember = new HashSet<>(); // 유저 프로그램 신청 여부
@@ -57,13 +57,6 @@ public class Program extends BaseTimeEntity {
         this.video.add(video);
     }
 
-//
-//    public void clearProgramVideo(){ //비디오 파일 변경 시 사용할 메소드
-//
-//        programVideo.forEach(programVideo -> programVideo.changeProgram(null));
-//
-//        this.programVideo.clear();
-//    }
     public void setIs_deleted(Boolean is_deleted){ //soft delete
         this.is_deleted = is_deleted;
     }
