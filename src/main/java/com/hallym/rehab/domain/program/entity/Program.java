@@ -15,7 +15,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString(exclude = "member")
 public class Program extends BaseTimeEntity {
 
     @Id
@@ -38,6 +37,7 @@ public class Program extends BaseTimeEntity {
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
     private Set<Video> video = new HashSet<>(); // 한 프로그램에 어떤 운동 동작 비디오들이 있는지
 
+    @Builder.Default
     @JsonBackReference
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
     private Set<Program_Member> programMember = new HashSet<>(); // 유저 프로그램 신청 여부

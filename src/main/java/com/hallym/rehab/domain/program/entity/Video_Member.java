@@ -27,7 +27,8 @@ public class Video_Member {
     @JoinColumn(name = "vno")
     private Video video;
 
-    private double matrix = 0;
+    @Builder.Default
+    private double metrics = 0;
 
     public void changeMatrix(double matrix) {
         this.matrix = matrix;
