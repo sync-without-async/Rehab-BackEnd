@@ -39,10 +39,11 @@ jobs:
       run: ./gradlew build
 
     # AWS CLI command로 objectStorage에 배포
-    - name: Deploy S3
+    - name: Sync Bucket
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_EC2_METADATA_DISABLED: true
       run: aws s3 sync --delete --region ap-northeast-2 build s3://rehab
 
     - name: 테스트 결과를 PR에 코멘트로 등록합니다
