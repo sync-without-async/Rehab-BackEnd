@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProgramMainResponseDTO {
+public class ProgramListResponseDTO {
     /**
      * Program 의 메인페이지에 반환할 DTO
      * List 로 반환

@@ -3,14 +3,15 @@ package com.hallym.rehab.domain.program.service;
 
 import com.hallym.rehab.domain.program.dto.act.ActResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramDetailResponseDTO;
-import com.hallym.rehab.domain.program.dto.program.ProgramMainResponseDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramHistoryDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramListResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.Program_Member;
+import com.hallym.rehab.domain.program.entity.ProgramHistory;
 import com.hallym.rehab.domain.program.entity.Video;
 import com.hallym.rehab.domain.program.entity.Video_Member;
+import com.hallym.rehab.domain.program.repository.ProgramHistoryRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.program.repository.Program_MemberRepository;
 import com.hallym.rehab.domain.program.repository.Video_MemberRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
@@ -18,12 +19,15 @@ import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -33,7 +37,7 @@ public class ProgramServiceImpl implements ProgramService{
     private final MemberRepository memberRepository;
     private final ProgramRepository programRepository;
     private final Video_MemberRepository videoMemberRepository;
-    private final Program_MemberRepository programMemberRepository;
+    private final ProgramHistoryRepository programHistoryRepository;
 
     @Override
     public ProgramDetailResponseDTO getProgramOne(Long pno, String mid) {
@@ -51,22 +55,67 @@ public class ProgramServiceImpl implements ProgramService{
             if (byMemberAndVideo.isEmpty()) { // 비디오랑 멤버랑 연관 테이블이 없으면 생성
                 videoMemberRepository.save(
                         Video_Member.builder()
-                        .member(member)
-                        .video(v).build());
-            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 matrix 값 변경
+                                .member(member)
+                                .video(v).build());
+            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 metrics 값 변경
                 Video_Member videoMember = byMemberAndVideo.get();
                 metrics = videoMember.getMetrics();
             }
 
             actResponseDTOList.add(
                     ActResponseDTO.builder()
-                            .vno(v.getVno())
+                            .ord(v.getOrd())
                             .actName(v.getActName())
-                            .metrics(metrics).build()
+                            .metrics(metrics)
+                            .frame(v.getFrame())
+                            .build()
             );
         });
 
         return entitesToProgramDetailResponseDTO(program, actResponseDTOList);
+    }
+
+    @Override
+    public ProgramHistoryDTO getProgramHistoryOne(Long pno, String mid) {
+
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
+        Member member = memberRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
+
+        Set<Video> video = program.getVideo();
+        List<ActResponseDTO> actResponseDTOList = new ArrayList<>();
+
+        video.forEach(v -> {
+            double metrics = 0;
+            Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, v.getVno());
+            if (byMemberAndVideo.isEmpty()) { // 비디오랑 멤버랑 연관 테이블이 없으면 생성
+                videoMemberRepository.save(
+                        Video_Member.builder()
+                                .member(member)
+                                .video(v).build());
+            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 metrics 값 변경
+                Video_Member videoMember = byMemberAndVideo.get();
+                metrics = videoMember.getMetrics();
+            }
+
+            actResponseDTOList.add(
+                    ActResponseDTO.builder()
+                            .actName(v.getActName())
+                            .frame(v.getFrame())
+                            .metrics(metrics).build()
+
+            );
+        });
+
+        return ProgramHistoryDTO.builder()
+                .programName(program.getProgramTitle())
+                .position(program.getPosition())
+                .category(program.getCategory())
+                .actResponseDTO(actResponseDTOList)
+                .mid(member.getMid())
+                .regDate(member.getRegDate())
+                .build();
     }
 
     @Override
@@ -93,10 +142,37 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public PageResponseDTO<ProgramMainResponseDTO> getProgramList(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProgramListResponseDTO> getProgramList(PageRequestDTO pageRequestDTO) {
 
-        return null;
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("pno");
+
+        Page<ProgramListResponseDTO> result = programRepository.searchProgramList(types, keyword, pageable);
+
+        return PageResponseDTO.<ProgramListResponseDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
     }
+
+    @Override
+    public List<ProgramListResponseDTO> getProgramHistoryList(String mid) {
+        List<Program> programs = programHistoryRepository.searchProgramListByMid(mid);
+
+        return programs.stream()
+                .map(program -> ProgramListResponseDTO.builder()
+                        .pno(program.getPno())
+                        .programTitle(program.getProgramTitle())
+                        .description(program.getDescription())
+                        .category(program.getCategory())
+                        .position(program.getPosition())
+                        .regDate(program.getRegDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public Long createProgram(ProgramRequestDTO programRequestDTO) {
@@ -108,23 +184,23 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String registerProgram(Long pno, String mid) {
+    public String addProgramHistory(Long pno, String mid) {
         Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
         Member member = memberRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
 
-        Optional<Program_Member> byMemberAndProgram = programMemberRepository.findByMemberAndProgram(mid, pno);
-        if (byMemberAndProgram.isPresent()) return "already Registered Program.";
+        Optional<ProgramHistory> byMemberAndProgram = programHistoryRepository.findByMemberWithProgram(mid, pno);
+        if (byMemberAndProgram.isPresent()) return "already Registered ProgramHistory.";
 
-        Program_Member program_member = Program_Member.builder()
+        ProgramHistory programHistory = ProgramHistory.builder()
                 .member(member)
                 .program(program)
                 .build();
 
-        programMemberRepository.save(program_member);
+        programHistoryRepository.save(programHistory);
 
-        return "Program Register Success for Member Id : " + mid;
+        return "Add Program History for member Id : " + mid;
     }
 
     @Override
@@ -134,12 +210,12 @@ public class ProgramServiceImpl implements ProgramService{
         memberRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
 
-        Optional<Program_Member> byMemberAndProgram = programMemberRepository.findByMemberAndProgram(mid, pno);
-        if (byMemberAndProgram.isEmpty()) return "Don't Registered Program.";
+        Optional<ProgramHistory> membersProgram = programHistoryRepository.findByMemberWithProgram(mid, pno);
+        if (membersProgram.isEmpty()) return "Don't Registered Program.";
 
-        Program_Member programMember = byMemberAndProgram.get();
+        ProgramHistory programHistory = membersProgram.get();
 
-        programMemberRepository.delete(programMember);
+        programHistoryRepository.delete(programHistory);
         return "Program Cancel Success for Member Id : " + mid;
     }
 }

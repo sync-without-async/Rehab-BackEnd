@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "programMember")
+@ToString(exclude = "programHistory")
 @Entity
 public class Program extends BaseTimeEntity {
 
@@ -40,7 +40,7 @@ public class Program extends BaseTimeEntity {
     @Builder.Default
     @JsonBackReference
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)
-    private Set<Program_Member> programMember = new HashSet<>(); // 유저 프로그램 신청 여부
+    private Set<ProgramHistory> programHistory = new HashSet<>(); // 유저 프로그램 신청 여부
 
     @ColumnDefault("false") //삭제 여부
     private boolean is_deleted;

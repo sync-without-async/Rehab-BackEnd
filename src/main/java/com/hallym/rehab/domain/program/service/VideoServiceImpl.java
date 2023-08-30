@@ -7,7 +7,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.Permission;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
-import com.hallym.rehab.domain.program.dto.video.MatrixRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.ChangeOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
@@ -112,12 +112,12 @@ public class VideoServiceImpl implements VideoService{
     }
 
     @Override
-    public String saveMetrics(Long vno, MatrixRequestDTO matrixRequestDTO) {
+    public String saveMetrics(Long vno, MetricsRequestDTO metricsRequestDTO) {
         videoRepository.findById(vno)
                 .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
 
-        String mid = matrixRequestDTO.getMid();
-        double metrics = matrixRequestDTO.getMetrics();
+        String mid = metricsRequestDTO.getMid();
+        double metrics = metricsRequestDTO.getMetrics();
 
         Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, vno);
         if (byMemberAndVideo.isEmpty()) return "findByMemberAndVideo error";
@@ -126,10 +126,10 @@ public class VideoServiceImpl implements VideoService{
         videoMember.changeMetrics(metrics);
         videoMemberRepository.save(videoMember);
 
-        return "Matrix saved";
+        return "Metrics saved";
     }
 
-    @Override // 비디오의 순서만을 바꿈.
+    @Override
     public String changeVideoOrd(Long pno, ChangeOrdRequestDTO changeOrdRequestDTO) {
         programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));

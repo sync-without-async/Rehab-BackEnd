@@ -8,7 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActResponseDTO {
-    private Long vno;
+    private Long ord; //등록 순서
     private String actName;
     private double metrics;
+    private Long frame;
 }
