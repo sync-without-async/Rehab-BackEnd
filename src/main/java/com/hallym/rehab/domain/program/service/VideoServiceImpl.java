@@ -51,6 +51,7 @@ public class VideoServiceImpl implements VideoService{
 
         MultipartFile[] files = videoRequestDTO.getFiles();
         String actName =  videoRequestDTO.getActName();
+        double playtime = videoRequestDTO.getPlayTime();
         Long frame = videoRequestDTO.getFrame();
         MultipartFile videoFile =  files[0];
         MultipartFile jsonFile =  files[1];
@@ -71,6 +72,7 @@ public class VideoServiceImpl implements VideoService{
                     .program(program)
                     .ord(ord)
                     .ActName(actName)
+                    .playTime(playtime)
                     .frame(frame)
                     .build();
 

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -119,6 +120,12 @@ public class ProgramSearchImpl extends QuerydslRepositorySupport implements Prog
 
             Program program1 = (Program) tuple.get(program);
 
+            double totalPlayTime = 0L;
+            Set<Video> videoList = program1.getVideo(); // 프로그램의 비디오 리스트를 가져옵니다.
+
+            for (Video v : videoList) {
+                totalPlayTime += v.getPlayTime(); // 각 비디오의 재생 시간을 더합니다.
+            }
 
             ProgramListResponseDTO dto = ProgramListResponseDTO.builder()
                     .pno(program1.getPno())
@@ -126,6 +133,7 @@ public class ProgramSearchImpl extends QuerydslRepositorySupport implements Prog
                     .description(program1.getDescription())
                     .category(program1.getCategory())
                     .position(program1.getPosition())
+                    .totalPlayTime(totalPlayTime)
                     .regDate(program1.getRegDate())
                     .build();
 
