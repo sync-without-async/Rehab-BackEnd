@@ -151,6 +151,23 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
+    public List<ProgramListResponseDTO> getProgramHistoryList(String mid) {
+        List<Program> programs = programHistoryRepository.searchProgramListByMid(mid);
+
+        return programs.stream()
+                .map(program -> ProgramListResponseDTO.builder()
+                        .pno(program.getPno())
+                        .programTitle(program.getProgramTitle())
+                        .description(program.getDescription())
+                        .category(program.getCategory())
+                        .position(program.getPosition())
+                        .regDate(program.getRegDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
     public Long createProgram(ProgramRequestDTO programRequestDTO) {
         Program program = programRequestDtoToProgram(programRequestDTO);
 

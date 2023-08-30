@@ -32,7 +32,8 @@ public interface ProgramService {
     String addProgramHistory(Long pno, String mid);
 
     String cancelProgram(Long pno, String mid);
-    default Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO){
+
+    default Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO) {
 
         return Program.builder()
                 .programTitle(programRequestDTO.getProgramTitle())
