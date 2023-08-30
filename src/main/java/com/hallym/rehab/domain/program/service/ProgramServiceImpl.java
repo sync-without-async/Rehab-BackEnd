@@ -66,6 +66,7 @@ public class ProgramServiceImpl implements ProgramService{
                     ActResponseDTO.builder()
                             .ord(v.getOrd())
                             .actName(v.getActName())
+                            .playTime(v.getPlayTime())
                             .metrics(metrics)
                             .frame(v.getFrame())
                             .build()
@@ -102,6 +103,7 @@ public class ProgramServiceImpl implements ProgramService{
             actResponseDTOList.add(
                     ActResponseDTO.builder()
                             .actName(v.getActName())
+                            .playTime(v.getPlayTime())
                             .frame(v.getFrame())
                             .metrics(metrics).build()
 
