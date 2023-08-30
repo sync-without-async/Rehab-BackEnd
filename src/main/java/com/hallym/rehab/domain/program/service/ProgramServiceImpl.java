@@ -64,9 +64,11 @@ public class ProgramServiceImpl implements ProgramService{
 
             actResponseDTOList.add(
                     ActResponseDTO.builder()
-                            .vno(v.getVno())
+                            .ord(v.getOrd())
                             .actName(v.getActName())
-                            .metrics(metrics).build()
+                            .metrics(metrics)
+                            .frame(v.getFrame())
+                            .build()
             );
         });
 
@@ -99,9 +101,10 @@ public class ProgramServiceImpl implements ProgramService{
 
             actResponseDTOList.add(
                     ActResponseDTO.builder()
-                            .vno(v.getVno())
                             .actName(v.getActName())
+                            .frame(v.getFrame())
                             .metrics(metrics).build()
+
             );
         });
 
