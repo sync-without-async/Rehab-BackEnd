@@ -22,9 +22,9 @@ public class VideoUserController {
     }
 
     @PutMapping("/modify/matrix/{vno}")
-    public ResponseEntity<String> saveMatrix(@PathVariable Long vno,
+    public ResponseEntity<String> saveMetrics(@PathVariable Long vno,
                                              @ModelAttribute MatrixRequestDTO matrixRequestDTO) {
-        String result = videoService.saveMatrix(vno, matrixRequestDTO);
+        String result = videoService.saveMetrics(vno, matrixRequestDTO);
         return ResponseEntity.ok(result);
     }
 }
