@@ -33,7 +33,7 @@ public class ProgramServiceImpl implements ProgramService{
     private final MemberRepository memberRepository;
     private final ProgramRepository programRepository;
     private final Video_MemberRepository videoMemberRepository;
-    private final Program_MemberRepository programMemberRepository;
+    private final ProgramHistoryRepository programHistoryRepository;
 
     @Override
     public ProgramDetailResponseDTO getProgramOne(Long pno, String mid) {

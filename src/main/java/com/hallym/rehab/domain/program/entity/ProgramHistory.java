@@ -12,8 +12,8 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Program_Member {
+@Entity(name = "programHistory")
+public class ProgramHistory {
     /**
      * 유저마다 어떤 프로그램에 수강등록 되어있는지 확인하는 테이블
      */
