@@ -8,7 +8,7 @@ import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.Permission;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
 import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
-import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.ChangeOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -128,39 +129,21 @@ public class VideoServiceImpl implements VideoService{
         return "Metrics saved";
     }
 
-    /**
-     * @param swapOrdRequestDTO
-     * DTO의 ord1 -> 바꿀 video의 원래 번호
-     * DTO의 ord2 -> ord1이 ord2로 바꿔져야함
-     * 만약 ord2에 객체가 있다면 서로의 번호를 swap하고 객체가 없다면 ord1만 ord2로 이동
-     */
-    @Override // 비디오의 순서만을 바꿈.
-    public String swapVideoOrd(Long pno, SwapOrdRequestDTO swapOrdRequestDTO) {
+    @Override
+    public String changeVideoOrd(Long pno, ChangeOrdRequestDTO changeOrdRequestDTO) {
         programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
-        Long ord1 = swapOrdRequestDTO.getOrd_1();
-        Long ord2 = swapOrdRequestDTO.getOrd_2();
+        for (Map.Entry<Long, Long> entry : changeOrdRequestDTO.getOrd_map().entrySet()) {
+            Long vno = entry.getKey();
+            Long ord = entry.getValue();
 
-
-        Optional<Video> byPno_1 = videoRepository.findByPnoAndOrd(pno, ord1);
-        Optional<Video> byPno_2 = videoRepository.findByPnoAndOrd(pno, ord2);
-
-        // 만약 ord1 자체가 없을 경우
-        if (byPno_1.isEmpty()) return "Please Select Valid Ord";
-        // ord2가 있다면 ord1과 ord2를 서로 swap
-        if (byPno_2.isPresent()) {
-            Video pv1 = byPno_1.get();
-            Video pv2 = byPno_2.get();
-            pv1.setOrd(ord2);
-            pv2.setOrd(ord1);
-            videoRepository.save(pv1);
-            videoRepository.save(pv2);
-        } else { // ord2가 없다면 ord1을 ord2로 변경
-            Video pv1 = byPno_1.get();
-            pv1.setOrd(ord2);
-            videoRepository.save(pv1);
+            Video video = videoRepository.findById(vno)
+                    .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
+            video.setOrd(ord);
+            videoRepository.save(video);
         }
+
         return "Success modify Video Ord";
     }
 
@@ -199,7 +182,7 @@ public class VideoServiceImpl implements VideoService{
             s3.putObject(bucketName, guideVideoObjectPath, uploadVideoFile);
             s3.putObject(bucketName, jsonObjectPath, uploadJsonFile);
 
-            String baseUploadURL = "https://kr.object.ncloudstorage.com/rehab/";
+            String baseUploadURL = "https://kr.object.ncloudstorage.com/" + bucketName + "/";
             String guideVideoURL = baseUploadURL + guideVideoObjectPath;
             String jsonURL = baseUploadURL + jsonObjectPath;
 

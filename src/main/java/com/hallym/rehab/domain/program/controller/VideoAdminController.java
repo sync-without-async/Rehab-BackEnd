@@ -1,12 +1,14 @@
 package com.hallym.rehab.domain.program.controller;
 
-import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.ChangeOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -26,9 +28,9 @@ public class VideoAdminController {
     }
 
     @PutMapping("/modify/{pno}")
-    public ResponseEntity<String> modifyVideo(@PathVariable Long pno,
-                                              SwapOrdRequestDTO swapOrdRequestDTO) {
-        String result = videoService.swapVideoOrd(pno, swapOrdRequestDTO);
+    public ResponseEntity<String> changeVideoOrd(@PathVariable Long pno,
+                            @RequestBody ChangeOrdRequestDTO changeOrdRequestDTO) {
+        String result = videoService.changeVideoOrd(pno, changeOrdRequestDTO);
         return ResponseEntity.ok(result);
     }
 

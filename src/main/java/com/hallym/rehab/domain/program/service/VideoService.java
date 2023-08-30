@@ -2,8 +2,8 @@ package com.hallym.rehab.domain.program.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
+import com.hallym.rehab.domain.program.dto.video.ChangeOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
-import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
@@ -21,7 +21,7 @@ public interface VideoService {
     String deleteVideo(Long pno, Long ord);
     VideoResponseDTO getVideoList(Long pno);
     String saveMetrics(Long vno, MetricsRequestDTO metricsRequestDTO);
-    String swapVideoOrd(Long pno, SwapOrdRequestDTO swapOrdRequestDTO);
+    String changeVideoOrd(Long pno, ChangeOrdRequestDTO changeOrdRequestDTO);
     UploadFileDTO uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile, Program program);
     File convertMultipartFileToFile(MultipartFile multipartFile, String fileName);
     void setAcl(AmazonS3 s3, String ObjectPath);
