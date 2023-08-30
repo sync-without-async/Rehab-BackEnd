@@ -160,23 +160,23 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String registerProgram(Long pno, String mid) {
+    public String addProgramHistory(Long pno, String mid) {
         Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
         Member member = memberRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
 
-        Optional<Program_Member> byMemberAndProgram = programMemberRepository.findByMemberAndProgram(mid, pno);
-        if (byMemberAndProgram.isPresent()) return "already Registered Program.";
+        Optional<ProgramHistory> byMemberAndProgram = programHistoryRepository.findByMemberWithProgram(mid, pno);
+        if (byMemberAndProgram.isPresent()) return "already Registered ProgramHistory.";
 
-        Program_Member program_member = Program_Member.builder()
+        ProgramHistory programHistory = ProgramHistory.builder()
                 .member(member)
                 .program(program)
                 .build();
 
-        programMemberRepository.save(program_member);
+        programHistoryRepository.save(programHistory);
 
-        return "Program Register Success for Member Id : " + mid;
+        return "Add Program History for member Id : " + mid;
     }
 
     @Override

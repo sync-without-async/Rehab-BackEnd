@@ -24,9 +24,13 @@ public interface ProgramService {
     List<ProgramListResponseDTO> getProgramHistoryList(String mid);
 
     String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO);
+
     String deleteProgramOne(Long pno);
+
     Long createProgram(ProgramRequestDTO programRequestDTO);
-    String registerProgram(Long pno, String mid);
+
+    String addProgramHistory(Long pno, String mid);
+
     String cancelProgram(Long pno, String mid);
     default Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO){
 
