@@ -70,6 +70,48 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
+    public ProgramHistoryDTO getProgramHistoryOne(Long pno, String mid) {
+
+        Program program = programRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
+        Member member = memberRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
+
+        Set<Video> video = program.getVideo();
+        List<ActResponseDTO> actResponseDTOList = new ArrayList<>();
+
+        video.forEach(v -> {
+            double metrics = 0;
+            Optional<Video_Member> byMemberAndVideo = videoMemberRepository.findByMemberAndVideo(mid, v.getVno());
+            if (byMemberAndVideo.isEmpty()) { // 비디오랑 멤버랑 연관 테이블이 없으면 생성
+                videoMemberRepository.save(
+                        Video_Member.builder()
+                                .member(member)
+                                .video(v).build());
+            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 metrics 값 변경
+                Video_Member videoMember = byMemberAndVideo.get();
+                metrics = videoMember.getMetrics();
+            }
+
+            actResponseDTOList.add(
+                    ActResponseDTO.builder()
+                            .vno(v.getVno())
+                            .actName(v.getActName())
+                            .metrics(metrics).build()
+            );
+        });
+
+        return ProgramHistoryDTO.builder()
+                .programName(program.getProgramTitle())
+                .position(program.getPosition())
+                .category(program.getCategory())
+                .actResponseDTO(actResponseDTOList)
+                .mid(member.getMid())
+                .regDate(member.getRegDate())
+                .build();
+    }
+
+    @Override
     public String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO) {
         Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
