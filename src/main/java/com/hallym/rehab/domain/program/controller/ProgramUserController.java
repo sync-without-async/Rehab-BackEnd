@@ -1,13 +1,18 @@
 package com.hallym.rehab.domain.program.controller;
 
 import com.hallym.rehab.domain.program.dto.program.ProgramDetailResponseDTO;
-import com.hallym.rehab.domain.program.dto.program.ProgramMainResponseDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramHistoryDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramListResponseDTO;
 import com.hallym.rehab.domain.program.service.ProgramService;
+import com.hallym.rehab.global.pageDTO.PageRequestDTO;
+import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -18,14 +23,9 @@ public class ProgramUserController {
 
     private final ProgramService programService;
 
-    @GetMapping()
-    public List<ProgramMainResponseDTO> getProgramList(
-            @RequestParam(value = "", required = false) String category,
-            @RequestParam(value = "", required = false) String position) {
-
-        log.info(category);
-        log.info(position);
-        return null;
+    @GetMapping("/list")
+    public PageResponseDTO<ProgramListResponseDTO> getProgramList(PageRequestDTO pageRequestDTO) {
+        return programService.getProgramList(pageRequestDTO);
     }
 
     @GetMapping("/{pno}")
@@ -33,16 +33,29 @@ public class ProgramUserController {
         return programService.getProgramOne(pno, mid);
     }
 
-    @PostMapping("/register/{pno}")
-    public ResponseEntity<String> programRegister(@PathVariable Long pno, String mid) {
-        String result = programService.registerProgram(pno, mid);
+    @PostMapping("/addHistory/{pno}")
+    public ResponseEntity<String> takeAProgram(@PathVariable Long pno, @RequestBody ProgramHistoryDTO programHistoryDTO) {
+        String mid = programHistoryDTO.getMid();
+        String result = programService.addProgramHistory(pno, mid);
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/cancel/{pno}")
-    public ResponseEntity<String> programCancel(@PathVariable Long pno, String mid) {
+    @DeleteMapping("/delete/{pno}")
+    public ResponseEntity<String> cancelProgram(@PathVariable Long pno, @RequestBody ProgramHistoryDTO programHistoryDTO) {
+        String mid = programHistoryDTO.getMid();
         String result = programService.cancelProgram(pno, mid);
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/history/{pno}")
+    public ProgramHistoryDTO getHistoryOne(@PathVariable Long pno, @RequestBody ProgramHistoryDTO programHistoryDTO) {
+        String mid = programHistoryDTO.getMid();
+        return programService.getProgramHistoryOne(pno, mid);
+    }
+
+    @GetMapping("/history/list")
+    public List<ProgramListResponseDTO> getProgramHistoryList(@RequestBody ProgramHistoryDTO programHistoryDTO) {
+        String mid = programHistoryDTO.getMid();
+        return programService.getProgramHistoryList(mid);
+    }
 }
