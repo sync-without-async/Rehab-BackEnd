@@ -51,9 +51,9 @@ public class ProgramServiceImpl implements ProgramService{
             if (byMemberAndVideo.isEmpty()) { // 비디오랑 멤버랑 연관 테이블이 없으면 생성
                 videoMemberRepository.save(
                         Video_Member.builder()
-                        .member(member)
-                        .video(v).build());
-            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 matrix 값 변경
+                                .member(member)
+                                .video(v).build());
+            } else { // 비디오랑 멤버랑 연관 테이블이 있으면 metrics 값 변경
                 Video_Member videoMember = byMemberAndVideo.get();
                 metrics = videoMember.getMetrics();
             }

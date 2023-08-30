@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.program.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
-import com.hallym.rehab.domain.program.dto.video.MatrixRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.SwapOrdRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
@@ -20,7 +20,7 @@ public interface VideoService {
     String createVideo(Long pno, Long ord, VideoRequestDTO videoRequestDTO);
     String deleteVideo(Long pno, Long ord);
     VideoResponseDTO getVideoList(Long pno);
-    String saveMatrix(Long vno, MatrixRequestDTO matrixRequestDTO);
+    String saveMetrics(Long vno, MetricsRequestDTO metricsRequestDTO);
     String swapVideoOrd(Long pno, SwapOrdRequestDTO swapOrdRequestDTO);
     UploadFileDTO uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile, Program program);
     File convertMultipartFileToFile(MultipartFile multipartFile, String fileName);

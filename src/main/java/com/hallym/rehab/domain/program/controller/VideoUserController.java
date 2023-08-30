@@ -1,6 +1,6 @@
 package com.hallym.rehab.domain.program.controller;
 
-import com.hallym.rehab.domain.program.dto.video.MatrixRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
 import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.service.VideoService;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,10 @@ public class VideoUserController {
         return videoService.getVideoList(pno);
     }
 
-    @PutMapping("/modify/matrix/{vno}")
-    public ResponseEntity<String> saveMatrix(@PathVariable Long vno,
-                                             @ModelAttribute MatrixRequestDTO matrixRequestDTO) {
-        String result = videoService.saveMatrix(vno, matrixRequestDTO);
+    @PutMapping("/modify/metrics/{vno}")
+    public ResponseEntity<String> saveMetrics(@PathVariable Long vno,
+                                             @ModelAttribute MetricsRequestDTO metricsRequestDTO) {
+        String result = videoService.saveMetrics(vno, metricsRequestDTO);
         return ResponseEntity.ok(result);
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 public class Video_Member {
     /**
-     * 유저마다 한 운동영상에 대한 Matrix 정보를 표시하기 위해 생성한 테이블
+     * 유저마다 한 운동영상에 대한 Metris 정보를 표시하기 위해 생성한 테이블
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
