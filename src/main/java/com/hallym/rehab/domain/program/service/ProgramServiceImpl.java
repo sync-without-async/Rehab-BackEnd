@@ -135,9 +135,19 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public PageResponseDTO<ProgramMainResponseDTO> getProgramList(PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ProgramListResponseDTO> getProgramList(PageRequestDTO pageRequestDTO) {
 
-        return null;
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("pno");
+
+        Page<ProgramListResponseDTO> result = programRepository.searchProgramList(types, keyword, pageable);
+
+        return PageResponseDTO.<ProgramListResponseDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
     }
 
     @Override

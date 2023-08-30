@@ -17,7 +17,12 @@ import java.util.Set;
 public interface ProgramService {
 
     ProgramDetailResponseDTO getProgramOne(Long pno, String mid);
-    PageResponseDTO<ProgramMainResponseDTO> getProgramList(PageRequestDTO pageRequestDTO);
+
+    ProgramHistoryDTO getProgramHistoryOne(Long pno, String mid);
+    PageResponseDTO<ProgramListResponseDTO> getProgramList(PageRequestDTO pageRequestDTO);
+
+    List<ProgramListResponseDTO> getProgramHistoryList(String mid);
+
     String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO);
     String deleteProgramOne(Long pno);
     Long createProgram(ProgramRequestDTO programRequestDTO);
