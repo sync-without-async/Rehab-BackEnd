@@ -28,6 +28,8 @@ public class ProgramListResponseDTO {
 
     private Position position;
 
+    private double totalPlayTime;
+
 //    private List<String> programVideoFile;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
