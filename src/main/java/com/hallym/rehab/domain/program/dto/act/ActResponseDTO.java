@@ -10,6 +10,7 @@ import lombok.*;
 public class ActResponseDTO {
     private Long ord; //등록 순서
     private String actName;
+    private double playTime;
     private double metrics;
     private Long frame;
 }
