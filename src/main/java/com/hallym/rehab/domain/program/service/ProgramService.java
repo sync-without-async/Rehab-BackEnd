@@ -43,6 +43,8 @@ public interface ProgramService {
     }
     default ProgramDetailResponseDTO entitesToProgramDetailResponseDTO(Program program, List<ActResponseDTO> actResponseDTOList){
 
+        actResponseDTOList.sort(Comparator.comparing(ActResponseDTO::getOrd));
+
         return ProgramDetailResponseDTO.builder()
                 .pno(program.getPno())
                 .programTitle(program.getProgramTitle())
