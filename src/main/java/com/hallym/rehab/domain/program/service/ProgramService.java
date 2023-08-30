@@ -2,17 +2,16 @@ package com.hallym.rehab.domain.program.service;
 
 import com.hallym.rehab.domain.program.dto.act.ActResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramDetailResponseDTO;
-import com.hallym.rehab.domain.program.dto.program.ProgramMainResponseDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramHistoryDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramListResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.Video;
-import com.hallym.rehab.domain.user.entity.Member;
+
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+
 
 public interface ProgramService {
 

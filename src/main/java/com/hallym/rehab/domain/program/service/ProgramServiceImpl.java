@@ -3,14 +3,15 @@ package com.hallym.rehab.domain.program.service;
 
 import com.hallym.rehab.domain.program.dto.act.ActResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramDetailResponseDTO;
-import com.hallym.rehab.domain.program.dto.program.ProgramMainResponseDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramHistoryDTO;
+import com.hallym.rehab.domain.program.dto.program.ProgramListResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.Program_Member;
+import com.hallym.rehab.domain.program.entity.ProgramHistory;
 import com.hallym.rehab.domain.program.entity.Video;
 import com.hallym.rehab.domain.program.entity.Video_Member;
+import com.hallym.rehab.domain.program.repository.ProgramHistoryRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.program.repository.Program_MemberRepository;
 import com.hallym.rehab.domain.program.repository.Video_MemberRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
@@ -18,12 +19,15 @@ import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -203,12 +207,12 @@ public class ProgramServiceImpl implements ProgramService{
         memberRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("Member not found for Id : " + mid));
 
-        Optional<Program_Member> byMemberAndProgram = programMemberRepository.findByMemberAndProgram(mid, pno);
-        if (byMemberAndProgram.isEmpty()) return "Don't Registered Program.";
+        Optional<ProgramHistory> membersProgram = programHistoryRepository.findByMemberWithProgram(mid, pno);
+        if (membersProgram.isEmpty()) return "Don't Registered Program.";
 
-        Program_Member programMember = byMemberAndProgram.get();
+        ProgramHistory programHistory = membersProgram.get();
 
-        programMemberRepository.delete(programMember);
+        programHistoryRepository.delete(programHistory);
         return "Program Cancel Success for Member Id : " + mid;
     }
 }
