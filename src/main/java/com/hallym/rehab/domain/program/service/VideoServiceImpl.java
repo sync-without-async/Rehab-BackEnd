@@ -77,8 +77,8 @@ public class VideoServiceImpl implements VideoService{
                     .build();
 
         videoRepository.save(video);
-
-        program.addProgramVideo(video);
+        program.addVideo(video);
+        videoRepository.flush();
 
         log.info(program.getVideo().size());
 
@@ -87,7 +87,7 @@ public class VideoServiceImpl implements VideoService{
 
     @Override
     public String deleteVideo(Long pno, Long ord) {
-        programRepository.findById(pno)
+        Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
         Optional<Video> byPno = videoRepository.findByPnoAndOrd(pno, ord);
@@ -100,6 +100,8 @@ public class VideoServiceImpl implements VideoService{
         deleteFileFromS3(guideVideoObjectPath, jsonObjectPath);
 
         videoRepository.delete(video);
+        program.deleteVideo(video);
+
         return "Success delete Video";
     }
 

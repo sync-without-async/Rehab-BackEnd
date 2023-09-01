@@ -52,9 +52,14 @@ public class Program extends BaseTimeEntity {
         this.position = position;
     }
 
-    public void addProgramVideo(Video video){
+    public void addVideo(Video video) {
         video.setProgram(this);
         this.video.add(video);
+    }
+
+    public void deleteVideo(Video video) {
+        video.setProgram(null);
+        this.video.remove(video);
     }
 
     public void setIs_deleted(Boolean is_deleted){ //soft delete
