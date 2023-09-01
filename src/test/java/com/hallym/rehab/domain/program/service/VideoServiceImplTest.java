@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.program.service;
 
 import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
+import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.entity.Category;
 import com.hallym.rehab.domain.program.entity.Position;
 import com.hallym.rehab.domain.program.entity.Program;
@@ -123,6 +124,18 @@ class VideoServiceImplTest {
         log.info(result);
         //then
         assertThat(program.getVideo().size()).isEqualTo(0);
+    }
+
+    @Test
+    @Transactional
+    public void 비디오조회() throws Exception {
+        //given
+        Program program = 비디오등록();
+        Long pno = program.getPno();
+        //when
+        VideoResponseDTO videoList = videoService.getVideoList(pno);
+        //then
+        assertThat(videoList.getProgramVideoFile().size()).isEqualTo(1);
     }
 
 }
