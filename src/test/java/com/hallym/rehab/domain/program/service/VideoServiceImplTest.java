@@ -5,13 +5,10 @@ import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
 import com.hallym.rehab.domain.program.entity.Category;
 import com.hallym.rehab.domain.program.entity.Position;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.Video;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.program.repository.VideoRepository;
 import lombok.extern.log4j.Log4j2;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -28,6 +25,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Log4j2
+@Transactional
 class VideoServiceImplTest {
 
     @Autowired
@@ -35,26 +33,22 @@ class VideoServiceImplTest {
     @Autowired
     VideoRepository videoRepository;
     @Autowired
+    ProgramService programService;
+    @Autowired
     ProgramRepository programRepository;
 
-    @BeforeEach
-    @Transactional
-    void setUp() {
-        // 프로그램 1번 등록
+    Long setUp() throws IOException {
+        // 프로그램 등록
         Program program = Program.builder()
-                .programTitle("title 1")
-                .description("desc 1")
-                .position(Position.STANDING)
-                .category(Category.ARMS)
+                .programTitle("sample title")
+                .description("Program test")
+                .category(Category.SHOULDERS)
+                .position(Position.LYING)
                 .build();
-        programRepository.save(program);
-        log.info(program.getPno());
-    }
 
-    @Test
-    @Transactional
-    public Program 비디오등록() throws IOException {
-        //given
+        Program savedProgram = programRepository.save(program);
+
+        // 프로그램 1번에 Video 등록
         String mp4FilePath = "src/main/resources/sample.mp4";
         String jsonFilePath = "src/main/resources/sample.json";
         byte[] mp4Bytes = Files.readAllBytes(Paths.get(mp4FilePath));
@@ -90,52 +84,38 @@ class VideoServiceImplTest {
                 .files(files)
                 .build();
 
-        Long pno = 1L;
+        Long pno = savedProgram.getPno();
         Long ord = 1L;
-
-        //when
-
         String result = videoService.createVideo(pno, ord, videoRequestDTO);
         log.info(result);
 
-        //then
-
-        Optional<Program> optionalProgram = programRepository.findById(1L);
-        Program program = optionalProgram.get();
-        assertThat(program.getVideo().size()).isEqualTo(1);
-
-        Optional<Video> optionalVideo = videoRepository.findById(1L);
-        Video video = optionalVideo.get();
-        assertThat(video.getProgram().getPno()).isEqualTo(1);
-        assertThat(video.getProgram().getProgramTitle()).isEqualTo("title 1");
-
-        return program;
+        return pno;
     }
 
     @Test
-    @Transactional
-    public void 비디오삭제 () throws Exception {
+    public void getVideoList() throws IOException {
         //given
-        Long pno = 1L;
-        Long ord = 1L;
-        Program program = 비디오등록();
-        //when
-        String result = videoService.deleteVideo(pno, ord);
-        log.info(result);
-        //then
-        assertThat(program.getVideo().size()).isEqualTo(0);
-    }
-
-    @Test
-    @Transactional
-    public void 비디오조회() throws Exception {
-        //given
-        Program program = 비디오등록();
-        Long pno = program.getPno();
+        Long pno = setUp();
+        log.info("getVideoList pno = " + pno);
         //when
         VideoResponseDTO videoList = videoService.getVideoList(pno);
         //then
         assertThat(videoList.getProgramVideoFile().size()).isEqualTo(1);
     }
 
+    @Test
+    public void deleteVideo () throws IOException {
+        //given
+        Long pno = setUp();
+        log.info("deleteVideo pno = " + pno);
+        Long ord = 1L;
+
+        Optional<Program> byId = programRepository.findById(pno);
+        Program program = byId.get();
+        //when
+        String result = videoService.deleteVideo(pno, ord);
+        log.info(result);
+        //then
+        assertThat(program.getVideo().size()).isEqualTo(0);
+    }
 }

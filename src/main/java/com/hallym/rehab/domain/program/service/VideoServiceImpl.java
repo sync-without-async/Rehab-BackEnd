@@ -77,8 +77,8 @@ public class VideoServiceImpl implements VideoService{
                     .build();
 
         videoRepository.save(video);
-
         program.addVideo(video);
+        videoRepository.flush();
 
         log.info(program.getVideo().size());
 
