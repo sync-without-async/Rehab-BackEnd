@@ -44,7 +44,7 @@ class S3ClientTest {
         String bucketName = "rehab";
         // upload local file
         String objectName = "video/video1";
-        String filePath = "src/main/resources/sampleVideo.mp4";
+        String filePath = "src/main/resources/sample.mp4";
 
         try {
             s3.putObject(bucketName, objectName, new File(filePath));
