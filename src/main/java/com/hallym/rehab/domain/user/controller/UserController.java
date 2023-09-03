@@ -9,6 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,10 +36,20 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("authentication.principal.username == #passwordChangeDTO.mid or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("authentication.principal.username == #passwordChangeDTO.mid")
     @PostMapping("/auth/change-password")
     public ResponseEntity<String> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO) {
+
+        String securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getName();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        UserDetails userDetails =(UserDetails) principal;
+        log.info("----getname-" + securityContextHolder);
+        log.info("---prin--" + userDetails.getUsername());
+
+        log.info("---------" + passwordChangeDTO.getMid());
         String username = passwordChangeDTO.getMid();
+
         try {
             apiUserService.changePassword(username, passwordChangeDTO);
             return ResponseEntity.ok("비밀번호 변경 완료");
