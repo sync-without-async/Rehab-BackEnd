@@ -44,6 +44,12 @@ public class Video extends BaseTimeEntity {
     @Column(name = "jsonObjectName")
     private String JsonObjectPath; // Json 파일 삭제하기 위한 ObjectPath
 
+    @Column(name = "guideWidth")
+    private Long guideWidth; // 가이드 영상의 Width
+
+    @Column(name = "guideHeight")
+    private Long guideHeight; // 가이드 영상의 Height
+
     @Builder.Default
     @OneToMany(mappedBy = "video", cascade = CascadeType.ALL)
     private List<Video_Member> video_members = new ArrayList<>();
