@@ -23,10 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -133,7 +130,7 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String deleteProgramOne(Long pno) {
+    public String deleteProgramOne(Long pno, ProgramRequestDTO programRequestDTO) {
         Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException("Program not found for Id : " + pno));
 
@@ -179,7 +176,6 @@ public class ProgramServiceImpl implements ProgramService{
     @Override
     public Long createProgram(ProgramRequestDTO programRequestDTO) {
         Program program = programRequestDtoToProgram(programRequestDTO);
-
         programRepository.save(program);
 
         return program.getPno();
@@ -219,5 +215,36 @@ public class ProgramServiceImpl implements ProgramService{
 
         programHistoryRepository.delete(programHistory);
         return "Program Cancel Success for Member Id : " + mid;
+    }
+
+
+    protected Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO) {
+
+        Member member = memberRepository.findById(programRequestDTO.getMid())
+                .orElseThrow(() -> new RuntimeException("Member not found for Id : " + programRequestDTO.getMid()));
+
+
+        return Program.builder()
+                .member(member)
+                .programTitle(programRequestDTO.getProgramTitle())
+                .description(programRequestDTO.getDescription())
+                .category(programRequestDTO.getCategory())
+                .position(programRequestDTO.getPosition())
+                .build();
+    }
+
+    protected ProgramDetailResponseDTO entitesToProgramDetailResponseDTO(Program program, List<ActResponseDTO> actResponseDTOList){
+
+        actResponseDTOList.sort(Comparator.comparing(ActResponseDTO::getOrd));
+
+        return ProgramDetailResponseDTO.builder()
+                .pno(program.getPno())
+                .programTitle(program.getProgramTitle())
+                .description(program.getDescription())
+                .category(program.getCategory())
+                .position(program.getPosition())
+                .actResponseDTO(actResponseDTOList)
+                .regDate(program.getRegDate())
+                .build();
     }
 }

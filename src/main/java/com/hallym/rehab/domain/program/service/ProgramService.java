@@ -7,11 +7,14 @@ import com.hallym.rehab.domain.program.dto.program.ProgramListResponseDTO;
 import com.hallym.rehab.domain.program.dto.program.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 
+import com.hallym.rehab.domain.user.entity.Member;
+import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 
 import java.util.Comparator;
 import java.util.List;
+
 
 
 public interface ProgramService {
@@ -25,7 +28,7 @@ public interface ProgramService {
 
     String modifyProgramOne(Long pno, ProgramRequestDTO programRequestDTO);
 
-    String deleteProgramOne(Long pno);
+    String deleteProgramOne(Long pno, ProgramRequestDTO programRequestDTO);
 
     Long createProgram(ProgramRequestDTO programRequestDTO);
 
@@ -33,27 +36,4 @@ public interface ProgramService {
 
     String cancelProgram(Long pno, String mid);
 
-    default Program programRequestDtoToProgram(ProgramRequestDTO programRequestDTO) {
-
-        return Program.builder()
-                .programTitle(programRequestDTO.getProgramTitle())
-                .description(programRequestDTO.getDescription())
-                .category(programRequestDTO.getCategory())
-                .position(programRequestDTO.getPosition())
-                .build();
-    }
-    default ProgramDetailResponseDTO entitesToProgramDetailResponseDTO(Program program, List<ActResponseDTO> actResponseDTOList){
-
-        actResponseDTOList.sort(Comparator.comparing(ActResponseDTO::getOrd));
-
-        return ProgramDetailResponseDTO.builder()
-                .pno(program.getPno())
-                .programTitle(program.getProgramTitle())
-                .description(program.getDescription())
-                .category(program.getCategory())
-                .position(program.getPosition())
-                .actResponseDTO(actResponseDTOList)
-                .regDate(program.getRegDate())
-                .build();
-    }
 }
