@@ -1,18 +1,15 @@
 package com.hallym.rehab.domain.program.service;
 
+import java.util.*;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.hallym.rehab.domain.program.dto.upload.UploadFileDTO;
-import com.hallym.rehab.domain.program.dto.video.ChangeOrdRequestDTO;
-import com.hallym.rehab.domain.program.dto.video.MetricsRequestDTO;
-import com.hallym.rehab.domain.program.dto.video.VideoRequestDTO;
-import com.hallym.rehab.domain.program.dto.video.VideoResponseDTO;
+import com.hallym.rehab.domain.program.dto.video.*;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.Video;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public interface VideoService {
@@ -29,9 +26,9 @@ public interface VideoService {
 
     default VideoResponseDTO videoToVideoResponseDTO(List<Video> videoList, Program program) {
 
-        List<String> programVideoFile = videoList.stream()
+        List<VideoUrl> videoUrl = videoList.stream()
                 .sorted(Comparator.comparing(Video::getOrd))
-                .map(Video::getGuideVideoURL)
+                .map(video -> new VideoUrl(video.getVno(), video.getGuideVideoURL()))
                 .collect(Collectors.toList());
 
         return VideoResponseDTO.builder()
@@ -40,7 +37,7 @@ public interface VideoService {
                 .description(program.getDescription())
                 .category(program.getCategory())
                 .position(program.getPosition())
-                .programVideoFile(programVideoFile)
+                .vno_videoUrl(videoUrl)
                 .build();
     }
 }
