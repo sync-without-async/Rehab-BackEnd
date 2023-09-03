@@ -61,16 +61,4 @@ public class Video extends BaseTimeEntity {
         this.ord = ord;
     }
 
-    public void changeProgramVideo(String GuideVideoURL, String JsonURL,
-                                   String GuideVideoObjectPath, String JsonObjectPath, Long ord) {
-        this.GuideVideoURL = GuideVideoURL;
-        this.JsonURL = JsonURL;
-        this.GuideVideoObjectPath = GuideVideoObjectPath;
-        this.JsonObjectPath = JsonObjectPath;
-        this.ord = ord;
-    }
-
-    public void changeProgram(Program program){ //Program 엔티티 삭제 시 ProgramVideo 객체의 참조도 변경하기 위한 메소드
-        this.program = program;
-    }
 }
