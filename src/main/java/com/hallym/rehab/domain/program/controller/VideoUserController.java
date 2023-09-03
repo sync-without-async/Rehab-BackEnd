@@ -6,6 +6,7 @@ import com.hallym.rehab.domain.program.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -21,9 +22,10 @@ public class VideoUserController {
         return videoService.getVideoList(pno);
     }
 
+    @PreAuthorize("authentication.principal.username == #metricsRequestDTO.mid or hasRole('ROLE_ADMIN')")
     @PutMapping("/modify/metrics/{vno}")
     public ResponseEntity<String> saveMetrics(@PathVariable Long vno,
-                                             @ModelAttribute MetricsRequestDTO metricsRequestDTO) {
+                                             @RequestBody MetricsRequestDTO metricsRequestDTO) {
         String result = videoService.saveMetrics(vno, metricsRequestDTO);
         return ResponseEntity.ok(result);
     }

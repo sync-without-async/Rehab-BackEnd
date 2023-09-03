@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.program.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -32,6 +33,10 @@ public class Program extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Position position;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mid")
+    private Member member;
 
     @Builder.Default
     @OneToMany(mappedBy = "program", fetch = FetchType.LAZY)

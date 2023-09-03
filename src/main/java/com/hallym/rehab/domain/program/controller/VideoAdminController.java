@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -18,7 +17,6 @@ public class VideoAdminController {
 
     private final VideoService videoService;
 
-    //    @PreAuthorize("authentication.principal.username == #passwordChangeDTO.mid or hasRole('ROLE_ADMIN')")
     @PostMapping("/create/{pno}/{ord}")
     public ResponseEntity<String> createVideo(@PathVariable Long pno,
                                               @PathVariable Long ord,
