@@ -100,7 +100,7 @@ class VideoServiceImplTest {
         //when
         VideoResponseDTO videoList = videoService.getVideoList(pno);
         //then
-        assertThat(videoList.getProgramVideoFile().size()).isEqualTo(1);
+        assertThat(videoList.getVno_videoUrl().size()).isEqualTo(1);
     }
 
     @Test
