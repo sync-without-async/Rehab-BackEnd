@@ -22,7 +22,7 @@ public class VideoUserController {
         return videoService.getVideoList(pno);
     }
 
-    @PreAuthorize("authentication.principal.username == #metricsRequestDTO.mid or hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("authentication.principal.username == #metricsRequestDTO.mid or hasRole('ROLE_ADMIN')")
     @PutMapping("/modify/metrics/{vno}")
     public ResponseEntity<String> saveMetrics(@PathVariable Long vno,
                                              @RequestBody MetricsRequestDTO metricsRequestDTO) {
