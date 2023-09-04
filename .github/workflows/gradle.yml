@@ -7,14 +7,15 @@
 
 name: Java CI with Gradle
 
-on:
+on: # 워크플로를 언제 실행할지를 정의
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  contents: read
+permissions: # 워크플로의 권한을 설정
+  contents: read # 코드 리포지토리의 내용을 읽기 권한을 부여
+  checks: write # 워크플로 결과를 체크하기 위한 쓰기 권한을 부여
 
 jobs:
   build:
@@ -30,7 +31,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-    # gradle build를 위한 permission 획득
+    # Gradle Wrapper 스크립트를 실행하기 위한 permission 획득
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
 
@@ -44,7 +45,7 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_EC2_METADATA_DISABLED: true
-      run: aws s3 sync --delete --region ap-northeast-2 build s3://rehab
+      run: aws s3 sync --delete --region ap-northeast-2 build s3://rehab #AWS CLI를 사용하여 로컬 빌드를 S3 버킷에 동기화
 
     - name: 테스트 결과를 PR에 코멘트로 등록합니다
       uses: EnricoMi/publish-unit-test-result-action@v1
