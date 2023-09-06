@@ -1,0 +1,4 @@
+[submodule "properties"]
+	path = properties
+	url = https://github.com/Sirius506775/properties.git
+	branch = main
