@@ -1,7 +1,9 @@
 spring:
-  profiles:
-    active: "secret"
+#  profiles:
+#    active: "secret"
   config:
+    activate:
+      on-profile: local
     import:
       - properties/application-secret.yml
   datasource:
