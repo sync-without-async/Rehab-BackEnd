@@ -44,8 +44,10 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_EC2_METADATA_DISABLED: true
-      run: aws s3 sync --delete --region ap-northeast-2 build s3://rehab #AWS CLI를 사용하여 로컬 빌드를 S3 버킷에 동기화
+      run: |
+        aws --endpoint-url=https://kr.object.ncloudstorage.com
+        # s3 cp --recursive <빌드한 폴더> 
+        s3://rehab
 
     - name: 테스트 결과를 PR에 코멘트로 등록합니다
       uses: EnricoMi/publish-unit-test-result-action@v1
