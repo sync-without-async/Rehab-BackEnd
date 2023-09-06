@@ -35,9 +35,14 @@ jobs:
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
 
+    # project test
+    - name: Test
+      run: |
+        ./gradlew clean test -Pprofile=test
+
     # gradle build
     - name: Build with Gradle
-      run: ./gradlew build --warning-mode=all --stacktrace
+      run: ./gradlew build -x test
 
       # AWS CLI command로 objectStorage에 배포
     - name: Sync Bucket
