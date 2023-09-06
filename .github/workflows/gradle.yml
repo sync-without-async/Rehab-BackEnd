@@ -39,14 +39,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build -x test
 
-      # AWS CLI command로 objectStorage에 배포
-    - name: Sync Bucket
+    - name: Upload JSON file
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
-        aws --endpoint-url=https://kr.object.ncloudstorage.com s3 cp --recursive /src/main/resources s3://rehab
-
+        aws --endpoint-url=https://kr.object.ncloudstorage.com s3 cp /src/main/resources/*.json s3://rehab/json
+    
     - name: 테스트 결과를 PR에 코멘트로 등록합니다
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
