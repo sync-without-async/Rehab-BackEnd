@@ -1,6 +1,5 @@
 package com.hallym.rehab.domain.user.entity;
 
-import com.hallym.rehab.domain.program.entity.Video_Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,9 +36,9 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
 
-    @Builder.Default
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private Set<Video_Member> video_member = new HashSet<>();
+//    @Builder.Default
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+//    private Set<Video_Member> video_member = new HashSet<>();
 
     @ColumnDefault("false")
     private boolean is_deleted;
