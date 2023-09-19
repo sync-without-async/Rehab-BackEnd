@@ -1,5 +1,6 @@
-package com.hallym.rehab.domain.user.repository;
+package com.hallym.rehab.domain.admin.repository;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.user.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import javax.transaction.Transactional;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface AdminRepository extends JpaRepository<Admin, String> {
 
     @Modifying
     @Transactional
