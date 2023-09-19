@@ -11,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -27,7 +29,8 @@ public class APIUserServiceImpl implements APIUserService{
     private final PasswordEncoder passwordEncoder;
 
     public String getRoleSetByMid(String mid) {
-        Member member = memberRepository.findByUserId(mid);
+        Member member = memberRepository.findById(mid)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디는 없는 사용자입니다."));
         String role = String.join(",", member.getRoleSet().stream().map(MemberRole::getValue).collect(Collectors.toList()));
 
         log.info("해당 유저는 " + role + " 권한을 가지고 있습니다.");
@@ -40,7 +43,8 @@ public class APIUserServiceImpl implements APIUserService{
     }
 
     public void changePassword(String mid, PasswordChangeDTO passwordChangeDTO) throws IncorrectPasswordException {
-        Member member = memberRepository.findByUserId(mid);
+        Member member = memberRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("해당 아이디는 없는 사용자입니다."));
         if (!passwordEncoder.matches(passwordChangeDTO.getCurrentPassword(), member.getPassword())) {
             throw new IncorrectPasswordException();
         }
