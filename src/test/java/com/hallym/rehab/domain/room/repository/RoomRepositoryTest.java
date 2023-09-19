@@ -1,5 +1,7 @@
 package com.hallym.rehab.domain.room.repository;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.user.entity.Member;
@@ -28,16 +30,18 @@ class RoomRepositoryTest {
     @Autowired
     RoomRepository roomRepository;
     @Autowired
+    AdminRepository adminRepository;
+    @Autowired
     MemberRepository memberRepository;
 
-    Member admin;
-    Member admin2;
+    Admin admin;
+    Admin admin2;
     Member user;
     Member user2;
 
     @BeforeEach
     void setUp() {
-        admin = Member.builder()
+        admin = Admin.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
@@ -47,7 +51,7 @@ class RoomRepositoryTest {
                 .roleSet(Collections.singleton(MemberRole.ADMIN))
                 .build();
 
-        admin2 = Member.builder()
+        admin2 = Admin.builder()
                 .mid("ldh2")
                 .name("이동헌2")
                 .password("1111")
@@ -77,10 +81,11 @@ class RoomRepositoryTest {
                 .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        memberRepository.save(admin);
-        memberRepository.save(admin2);
+        adminRepository.save(admin);
+        adminRepository.save(admin2);
         memberRepository.save(user);
         memberRepository.save(user2);
+        adminRepository.flush();
         memberRepository.flush();
     }
 

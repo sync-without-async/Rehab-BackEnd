@@ -32,12 +32,20 @@ public class Member extends BaseTimeEntity {
 
     private String phone;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
+
 //    @Builder.Default
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
 //    private Set<Video_Member> video_member = new HashSet<>();
 
     @ColumnDefault("false")
     private boolean is_deleted;
+
+    public void addRole(MemberRole memberRole){
+        this.roleSet.add(memberRole);
+    }
 
     public void changePassword(String password) {
         this.password = password;
@@ -48,5 +56,6 @@ public class Member extends BaseTimeEntity {
         this.password = password;
         this.name = name;
         this.phone = phone;
+        this.roleSet = roleSet;
     }
 }

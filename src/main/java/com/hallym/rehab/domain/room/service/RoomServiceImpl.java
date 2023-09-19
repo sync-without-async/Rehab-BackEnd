@@ -1,5 +1,7 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
@@ -16,15 +18,20 @@ import java.util.UUID;
 @Service
 public class RoomServiceImpl implements RoomService{
     private final RoomRepository roomRepository;
+    private final AdminRepository adminRepository;
     private final MemberRepository memberRepository;
+
 
     @Override
     public String registerRoom(String admin_id, String user_id) {
         Optional<Room> byAdminAndUser = roomRepository.findByAdminAndUser(admin_id, user_id);
         if (byAdminAndUser.isPresent()) return "already exist room";
 
-        Member admin = memberRepository.findByUserId(admin_id);
-        Member user = memberRepository.findByUserId(user_id);
+        Admin admin = adminRepository.findById(admin_id)
+                .orElseThrow(() -> new RuntimeException("해당 아이디는 없는 관리자입니다."));
+        Member user = memberRepository.findById(user_id)
+                .orElseThrow(() -> new RuntimeException("해당 아이디는 없는 사용자입니다."));
+
         roomRepository.save(Room.builder()
                                 .admin(admin)
                                 .user(user)

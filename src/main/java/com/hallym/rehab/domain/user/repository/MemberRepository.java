@@ -10,9 +10,6 @@ import javax.transaction.Transactional;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
-    @Query("SELECT m FROM Member m WHERE m.mid = :mid") //ID에 해당하는 사용자 정보 반환
-    Member findByUserId(@Param("mid") String mid);
-
     @Modifying
     @Transactional
     @Query("update Member m set m.password =:password where m.mid =:mid")

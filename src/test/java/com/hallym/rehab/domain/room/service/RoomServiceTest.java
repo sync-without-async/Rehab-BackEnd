@@ -1,5 +1,7 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
@@ -28,18 +30,20 @@ class RoomServiceTest {
     @Autowired
     RoomService roomService;
     @Autowired
+    AdminRepository adminRepository;
+    @Autowired
     MemberRepository memberRepository;
     @Autowired
     RoomRepository roomRepository;
 
-    Member admin;
+    Admin admin;
     Member user;
 
 
     @BeforeEach
     @DisplayName("유저 생성")
     void setUp() {
-        admin = Member.builder()
+        admin = Admin.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
@@ -59,17 +63,10 @@ class RoomServiceTest {
                 .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        memberRepository.save(admin);
+        adminRepository.save(admin);
         memberRepository.save(user);
         memberRepository.flush();
     }
-
-//    @AfterEach
-//    void tearDown() {
-//        memberRepository.delete(admin);
-//        memberRepository.delete(user);
-//        memberRepository.flush();
-//    }
 
     @Test
     @DisplayName("룸 생성 테스트")
@@ -121,11 +118,10 @@ class RoomServiceTest {
     void getRoomListByAdmin() {
         //given
         roomService.registerRoom(admin.getMid(), user.getMid());
-        roomService.registerRoom(admin.getMid(), user.getMid()+"fake");
         //when
         List<RoomResponseDTO> roomListByAdmin = roomService.getRoomListByAdmin(admin.getMid());
         //then
-        assertThat(roomListByAdmin.size()).isEqualTo(2);
+        assertThat(roomListByAdmin.size()).isEqualTo(1);
     }
 
     @Test
@@ -133,11 +129,10 @@ class RoomServiceTest {
     void getRoomListByUser() {
         //given
         roomService.registerRoom(admin.getMid(), user.getMid());
-        roomService.registerRoom(admin.getMid()+"fake", user.getMid());
         //when
         List<RoomResponseDTO> roomListByUser = roomService.getRoomListByUser(user.getMid());
         //then
-        assertThat(roomListByUser.size()).isEqualTo(2);
+        assertThat(roomListByUser.size()).isEqualTo(1);
     }
 
     @Test

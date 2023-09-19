@@ -1,8 +1,9 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
-import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.entity.MemberRole;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -34,18 +34,19 @@ class AudioServiceImplTest {
     @Autowired
     AudioService audioService;
     @Autowired
-    AudioRepository audioRepository;
+    RoomRepository roomRepository;
+    @Autowired
+    AdminRepository adminRepository;
     @Autowired
     MemberRepository memberRepository;
-    @Autowired
-    RoomRepository roomRepository;
 
-    Member admin;
+
+    Admin admin;
     Member user;
 
     @BeforeEach
     void setUp() {
-        admin = Member.builder()
+        admin = Admin.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
@@ -65,7 +66,7 @@ class AudioServiceImplTest {
                 .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        memberRepository.save(admin);
+        adminRepository.save(admin);
         memberRepository.save(user);
         memberRepository.flush();
 
@@ -87,8 +88,8 @@ class AudioServiceImplTest {
                 mp4Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
         );
 
-        Optional<Room> byAdminAndUser = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid());
-        Room room = byAdminAndUser.get();
+        Room room = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid())
+                .orElseThrow(() -> new RuntimeException("유저와 관리자에 의해 매칭된 방이 없습니다."));
 
         AudioRequestDTO user = AudioRequestDTO.builder()
                 .audioFile(audioFile)

@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.room.domain;
 
+import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
@@ -27,7 +28,7 @@ public class Room extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "admin_id", referencedColumnName = "mid")
-    private Member admin;
+    private Admin admin;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "mid")
