@@ -40,11 +40,11 @@ public class Admin extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "vno", cascade = CascadeType.ALL)
-    private Set<Video> video = new HashSet<>();
+    private Set<Video> videoList = new HashSet<>();
 
 //    @Builder.Default
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Set<Video_Member> video_member = new HashSet<>();
+//    private Set<Video_Member> videoList_member = new HashSet<>();
 
     @ColumnDefault("false")
     private boolean is_deleted;
