@@ -9,9 +9,7 @@ import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -28,10 +26,10 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class VideoServiceTest {
     @Autowired VideoRepository videoRepository;
-    @Autowired
-    VideoService videoService;
+    @Autowired VideoService videoService;
     @Autowired AdminRepository adminRepository;
 
     Admin admin;
