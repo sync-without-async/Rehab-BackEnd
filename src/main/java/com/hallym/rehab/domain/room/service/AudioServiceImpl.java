@@ -1,10 +1,8 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AccessControlList;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GroupGrantee;
-import com.amazonaws.services.s3.model.Permission;
+import com.amazonaws.services.s3.model.*;
 import com.hallym.rehab.domain.room.domain.Audio;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
@@ -22,6 +20,8 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -126,5 +126,25 @@ public class AudioServiceImpl implements AudioService{
         AccessControlList objectAcl = s3.getObjectAcl(bucketName, objectPath);
         objectAcl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
         s3.setObjectAcl(bucketName, objectPath, objectAcl);
+    }
+
+    @Override
+    public void deleteAllRoomAndAudio() {
+        AmazonS3 s3 = s3Client.getAmazonS3();
+
+        ObjectListing objectListing = s3.listObjects(bucketName, "audio/");
+        while (true) {
+            for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+                if (!summary.getKey().equals("audio/")) { // Exclude the folder itself
+                    s3.deleteObject(bucketName, summary.getKey());
+                }
+            }
+            if (!objectListing.isTruncated()) break;
+            objectListing = s3.listNextBatchOfObjects(objectListing);
+        }
+
+
+        audioRepository.deleteAll();
+        roomRepository.deleteAll();
     }
 }

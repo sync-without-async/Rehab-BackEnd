@@ -12,4 +12,5 @@ public interface AudioService {
     UploadAudioDTO uploadFileToS3(MultipartFile audioFile);
     File convertMultipartFileToFile(MultipartFile multipartFile, String fileName);
     void setAcl(AmazonS3 s3, String objectPath);
+    void deleteAllRoomAndAudio();
 }
