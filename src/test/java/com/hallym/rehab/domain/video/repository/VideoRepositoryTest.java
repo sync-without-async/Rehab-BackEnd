@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 import java.util.Collections;
@@ -43,6 +44,7 @@ class VideoRepositoryTest {
     }
 
     @Test
+//    @Rollback(value = false)
     void videoSave() {
         Video video = Video.builder()
                 .admin(admin)
