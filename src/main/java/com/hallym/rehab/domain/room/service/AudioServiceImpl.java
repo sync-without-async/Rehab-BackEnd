@@ -1,10 +1,9 @@
 package com.hallym.rehab.domain.room.service;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.hallym.rehab.domain.room.domain.Audio;
-import com.hallym.rehab.domain.room.domain.Room;
+import com.hallym.rehab.domain.room.entity.Audio;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
 import com.hallym.rehab.domain.room.dto.UploadAudioDTO;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
@@ -20,8 +19,6 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

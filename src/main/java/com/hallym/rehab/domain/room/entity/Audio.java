@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.room.domain;
+package com.hallym.rehab.domain.room.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

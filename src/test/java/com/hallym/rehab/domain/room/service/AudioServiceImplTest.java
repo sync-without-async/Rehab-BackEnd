@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.room.service;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
-import com.hallym.rehab.domain.room.domain.Room;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
@@ -17,13 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
