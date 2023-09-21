@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.admin.entity;
 
 import com.hallym.rehab.domain.user.entity.MemberRole;
+import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,9 +38,13 @@ public class Admin extends BaseTimeEntity {
     @Builder.Default
     private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
 
+    @Builder.Default
+    @OneToMany(mappedBy = "vno", cascade = CascadeType.ALL)
+    private Set<Video> videoList = new HashSet<>();
+
 //    @Builder.Default
 //    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Set<Video_Member> video_member = new HashSet<>();
+//    private Set<Video_Member> videoList_member = new HashSet<>();
 
     @ColumnDefault("false")
     private boolean is_deleted;

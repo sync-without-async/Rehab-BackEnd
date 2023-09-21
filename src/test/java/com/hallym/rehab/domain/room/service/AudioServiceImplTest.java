@@ -4,6 +4,7 @@ import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.room.domain.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
+import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.entity.MemberRole;
@@ -27,7 +28,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
+//@Transactional
 class AudioServiceImplTest {
     @Autowired
     RoomService roomService;
@@ -39,6 +40,8 @@ class AudioServiceImplTest {
     AdminRepository adminRepository;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    AudioRepository audioRepository;
 
 
     Admin admin;
@@ -106,5 +109,12 @@ class AudioServiceImplTest {
 
         audioService.registerAudio(admin);
         assertThat(result).isEqualTo("Success create Audio");
+    }
+
+    @Test
+    void deleteAllRoomAndAudio() {
+        audioService.deleteAllRoomAndAudio();
+        assertThat(audioRepository.findAll().size()).isEqualTo(0);
+        assertThat(roomRepository.findAll().size()).isEqualTo(0);
     }
 }
