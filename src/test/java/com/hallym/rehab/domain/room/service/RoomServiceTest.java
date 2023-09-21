@@ -2,15 +2,12 @@ package com.hallym.rehab.domain.room.service;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
-import com.hallym.rehab.domain.room.domain.Room;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
-import org.aspectj.lang.annotation.Before;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

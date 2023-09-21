@@ -1,6 +1,6 @@
 package com.hallym.rehab.domain.room.repository;
 
-import com.hallym.rehab.domain.room.domain.Room;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

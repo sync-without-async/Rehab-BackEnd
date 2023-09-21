@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.room.service;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
-import com.hallym.rehab.domain.room.domain.Room;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
 import com.hallym.rehab.domain.user.entity.Member;

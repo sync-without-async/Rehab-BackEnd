@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.room.domain;
+package com.hallym.rehab.domain.room.entity;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
