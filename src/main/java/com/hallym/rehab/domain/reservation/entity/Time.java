@@ -2,7 +2,6 @@ package com.hallym.rehab.domain.reservation.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
