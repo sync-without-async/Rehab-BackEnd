@@ -3,11 +3,14 @@ package com.hallym.rehab.domain.reservation.service;
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
+import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.entity.Time;
+import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.reservation.repository.TimeRepository;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +27,14 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Slf4j
 @Transactional
 class ReservationServiceImplTest {
 
     @Autowired
     ReservationService reservationService;
+    @Autowired
+    ReservationRepository reservationRepository;
     @Autowired
     AdminRepository adminRepository;
     @Autowired
@@ -78,11 +84,14 @@ class ReservationServiceImplTest {
         String result = reservationService.createReservation(reservationRequestDTO);
         assertThat(result).isEqualTo("success");
 
-        reservationRequestDTO.setIndex(4);
-        String result2 = reservationService.createReservation(reservationRequestDTO);
-        assertThat(result2).isEqualTo("success");
-
         List<Time> timeList = timeRepository.findByAdmin(admin.getMid());
-        assertThat(timeList.size()).isEqualTo(2);
+        assertThat(timeList.size()).isEqualTo(1);
+
+        List<Reservation> reservationList = reservationRepository.findByMid(admin.getMid());
+        Reservation reservation = reservationList.get(0);
+        assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2023, 9, 20));
+        assertThat(reservation.getIndex()).isEqualTo(3);
+
+        assertNotNull(reservation.getRoom());
     }
 }

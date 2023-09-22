@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.room.entity;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
@@ -9,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.mapping.Join;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -34,19 +36,12 @@ public class Room extends BaseTimeEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "mid")
     private Member user;
 
-    @ColumnDefault("false") //삭제 여부
-    private boolean is_deleted;
+    @OneToOne
+    @JoinColumn(name = "reservation_id", referencedColumnName = "rvno")
+    private Reservation reservation;
 
-    public boolean is_deleted() {
-        return is_deleted;
-    }
-
-    public void delete() {
-        this.is_deleted = true;
-    }
-
-    public void revertDelete() {
-        this.is_deleted = false;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
 
     public RoomResponseDTO toRoomResponseDTO() {
