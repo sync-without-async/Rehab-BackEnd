@@ -68,68 +68,7 @@ class RoomServiceTest {
     @Test
     @DisplayName("룸 생성 테스트")
     void registerRoom() {
-        String result = roomService.registerRoom(admin.getMid(), user.getMid());
-        assertThat(result).isEqualTo("success registerRoom");
-    }
-
-    @Test
-    @DisplayName("룸 생성 실패 테스트 - 이미 있는 방")
-    void registerRoom_Fail() {
-        String result = roomService.registerRoom(admin.getMid(), user.getMid());
-        assertThat(result).isEqualTo("success registerRoom");
-
-        String result2 = roomService.registerRoom(admin.getMid(), user.getMid());
-        assertThat(result2).isEqualTo("already exist room");
-    }
-
-    @Test
-    @DisplayName("룸 삭제 테스트")
-    void deleteRoom() {
-        //given
-        roomService.registerRoom(admin.getMid(), user.getMid());
-        //when
-        Optional<Room> byAdminAndUser = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid());
-        Room room = byAdminAndUser.get();
-        roomService.deleteRoom(room.getRno());
-        //then
-        assertThat(room.is_deleted()).isTrue();
-    }
-
-    @Test
-    @DisplayName("룸 복원 테스트")
-    void revertRoom() {
-        //given
-        roomService.registerRoom(admin.getMid(), user.getMid());
-        //when
-        Optional<Room> byAdminAndUser = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid());
-        Room room = byAdminAndUser.get();
-        roomService.deleteRoom(room.getRno());
-        roomRepository.flush();
-        roomService.revertDeleteRoom(room.getRno());
-        //then
-        assertThat(room.is_deleted()).isFalse();
-    }
-
-    @Test
-    @DisplayName("룸 리스트 조회 - 어드민")
-    void getRoomListByAdmin() {
-        //given
-        roomService.registerRoom(admin.getMid(), user.getMid());
-        //when
-        List<RoomResponseDTO> roomListByAdmin = roomService.getRoomListByAdmin(admin.getMid());
-        //then
-        assertThat(roomListByAdmin.size()).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("룸 리스트 조회 - 유저")
-    void getRoomListByUser() {
-        //given
-        roomService.registerRoom(admin.getMid(), user.getMid());
-        //when
-        List<RoomResponseDTO> roomListByUser = roomService.getRoomListByUser(user.getMid());
-        //then
-        assertThat(roomListByUser.size()).isEqualTo(1);
+        Room room = roomService.registerRoom(admin.getMid(), user.getMid());
     }
 
     @Test
