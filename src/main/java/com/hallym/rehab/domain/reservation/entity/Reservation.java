@@ -2,6 +2,7 @@ package com.hallym.rehab.domain.reservation.entity;
 
 
 import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -29,6 +31,15 @@ public class Reservation extends BaseTimeEntity {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "mid")
     private Member user;
+
+    @OneToOne
+    @JoinColumn(name = "room_id", referencedColumnName = "rno")
+    private Room room;
+
+    private LocalDate date;
+
+    @Column(name = "time_index")
+    private int index;
 
     private String content;
 }
