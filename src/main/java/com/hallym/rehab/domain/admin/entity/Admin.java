@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.admin.entity;
 
+import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
@@ -7,7 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -42,9 +45,13 @@ public class Admin extends BaseTimeEntity {
     @OneToMany(mappedBy = "vno", cascade = CascadeType.ALL)
     private Set<Video> videoList = new HashSet<>();
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Set<Video_Member> videoList_member = new HashSet<>();
+    @Builder.Default
+    @OneToMany(mappedBy = "tno", cascade = CascadeType.ALL)
+    private Set<Time> timeList = new HashSet<>();
+
+    public void addTime(Time time) {
+        this.timeList.add(time);
+    }
 
     @ColumnDefault("false")
     private boolean is_deleted;
