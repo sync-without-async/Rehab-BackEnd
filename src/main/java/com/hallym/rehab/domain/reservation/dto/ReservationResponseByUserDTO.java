@@ -12,10 +12,10 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservationResponseDTO {
-    private String admin_id;
-    private String user_id;
-    private UUID rno;
+public class ReservationResponseByUserDTO {
+    private String adminName;
+    private UUID rno; // 화상채팅 룸 입장을 위한 room number
+    private Long rvno; // 예약 취소를 위한 reservation number
     private LocalDate date;
     private int index;
     // + role
