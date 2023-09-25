@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -40,7 +41,7 @@ public class EmailServiceImpl implements EmailService{
 
             for (MultipartFile multipartFile : file) {
                 mimeMessageHelper.addAttachment(
-                        multipartFile.getOriginalFilename(),
+                        Objects.requireNonNull(multipartFile.getOriginalFilename()), //Null Safety를 위한 wrapping
                         new ByteArrayResource(multipartFile.getBytes()));
             }
 
