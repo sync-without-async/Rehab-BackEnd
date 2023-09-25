@@ -67,6 +67,12 @@ dependencies {
 			"javax.annotation:javax.annotation-api",
 
 			"com.querydsl:querydsl-apt:${queryDslVersion}:jpa")
+
+
+	//smtp 구현을 위한 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.11'
+
+
 }
 
 tasks.named('test') {
