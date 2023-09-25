@@ -49,10 +49,6 @@ public class Admin extends BaseTimeEntity {
     @OneToMany(mappedBy = "tno", cascade = CascadeType.ALL)
     private Set<Time> timeList = new HashSet<>();
 
-    public void addTime(Time time) {
-        this.timeList.add(time);
-    }
-
     @ColumnDefault("false")
     private boolean is_deleted;
 

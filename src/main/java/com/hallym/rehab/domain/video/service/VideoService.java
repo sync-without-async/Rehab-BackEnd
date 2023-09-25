@@ -1,8 +1,8 @@
-package com.hallym.rehab.domain.admin.service;
+package com.hallym.rehab.domain.video.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.hallym.rehab.domain.admin.dto.UploadFileDTO;
-import com.hallym.rehab.domain.admin.dto.VideoRequestDTO;
+import com.hallym.rehab.domain.video.dto.UploadFileDTO;
+import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

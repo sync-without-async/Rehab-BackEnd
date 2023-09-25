@@ -22,7 +22,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Room extends BaseTimeEntity {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "BINARY(16)") // UUID를 이진 형태로 저장하도록 지정

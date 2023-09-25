@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.admin.dto;
+package com.hallym.rehab.domain.video.dto;
 
 import lombok.*;
 

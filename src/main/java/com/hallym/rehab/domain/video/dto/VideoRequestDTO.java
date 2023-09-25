@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.admin.dto;
+package com.hallym.rehab.domain.video.dto;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.video.entity.Tag;
