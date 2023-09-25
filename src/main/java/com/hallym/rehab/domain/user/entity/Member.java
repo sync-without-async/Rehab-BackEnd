@@ -36,10 +36,6 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
 
-//    @Builder.Default
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private Set<Video_Member> video_member = new HashSet<>();
-
     @ColumnDefault("false")
     private boolean is_deleted;
 

@@ -32,6 +32,11 @@ public class Time {
     private Admin admin;
 
     public void setAdmin(Admin admin) {
+        // 기존 관계 제거
+        if (this.admin != null) {
+            this.admin.getTimeList().remove(this);
+        }
         this.admin = admin;
+        admin.getTimeList().add(this);
     }
 }

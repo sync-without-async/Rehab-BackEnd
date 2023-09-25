@@ -51,8 +51,6 @@ class TimeRepositoryTest {
                 .index(3)
                 .build();
 
-        admin.addTime(time);
-        admin.addTime(time2);
         time.setAdmin(admin);
         time2.setAdmin(admin);
 

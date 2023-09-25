@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class Audio {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ano;
 
     @NotNull
