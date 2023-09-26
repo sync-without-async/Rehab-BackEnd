@@ -4,21 +4,26 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.hallym.rehab.domain.video.dto.UploadFileDTO;
+import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
+import com.hallym.rehab.domain.video.dto.pagedto.VideoPageResponseDTO;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoRepository;
 import com.hallym.rehab.global.config.S3Client;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,6 +36,18 @@ public class VideoServiceImpl implements VideoService{
     private final S3Client s3Client;
     private final AdminRepository adminRepository;
     private final VideoRepository videoRepository;
+
+
+    @Override
+    public VideoPageResponseDTO<VideoResponseDTO> getVideoList(VideoPageRequestDTO requestDTO) {
+        Page<VideoResponseDTO> result = videoRepository.search(requestDTO);
+
+        return VideoPageResponseDTO.<VideoResponseDTO>withAll()
+                .pageRequestDTO(requestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
+    }
 
     @Override
     public String createVideo(VideoRequestDTO videoRequestDTO) {
@@ -50,9 +67,10 @@ public class VideoServiceImpl implements VideoService{
 
     @Override
     public String deleteVideo(Long vno) {
-        Video video = videoRepository.findById(vno)
-                .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
+        Optional<Video> byId = videoRepository.findById(vno);
+        if (byId.isEmpty()) return "Video not found for Id : " + vno;
 
+        Video video = byId.get();
         String videoPath = video.getVideoPath();
         String jsonPath = video.getJsonPath();
 
