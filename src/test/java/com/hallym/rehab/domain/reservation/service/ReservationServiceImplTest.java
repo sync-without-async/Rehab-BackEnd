@@ -14,6 +14,7 @@ import com.hallym.rehab.domain.user.repository.MemberRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -144,5 +145,22 @@ class ReservationServiceImplTest {
         assertThat(result2).isEqualTo("success");
 
         assertThat(timeRepository.findByAdmin(admin.getMid()).size()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("create Dummy")
+    @Rollback(value = false)
+    void createDummy() {
+        for (int i = 0; i < 120; i++) {
+            ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
+                    .admin_id(admin.getMid())
+                    .user_id(user.getMid())
+                    .content("개발하다가 마음이 아파졌어요.."+i)
+                    .date(LocalDate.of(2023, 9, 20))
+                    .index(i)
+                    .build();
+
+            reservationService.createReservation(reservationRequestDTO);
+        }
     }
 }
