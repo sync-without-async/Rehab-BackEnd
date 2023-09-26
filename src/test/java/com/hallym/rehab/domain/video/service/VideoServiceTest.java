@@ -64,8 +64,8 @@ class VideoServiceTest {
         MultipartFile jsonFile = new MockMultipartFile(
                 "file",           // 필드 이름
                 "sample.json",      // 원본 파일 이름
-                "application/json",      // 파일 타입
-                jsonBytes           // 바이트 배열로 읽은 MP4 파일 데이터
+                "file",
+                jsonBytes
         );
 
         MultipartFile[] files = new MultipartFile[2];
