@@ -2,6 +2,7 @@ package com.hallym.rehab.domain.video.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class Video extends BaseTimeEntity {
 
     private String description; // 동작 설명
 
+    @Enumerated(value = EnumType.STRING)
     private Tag tag; // 동작 태그
 
     private Long frame; // AI 에서 쓸 영상 프레임
@@ -43,4 +45,15 @@ public class Video extends BaseTimeEntity {
     private String videoPath; // Object Storage 에서의 video 경로 (삭제시 사용)
 
     private String jsonPath; // Object Storage 에서의 json 경로 (삭제시 사용)
+
+    public VideoResponseDTO toResponseDTO() {
+        return VideoResponseDTO.builder()
+                    .vno(this.vno)
+                    .title(this.title)
+                    .description(this.description)
+                    .tag(this.tag)
+                    .playTime(this.playTime)
+                    .videoURL(videoURL)
+                    .build();
+    }
 }
