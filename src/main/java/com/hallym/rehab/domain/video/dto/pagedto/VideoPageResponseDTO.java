@@ -1,6 +1,5 @@
 package com.hallym.rehab.domain.video.dto.pagedto;
 
-import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -46,7 +45,7 @@ public class VideoPageResponseDTO<E> {
 
         int last =  (int)(Math.ceil((total/(double)size))); //마지막 페이지 전체 개수
 
-        this.end =  end > last ? last: end; //마지막 페이지가 last 값보다 작은 경우에 last값이 end
+        this.end = Math.min(end, last); //마지막 페이지가 last 값보다 작은 경우에 last값이 end
 
         this.prev = this.start > 1; //이전 페이지는 시작 페이지가 1이 아니라면 무조건 true
 

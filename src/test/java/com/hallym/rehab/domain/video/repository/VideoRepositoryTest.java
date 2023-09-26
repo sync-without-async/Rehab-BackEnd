@@ -73,7 +73,7 @@ class VideoRepositoryTest {
     @Rollback(value = false)
     void videoSearch() {
         // insert dummy video data
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 30; i++) {
             Video video = Video.builder()
                     .admin(admin)
                     .title("동작 제목" + i)
