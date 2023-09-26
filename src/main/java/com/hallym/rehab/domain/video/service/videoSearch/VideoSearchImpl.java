@@ -7,7 +7,6 @@ import com.hallym.rehab.domain.video.entity.QVideo;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,16 +44,15 @@ public class VideoSearchImpl extends QuerydslRepositorySupport implements VideoS
         if (title != null) builder.and(video.title.containsIgnoreCase(title));
         if (tag != null) builder.and(video.tag.eq(tag));
 
-        QueryResults<VideoResponseDTO> results = queryFactory
+        List<VideoResponseDTO> content = queryFactory
                 .select(new QVideoResponseDTO(video.vno, video.title, video.description, video.tag, video.playTime, video.videoURL))
                 .from(video)
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        List<VideoResponseDTO> content = results.getResults();
-        long total = results.getTotal();
+        long total = content.size();
 
         return new PageImpl<>(content, pageable, total);
     }
