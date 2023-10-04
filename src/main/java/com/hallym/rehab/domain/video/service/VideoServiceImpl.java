@@ -1,8 +1,14 @@
 package com.hallym.rehab.domain.video.service;
 
 import com.amazonaws.SdkClientException;
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.hallym.rehab.domain.program.dto.ProgramResponseDTO;
+import com.hallym.rehab.domain.program.entity.Program;
+import com.hallym.rehab.domain.program.entity.ProgramDetail;
+import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
+import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.video.dto.UploadFileDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
@@ -17,14 +23,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,10 +45,11 @@ public class VideoServiceImpl implements VideoService{
     private final S3Client s3Client;
     private final AdminRepository adminRepository;
     private final VideoRepository videoRepository;
-
+    private final ProgramRepository programRepository;
+    private final ProgramDetailRepository programDetailRepository;
 
     @Override
-    public VideoPageResponseDTO<VideoResponseDTO> getVideoList(VideoPageRequestDTO requestDTO) {
+    public VideoPageResponseDTO<VideoResponseDTO> getVideoListByAdmin(VideoPageRequestDTO requestDTO) {
         Page<VideoResponseDTO> result = videoRepository.search(requestDTO);
 
         return VideoPageResponseDTO.<VideoResponseDTO>withAll()
@@ -47,6 +57,24 @@ public class VideoServiceImpl implements VideoService{
                 .dtoList(result.getContent())
                 .total((int)result.getTotalElements())
                 .build();
+    }
+
+    @Override
+    public Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getVideoListByUser(VideoPageRequestDTO requestDTO, String userId) {
+        Program program = programRepository.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("not found program for userId : " + userId));
+
+        Pageable pageable = requestDTO.getPageable();
+
+        Page<ProgramResponseDTO> result = programDetailRepository.findPageByProgram(program, pageable);
+
+        VideoPageResponseDTO<ProgramResponseDTO> responseDTO = VideoPageResponseDTO.<ProgramResponseDTO>withAll()
+                .pageRequestDTO(requestDTO)
+                .dtoList(result.getContent())
+                .total((int) result.getTotalElements())
+                .build();
+
+        return Pair.of(program.getDescription(), responseDTO);
     }
 
     @Override
