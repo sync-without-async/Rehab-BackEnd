@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ class AudioServiceImplTest {
     @BeforeEach
     void setUp() {
         admin = Admin.builder()
-                .mid("ldh")
+                .mid("ldh2")
                 .name("이동헌")
                 .password("1111")
                 .age(26)
@@ -57,7 +58,7 @@ class AudioServiceImplTest {
                 .build();
 
         user = Member.builder()
-                .mid("jyp")
+                .mid("jyp2")
                 .name("박주영")
                 .password("1111")
                 .age(22)
@@ -75,24 +76,34 @@ class AudioServiceImplTest {
     }
 
     @Test
-//    @Rollback(value = false)
+    @Rollback(value = false)
     @DisplayName("Audio 유저, 어드민 생성")
-    void createAudio() throws IOException {
-        String audioFilePath = "src/main/resources/sample.mp4";
-        byte[] mp4Bytes = Files.readAllBytes(Paths.get(audioFilePath));
+    void createAudio() throws IOException, InterruptedException {
+        String DoctorAudioFilePath = "src/main/resources/isb_doctor_with_sho.wav";
+        String PatientAudioFilePath = "src/main/resources/sho_patient_with_isb.wav";
+        byte[] d_Bytes = Files.readAllBytes(Paths.get(DoctorAudioFilePath));
+        byte[] p_Bytes = Files.readAllBytes(Paths.get(PatientAudioFilePath));
+
         // MockMultipartFile로 변환
-        MultipartFile audioFile = new MockMultipartFile(
+        MultipartFile doctorAudioFile = new MockMultipartFile(
                 "file",           // 필드 이름
-                "sample.mp4",      // 원본 파일 이름
-                "video/mp4",      // 파일 타입
-                mp4Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
+                "isb_doctor_with_sho.wav",      // 원본 파일 이름
+                "wav",      // 파일 타입
+                d_Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
+        );
+
+        MultipartFile patientAudioFile = new MockMultipartFile(
+                "file",           // 필드 이름
+                "sho_patient_with_isb",      // 원본 파일 이름
+                "wav",      // 파일 타입
+                p_Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
         );
 
         Room room = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid())
                 .orElseThrow(() -> new RuntimeException("유저와 관리자에 의해 매칭된 방이 없습니다."));
 
         AudioRequestDTO user = AudioRequestDTO.builder()
-                .audioFile(audioFile)
+                .audioFile(patientAudioFile)
                 .rno(room.getRno())
                 .is_user(true).build();
 
@@ -100,7 +111,7 @@ class AudioServiceImplTest {
         assertThat(result).isEqualTo("Success create Audio");
 
         AudioRequestDTO admin = AudioRequestDTO.builder()
-                .audioFile(audioFile)
+                .audioFile(doctorAudioFile)
                 .rno(room.getRno())
                 .is_user(false).build();
 
