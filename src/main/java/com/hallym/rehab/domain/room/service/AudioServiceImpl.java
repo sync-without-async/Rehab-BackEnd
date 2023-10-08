@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.hallym.rehab.domain.room.entity.Audio;
@@ -13,19 +14,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class AudioServiceImpl implements AudioService{
 
     @Value("${cloud.aws.s3.bucket}")
@@ -33,6 +33,7 @@ public class AudioServiceImpl implements AudioService{
     private final S3Client s3Client;
     private final RoomRepository roomRepository;
     private final AudioRepository audioRepository;
+    private final ConcurrentHashMap<UUID, Integer> audio_check = new ConcurrentHashMap<>();
 
     @Override
     public String registerAudio(AudioRequestDTO audioRequestDTO) {
@@ -56,34 +57,49 @@ public class AudioServiceImpl implements AudioService{
                         .userAudioObjectPath(uploadAudioDTO.getAudioObjectPath())
                         .room(room)
                         .build();
-                audioRepository.save(audio);
+                audioRepository.saveAndFlush(audio);
             } else {
                 Audio audio = Audio.builder()
                         .adminAudioURL(uploadAudioDTO.getAudioURL())
                         .adminAudioObjectPath(uploadAudioDTO.getAudioObjectPath())
                         .room(room)
                         .build();
-                audioRepository.save(audio);
+                audioRepository.saveAndFlush(audio);
             }
 
         } else { // 이미 테이블이 있을경우
+
             Audio audio = audioOptional.get();
             UploadAudioDTO uploadAudioDTO = uploadFileToS3(audioFile);
 
             if (is_user) { //dirty checking update
                 audio.setUserAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
-                audioRepository.save(audio);
+                audioRepository.saveAndFlush(audio);
             } else {
                 audio.setAdminAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
-                audioRepository.save(audio);
+                audioRepository.saveAndFlush(audio);
             }
         }
 
+        audio_check.putIfAbsent(rno, 0);
+        Integer size = audio_check.get(rno);
+
+        if (size.equals(0)) audio_check.put(rno, 1);
+        else if (size.equals(1)) {
+            audio_check.put(rno, 0); // 다시 0으로 초기화
+            Audio audio = audioRepository.findByRoom(room).orElseThrow(() -> new NotFoundException("wrong rno"));
+            Long ano = audio.getAno();
+
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.getForObject("http://10.50.227.253:8000/getSummary?ano=" + ano.toString(), String.class);
+        }
+
+        log.info("size : " + audio_check.get(rno));
         return "Success create Audio";
     }
 
     @Override
-    public UploadAudioDTO uploadFileToS3(MultipartFile audioFile) {
+    public synchronized UploadAudioDTO uploadFileToS3(MultipartFile audioFile) {
         AmazonS3 s3 = s3Client.getAmazonS3();
 
         UUID uuid = UUID.randomUUID();
