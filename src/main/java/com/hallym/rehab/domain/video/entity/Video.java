@@ -2,6 +2,7 @@ package com.hallym.rehab.domain.video.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
 import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
@@ -42,18 +43,20 @@ public class Video extends BaseTimeEntity {
 
     private String jsonURL; // json URL (실제로 Client, AI 서버에서 사용)
 
+    private String thumbnailURL; // thumbnail URL (Used by Cilent and AI Server)
+
     private String videoPath; // Object Storage 에서의 video 경로 (삭제시 사용)
 
     private String jsonPath; // Object Storage 에서의 json 경로 (삭제시 사용)
 
-    public VideoResponseDTO toResponseDTO() {
-        return VideoResponseDTO.builder()
-                    .vno(this.vno)
-                    .title(this.title)
-                    .description(this.description)
-                    .tag(this.tag)
-                    .playTime(this.playTime)
-                    .videoURL(videoURL)
-                    .build();
+    private String thumbnailPath; // (Used when deleting)
+
+    public VideoDetailResponseDTO toDetailDTO() {
+        return VideoDetailResponseDTO.builder()
+                .vno(vno)
+                .title(title)
+                .description(description)
+                .videoURL(videoURL)
+                .build();
     }
 }
