@@ -190,6 +190,9 @@ public class VideoServiceImpl implements VideoService{
             setAcl(s3, jsonObjectPath);
             setAcl(s3, thumbnailObjectPath);
 
+            // close readable channel to delete temp file
+            channel.close();
+
             return UploadFileDTO.builder()
                     .videoURL(videoURL)
                     .jsonURL(jsonURL)
@@ -202,12 +205,8 @@ public class VideoServiceImpl implements VideoService{
         } catch (AmazonS3Exception e) { // ACL Exception
             log.info(e.getErrorMessage());
             System.exit(1);
-            return null; // 업로드 오류 시 null 반환
-        } catch (JCodecException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            return null; // if error during upload, return null
+        } catch (JCodecException | IOException e) {
             throw new RuntimeException(e);
         } finally {
             // Delete temporary files used when uploading
