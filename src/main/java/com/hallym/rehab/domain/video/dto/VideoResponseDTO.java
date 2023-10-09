@@ -15,15 +15,20 @@ public class VideoResponseDTO {
     private String description; // 동작 설명
     private Tag tag; // 동작 태그
     private double playTime; // FRONT 에서 쓸 영상 시간
-    private String videoURL; // 동영상 URL (실제로 Client, AI 서버에서 사용)
+
+    // Path to directly access objects stored in object storage
+    private String videoURL;
+    private String thumbnailURL;
 
     @QueryProjection
-    public VideoResponseDTO(Long vno, String title, String description, Tag tag, double playTime, String videoURL) {
+    public VideoResponseDTO(Long vno, String title, String description,
+                            Tag tag, double playTime, String videoURL, String thumbnailURL) {
         this.vno = vno;
         this.title = title;
         this.description = description;
         this.tag = tag;
         this.playTime = playTime;
         this.videoURL = videoURL;
+        this.thumbnailURL = thumbnailURL;
     }
 }

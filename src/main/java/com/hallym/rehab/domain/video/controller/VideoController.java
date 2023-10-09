@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.video.controller;
 
 import com.hallym.rehab.domain.program.dto.ProgramResponseDTO;
+import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
@@ -26,6 +27,11 @@ public class VideoController {
     @GetMapping("/list")
     public VideoPageResponseDTO<VideoResponseDTO> getListByAdmin(VideoPageRequestDTO pageRequestDTO) {
         return videoService.getVideoListByAdmin(pageRequestDTO);
+    }
+
+    @GetMapping("/{vno}")
+    public VideoDetailResponseDTO getOne(@PathVariable("vno") Long vno) {
+        return videoService.getVideo(vno);
     }
 
     @PostMapping("/create")

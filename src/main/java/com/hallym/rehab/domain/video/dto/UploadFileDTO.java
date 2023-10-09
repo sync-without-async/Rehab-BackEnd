@@ -9,6 +9,8 @@ import lombok.*;
 public class UploadFileDTO {
     private String videoURL;
     private String jsonURL;
+    private String thumbnailURL;
     private String videoPath;
     private String jsonPath;
+    private String thumbnailPath;
 }

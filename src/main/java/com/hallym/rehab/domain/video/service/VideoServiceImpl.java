@@ -10,6 +10,7 @@ import com.hallym.rehab.domain.program.entity.ProgramDetail;
 import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.video.dto.UploadFileDTO;
+import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
 import com.hallym.rehab.domain.admin.entity.Admin;
@@ -19,8 +20,14 @@ import com.hallym.rehab.domain.video.dto.pagedto.VideoPageResponseDTO;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoRepository;
 import com.hallym.rehab.global.config.S3Client;
+import com.hallym.rehab.global.util.AWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.io.FileChannelWrapper;
+import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.model.Picture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,7 +36,10 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -75,6 +85,14 @@ public class VideoServiceImpl implements VideoService{
                 .build();
 
         return Pair.of(program.getDescription(), responseDTO);
+    }
+
+    @Override
+    public VideoDetailResponseDTO getVideo(Long vno) {
+        Video video = videoRepository.findById(vno)
+                .orElseThrow(() -> new NotFoundException("video not found for id -> " + vno));
+
+        return video.toDetailDTO();
     }
 
     @Override
@@ -126,47 +144,80 @@ public class VideoServiceImpl implements VideoService{
 
         UUID uuid_1 = UUID.randomUUID();
         UUID uuid_2 = UUID.randomUUID();
+        UUID uuid_3 = UUID.randomUUID();
+
         String videoFileName = uuid_1 + "_" + videoFile.getOriginalFilename();
         String jsonFileName = uuid_2 + "_" + jsonFile.getOriginalFilename();
+        String thumbnailFileName = uuid_3 + "_" + videoFile.getOriginalFilename().split("\\.")[0] + ".png";
 
         File uploadVideoFile = null;
         File uploadJsonFile = null;
+        File uploadThumbnailFile = null;
 
         try {
             uploadVideoFile = convertMultipartFileToFile(videoFile, videoFileName);
             uploadJsonFile = convertMultipartFileToFile(jsonFile, jsonFileName);
 
+            FileChannelWrapper channel = NIOUtils.readableChannel(uploadVideoFile);
+            FrameGrab grab = FrameGrab.createFrameGrab(channel);
+
+            // Get the first frame
+            Picture picture = grab.getNativeFrame();
+            // Convert the Picture object to a BufferedImage
+            BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
+            // Now you can use the BufferedImage as needed. For example, write it to a file:
+            uploadThumbnailFile = new File(thumbnailFileName);
+            ImageIO.write(bufferedImage, "png", uploadThumbnailFile);
+
             String guideVideoObjectPath = "video/" + videoFileName;
             String jsonObjectPath = "json/" + jsonFileName;
+            String thumbnailObjectPath = "thumbnail/" + thumbnailFileName;
 
             s3.putObject(bucketName, guideVideoObjectPath, uploadVideoFile);
             s3.putObject(bucketName, jsonObjectPath, uploadJsonFile);
+            s3.putObject(bucketName, thumbnailObjectPath, uploadThumbnailFile);
 
             String baseUploadURL = "https://kr.object.ncloudstorage.com/" + bucketName + "/";
             String videoURL = baseUploadURL + guideVideoObjectPath;
             String jsonURL = baseUploadURL + jsonObjectPath;
+            String thumbnailURL = baseUploadURL + thumbnailObjectPath;
 
             log.info(videoURL);
             log.info(jsonURL);
+            log.info(thumbnailURL);
 
             setAcl(s3, guideVideoObjectPath);
             setAcl(s3, jsonObjectPath);
+            setAcl(s3, thumbnailObjectPath);
 
             return UploadFileDTO.builder()
                     .videoURL(videoURL)
                     .jsonURL(jsonURL)
+                    .thumbnailURL(thumbnailURL)
                     .videoPath(guideVideoObjectPath)
                     .jsonPath(jsonObjectPath)
+                    .thumbnailPath(thumbnailObjectPath)
                     .build();
 
         } catch (AmazonS3Exception e) { // ACL Exception
             log.info(e.getErrorMessage());
             System.exit(1);
             return null; // 업로드 오류 시 null 반환
+        } catch (JCodecException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
-            // 업로드에 사용한 임시 파일을 삭제합니다.
-            if (uploadVideoFile != null) uploadVideoFile.delete();
-            if (uploadJsonFile != null) uploadJsonFile.delete();
+            // Delete temporary files used when uploading
+            assert uploadJsonFile != null;
+            assert uploadVideoFile != null;
+            assert uploadThumbnailFile != null;
+
+            uploadVideoFile.delete();
+            uploadJsonFile.delete();
+            uploadThumbnailFile.delete();
         }
     }
 

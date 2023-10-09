@@ -43,7 +43,8 @@ public class VideoSearchImpl extends QuerydslRepositorySupport implements VideoS
         if (tag != null) builder.and(video.tag.eq(tag));
 
         QueryResults<VideoResponseDTO> fetchResults = queryFactory
-                .select(new QVideoResponseDTO(video.vno, video.title, video.description, video.tag, video.playTime, video.videoURL))
+                .select(new QVideoResponseDTO(video.vno, video.title, video.description,
+                        video.tag, video.playTime, video.videoURL, video.thumbnailURL))
                 .from(video)
                 .where(builder)
                 .offset(pageable.getOffset())

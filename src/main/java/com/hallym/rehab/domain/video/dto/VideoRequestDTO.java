@@ -35,6 +35,8 @@ public class VideoRequestDTO {
                     .jsonURL(uploadFileDTO.getJsonURL())
                     .videoPath(uploadFileDTO.getVideoPath())
                     .jsonPath(uploadFileDTO.getJsonPath())
+                    .thumbnailURL(uploadFileDTO.getThumbnailURL())
+                    .thumbnailPath(uploadFileDTO.getThumbnailPath())
                     .build();
     }
 }
