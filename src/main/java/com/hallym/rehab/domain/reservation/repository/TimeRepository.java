@@ -19,4 +19,9 @@ public interface TimeRepository extends JpaRepository<Time, Long> {
     Optional<Time> findReservation(@Param("admin_id") String admin_id,
                              @Param("date") LocalDate localDate,
                              @Param("index") int index);
+
+    @Query("SELECT t FROM Time t WHERE t.admin.mid = :admin_id " +
+            "and t.date = :date")
+    List<Time> findAvailableTimeOfDayByAdmin(@Param("admin_id") String admin_id,
+                                             @Param("date") LocalDate localDate);
 }
