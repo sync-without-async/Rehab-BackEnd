@@ -163,4 +163,25 @@ class ReservationServiceImplTest {
             reservationService.createReservation(reservationRequestDTO);
         }
     }
+
+    @Test
+    void getReservedTime() {
+        //given
+        ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
+                .admin_id(admin.getMid())
+                .user_id(user.getMid())
+                .content("개발하다가 마음이 아파졌어요..")
+                .date(LocalDate.of(2023, 9, 20))
+                .index(1)
+                .build();
+
+        reservationService.createReservation(reservationRequestDTO);
+
+        //when
+        List<Time> timeList =
+                reservationService.getReservedTime("ldh", LocalDate.of(2023, 9, 20));
+
+        //then
+        assertThat(timeList.size()).isEqualTo(1);
+    }
 }
