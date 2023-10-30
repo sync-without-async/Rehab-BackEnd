@@ -86,6 +86,13 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
+    public List<Time> getReservedTime(String adminId, LocalDate date) {
+        adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
+
+        return timeRepository.findAvailableTimeOfDayByAdmin(adminId, date);
+    }
+
+    @Override
     public String createReservation(ReservationRequestDTO requestDTO) {
         String adminId = requestDTO.getAdmin_id();
         String userId = requestDTO.getUser_id();

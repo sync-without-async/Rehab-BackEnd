@@ -46,7 +46,6 @@ class VideoServiceTest {
 
     @Test
     @Order(1)
-//    @Transactional
     void createVideo() throws IOException {
         String mp4FilePath = "src/main/resources/sample.mp4";
         String jsonFilePath = "src/main/resources/sample.json";
@@ -76,7 +75,7 @@ class VideoServiceTest {
                 .admin_id(admin.getMid())
                 .title("테스트 title")
                 .description("테스트 description")
-                .tag(Tag.ARM)
+                .tag(Tag.SHOULDER)
                 .frame(300L)
                 .playTime(18.5)
                 .files(files)
@@ -88,6 +87,47 @@ class VideoServiceTest {
 
     @Test
     @Order(2)
+    void createVideo2() throws IOException {
+        String mp4FilePath = "src/main/resources/sample2.mp4";
+        String jsonFilePath = "src/main/resources/sample2.json";
+        byte[] mp4Bytes = Files.readAllBytes(Paths.get(mp4FilePath));
+        byte[] jsonBytes = Files.readAllBytes(Paths.get(jsonFilePath));
+
+        // MockMultipartFile로 변환
+        MultipartFile mp4File = new MockMultipartFile(
+                "file",           // 필드 이름
+                "sample2.mp4",      // 원본 파일 이름
+                "video/mp4",      // 파일 타입
+                mp4Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
+        );
+
+        MultipartFile jsonFile = new MockMultipartFile(
+                "file",           // 필드 이름
+                "sample2.json",      // 원본 파일 이름
+                "file",
+                jsonBytes
+        );
+
+        MultipartFile[] files = new MultipartFile[2];
+        files[0] = mp4File;
+        files[1] = jsonFile;
+
+        VideoRequestDTO videoRequestDTO = VideoRequestDTO.builder()
+                .admin_id(admin.getMid())
+                .title("테스트 title2")
+                .description("테스트 description2")
+                .tag(Tag.KNEE)
+                .frame(300L)
+                .playTime(18.5)
+                .files(files)
+                .build();
+
+        String result = videoService.createVideo(videoRequestDTO);
+        assertThat(result).isEqualTo("Success create Video");
+    }
+
+    @Test
+    @Order(3)
 //    @Transactional
     void deleteVideo() {
         Video video = videoRepository.findAll().get(0);
@@ -96,7 +136,7 @@ class VideoServiceTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     void clearAllVideoAndJson() {
         videoService.clearAllVideoAndJson();
         List<Video> videoList = videoRepository.findAll();
