@@ -64,6 +64,7 @@ jobs:
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
           username: ${{ secrets.NCP_SERVER_USERNAME }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
           key: ${{ secrets.NCP_KEY }}
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
