@@ -60,7 +60,7 @@ jobs:
     needs: push_to_registry
     steps:
       - name: Connect via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
           username: ${{ secrets.NCP_SERVER_USERNAME }}
