@@ -1,0 +1,56 @@
+name: auto deploy with NCP Registry
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  push_to_registry:
+    name: Push to ncp container registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2 #멀티 아키텍처 플랫폼을 지원하기 위한 buildx
+
+      - name: Login to NCP Container Registry #ncp registry에 로그인
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.NCP_CONTAINER_REGISTRY }}
+          username: ${{ secrets.NCP_ACCESS_KEY }}
+          password: ${{ secrets.NCP_SECRET_KEY }}
+
+      - name: build and push #Dockerfile에 작성된 내용으로 이미지를 빌드하고 registry에 push
+        uses: docker/build-push-action@v3
+        with:
+          context: . #이미지가 빌드되어야하는 root 위치
+          file: ./Dockerfile #dockerfile이 존재하는 위치
+          push: true
+          tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/tag-name:latest
+          cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/prv-frontend:latest
+          cache-to: type=inline
+          secrets: |
+            GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
+
+  pull_from_registry:
+     name: Connect server ssh and pull from container registry
+     needs: push_to_registry #push_to_registry job이 완료된 후에 실행 가능
+     runs-on: ubuntu-latest
+     steps:
+       - name: connect ssh
+         uses: appleboy/ssh-action@master
+         with:
+           host: ${{ secrets.NCP_SERVER_IP }}
+           username: ${{ secrets.DEV_USERNAME }}
+           password: ${{ secrets.DEV_PASSWORD }}
+           port: ${{ secrets.DEV_PORT }}
+           script: |
+             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/tag-name
+             docker stop $(docker ps -a -q)
+             docker rm $(docker ps -a -q)
+             docker run -d -p 3000:80 --env-file ${{ secrets.ENV_FILENAME_FRONTEND }} ${{ secrets.NCP_CONTAINER_REGISTRY }}/tag-name
+             docker image prune -f
