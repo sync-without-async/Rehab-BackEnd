@@ -17,7 +17,7 @@ RUN chown -R dockeruser:dockeruser /app
 USER dockeruser
 
 #노출할 포트 명시
-EXPOSE 8081
+EXPOSE 443
 
 # 시스템 진입점 정의
 ENTRYPOINT ["java","-jar","/app/rehab-0.0.1-SNAPSHOT.jar"]
