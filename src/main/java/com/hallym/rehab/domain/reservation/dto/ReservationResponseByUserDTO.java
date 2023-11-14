@@ -18,6 +18,8 @@ public class ReservationResponseByUserDTO {
     private Long rvno; // 예약 취소를 위한 reservation number
     private LocalDate date;
     private int index;
+    private String content; // 진료 희망 사유
+    private String summary; // 오디오 요약
     // + role
     // + company
     // + 프로필 사진

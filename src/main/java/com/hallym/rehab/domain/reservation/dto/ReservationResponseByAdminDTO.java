@@ -18,4 +18,6 @@ public class ReservationResponseByAdminDTO {
     private UUID rno;
     private LocalDate date;
     private int index;
+    private String content; // 진료 희망 사유
+    private String summary; // 오디오 요약
 }
