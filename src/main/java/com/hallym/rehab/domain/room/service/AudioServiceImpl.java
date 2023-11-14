@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AudioServiceImpl implements AudioService{
+public class AudioServiceImpl implements AudioService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -38,60 +38,43 @@ public class AudioServiceImpl implements AudioService{
     @Override
     public String registerAudio(AudioRequestDTO audioRequestDTO) {
         UUID rno = audioRequestDTO.getRno();
-        boolean is_user = audioRequestDTO.is_user();
+        boolean is_user = audioRequestDTO.getIs_user();
         MultipartFile audioFile = audioRequestDTO.getAudioFile();
 
         Optional<Room> roomOptional = roomRepository.findById(rno);
-        if (audioFile.isEmpty()) return "Please select audioFile to upload";
-        if (roomOptional.isEmpty()) return "Room not found for Id : " + rno;
+        if (audioFile.isEmpty()) {
+            return "Please select audioFile to upload";
+        }
+        if (roomOptional.isEmpty()) {
+            return "Room not found for Id : " + rno;
+        }
 
         Room room = roomOptional.get();
-        Optional<Audio> audioOptional = audioRepository.findByRoom(room);
+        Audio audio = audioRepository.findByRoom(room)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방"));
 
-        if (audioOptional.isEmpty()) { // 테이블이 없을 경우
-            UploadAudioDTO uploadAudioDTO = uploadFileToS3(audioFile);
+        UploadAudioDTO uploadAudioDTO = uploadFileToS3(audioFile);
 
-            if (is_user) {
-                Audio audio = Audio.builder()
-                        .userAudioURL(uploadAudioDTO.getAudioURL())
-                        .userAudioObjectPath(uploadAudioDTO.getAudioObjectPath())
-                        .room(room)
-                        .build();
-                audioRepository.saveAndFlush(audio);
-            } else {
-                Audio audio = Audio.builder()
-                        .adminAudioURL(uploadAudioDTO.getAudioURL())
-                        .adminAudioObjectPath(uploadAudioDTO.getAudioObjectPath())
-                        .room(room)
-                        .build();
-                audioRepository.saveAndFlush(audio);
-            }
-
-        } else { // 이미 테이블이 있을경우
-
-            Audio audio = audioOptional.get();
-            UploadAudioDTO uploadAudioDTO = uploadFileToS3(audioFile);
-
-            if (is_user) { //dirty checking update
-                audio.setUserAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
-                audioRepository.saveAndFlush(audio);
-            } else {
-                audio.setAdminAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
-                audioRepository.saveAndFlush(audio);
-            }
+        if (is_user) { //dirty checking update
+            audio.setUserAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
+            audioRepository.saveAndFlush(audio);
+        } else {
+            audio.setAdminAudio(uploadAudioDTO.getAudioURL(), uploadAudioDTO.getAudioObjectPath());
+            audioRepository.saveAndFlush(audio);
         }
 
         audio_check.putIfAbsent(rno, 0);
         Integer size = audio_check.get(rno);
 
-        if (size.equals(0)) audio_check.put(rno, 1);
-        else if (size.equals(1)) {
+        if (size.equals(0)) {
+            audio_check.put(rno, 1);
+        } else if (size.equals(1)) {
             audio_check.put(rno, 0); // 다시 0으로 초기화
-            Audio audio = audioRepository.findByRoom(room).orElseThrow(() -> new NotFoundException("wrong rno"));
             Long ano = audio.getAno();
 
-            RestTemplate restTemplate = new RestTemplate();
-            return restTemplate.getForObject("http://10.50.227.253:8000/getSummary?ano=" + ano.toString(), String.class);
+//            RestTemplate restTemplate = new RestTemplate();
+//            return restTemplate.getForObject("http://59.29.102.247:58000/getSummary?ano=" + ano.toString(),
+//                    String.class);
         }
 
         log.info("size : " + audio_check.get(rno));
@@ -119,7 +102,9 @@ public class AudioServiceImpl implements AudioService{
         } catch (AmazonS3Exception e) {
             throw new RuntimeException(e.getErrorMessage());
         } finally {
-            if (uploadAudioFile != null) uploadAudioFile.delete();
+            if (uploadAudioFile != null) {
+                uploadAudioFile.delete();
+            }
         }
     }
 
@@ -152,10 +137,11 @@ public class AudioServiceImpl implements AudioService{
                     s3.deleteObject(bucketName, summary.getKey());
                 }
             }
-            if (!objectListing.isTruncated()) break;
+            if (!objectListing.isTruncated()) {
+                break;
+            }
             objectListing = s3.listNextBatchOfObjects(objectListing);
         }
-
 
         audioRepository.deleteAll();
         roomRepository.deleteAll();

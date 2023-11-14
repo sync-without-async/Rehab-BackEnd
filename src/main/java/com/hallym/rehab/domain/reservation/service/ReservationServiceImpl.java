@@ -9,7 +9,9 @@ import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.reservation.repository.TimeRepository;
+import com.hallym.rehab.domain.room.entity.Audio;
 import com.hallym.rehab.domain.room.entity.Room;
+import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.service.RoomService;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.domain.user.repository.MemberRepository;
@@ -33,22 +35,22 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ReservationServiceImpl implements ReservationService{
+public class ReservationServiceImpl implements ReservationService {
 
     private final RoomService roomService;
-
     private final TimeRepository timeRepository;
     private final AdminRepository adminRepository;
+    private final AudioRepository audioRepository;
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
 
 
     @Override
     public PageResponseDTO<ReservationResponseByAdminDTO> getListByAdmin(String mid, PageRequestDTO pageRequestDTO) {
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0? 0:
-                        pageRequestDTO.getPage()-1,
-                        pageRequestDTO.getSize(),
-                        Sort.by("date", "index").ascending());
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0 ? 0 :
+                        pageRequestDTO.getPage() - 1,
+                pageRequestDTO.getSize(),
+                Sort.by("date", "index").ascending());
 
         Page<Reservation> result = reservationRepository.findByMid(mid, pageable);
 
@@ -60,14 +62,14 @@ public class ReservationServiceImpl implements ReservationService{
         return PageResponseDTO.<ReservationResponseByAdminDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(dtoList)
-                .total((int)result.getTotalElements())
+                .total((int) result.getTotalElements())
                 .build();
     }
 
     @Override
     public PageResponseDTO<ReservationResponseByUserDTO> getListByUser(String mid, PageRequestDTO pageRequestDTO) {
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0? 0:
-                        pageRequestDTO.getPage()-1,
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0 ? 0 :
+                        pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
                 Sort.by("date", "index").ascending());
 
@@ -81,7 +83,7 @@ public class ReservationServiceImpl implements ReservationService{
         return PageResponseDTO.<ReservationResponseByUserDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(dtoList)
-                .total((int)result.getTotalElements())
+                .total((int) result.getTotalElements())
                 .build();
     }
 
@@ -101,7 +103,9 @@ public class ReservationServiceImpl implements ReservationService{
         int index = requestDTO.getIndex();
 
         Optional<Time> timeOptional = timeRepository.findReservation(adminId, date, index);
-        if (timeOptional.isPresent()) return "already reserved time";
+        if (timeOptional.isPresent()) {
+            return "already reserved time";
+        }
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
         Member user = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("사용자 아이디가 일치하지 않습니다."));
@@ -126,7 +130,14 @@ public class ReservationServiceImpl implements ReservationService{
                 .room(room)
                 .build();
 
+        Audio audio = Audio.builder()
+                .room(room)
+                .build();
+
+        audioRepository.save(audio);
+
         room.setReservation(reservation);
+        room.setAudio(audio);
 
         reservationRepository.save(reservation);
         return "success";
@@ -135,7 +146,9 @@ public class ReservationServiceImpl implements ReservationService{
     @Override
     public String cancleReservation(Long rvno) {
         Optional<Reservation> byId = reservationRepository.findById(rvno);
-        if (byId.isEmpty()) return "wrong id";
+        if (byId.isEmpty()) {
+            return "wrong id";
+        }
 
         Reservation reservation = byId.get();
         reservation.setDelete(true);
@@ -145,7 +158,9 @@ public class ReservationServiceImpl implements ReservationService{
         int index = reservation.getIndex();
 
         Optional<Time> optionalTime = timeRepository.findReservation(admin.getMid(), date, index);
-        if (optionalTime.isEmpty()) return "exists rvno, but time doesn't exist";
+        if (optionalTime.isEmpty()) {
+            return "exists rvno, but time doesn't exist";
+        }
 
         Time time = optionalTime.get();
         admin.getTimeList().remove(time);
