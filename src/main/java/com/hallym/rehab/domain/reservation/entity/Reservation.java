@@ -54,13 +54,24 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public static ReservationResponseByAdminDTO toAdminDTO(Reservation reservation) {
+
+        String summary;
+
+        if (reservation.getRoom().getAudio().getSummary() == null) {
+            summary = "";
+        } else {
+            summary = reservation.getRoom().getAudio().getSummary();
+        }
+
         return ReservationResponseByAdminDTO.builder()
-                    .userName(reservation.getUser().getName())
-                    .userId(reservation.getUser().getMid())
-                    .rno(reservation.getRoom().getRno())
-                    .date(reservation.getDate())
-                    .index(reservation.getIndex())
-                    .build();
+                .userName(reservation.getUser().getName())
+                .userId(reservation.getUser().getMid())
+                .rno(reservation.getRoom().getRno())
+                .date(reservation.getDate())
+                .index(reservation.getIndex())
+                .summary(summary)
+                .content(reservation.getContent())
+                .build();
     }
 
     public static ReservationResponseByUserDTO toUserDTO(Reservation reservation) {
@@ -70,6 +81,8 @@ public class Reservation extends BaseTimeEntity {
                 .rvno(reservation.getRvno())
                 .date(reservation.getDate())
                 .index(reservation.getIndex())
+                .content(reservation.getContent())
+                .summary(reservation.getRoom().getAudio().getSummary())
                 .build();
     }
 }
