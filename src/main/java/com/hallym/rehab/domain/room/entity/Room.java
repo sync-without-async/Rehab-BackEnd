@@ -5,6 +5,7 @@ import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
 import com.hallym.rehab.domain.user.entity.Member;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import org.hibernate.mapping.Join;
 
 import javax.persistence.*;
 import java.util.UUID;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -39,8 +41,15 @@ public class Room extends BaseTimeEntity {
     @JoinColumn(name = "reservation_id", referencedColumnName = "rvno")
     private Reservation reservation;
 
+    @OneToOne
+    private Audio audio;
+
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
+    }
+
+    public void setAudio(Audio audio) {
+        this.audio = audio;
     }
 
     public RoomResponseDTO toRoomResponseDTO() {

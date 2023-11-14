@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Getter
