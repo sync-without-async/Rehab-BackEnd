@@ -69,9 +69,9 @@ jobs:
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
             whoami
-            docker login -u ${{ secrets.NCP_ACCESS_KEY_ID }} -p ${{ secrets.NCP_SECRET_ACCESS_KEY }} ${{ secrets.NCP_CONTAINER_REGISTRY }}
+            docker login -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }} ${{ secrets.NCP_CONTAINER_REGISTRY }}
             docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
-            docker run -d -p 3000:80 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server
+            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server
             docker image prune -f
