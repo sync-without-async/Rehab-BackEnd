@@ -1,9 +1,8 @@
 package com.hallym.rehab.domain.video.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
-import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +25,7 @@ public class Video extends BaseTimeEntity {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mid", nullable = false)
-    private Admin admin; // 물리치료사 연관관계
+    private Staff staff; // 물리치료사 연관관계
 
     private String title; // 동작 제목
 

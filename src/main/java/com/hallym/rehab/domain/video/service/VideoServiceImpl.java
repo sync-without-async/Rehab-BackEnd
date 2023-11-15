@@ -4,17 +4,16 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.program.dto.ProgramResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.entity.ProgramDetail;
 import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.video.dto.UploadFileDTO;
 import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageResponseDTO;
 import com.hallym.rehab.domain.video.entity.Video;
@@ -30,7 +29,6 @@ import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Picture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -39,11 +37,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,7 +49,7 @@ public class VideoServiceImpl implements VideoService{
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
     private final S3Client s3Client;
-    private final AdminRepository adminRepository;
+    private final StaffRepository staffRepository;
     private final VideoRepository videoRepository;
     private final ProgramRepository programRepository;
     private final ProgramDetailRepository programDetailRepository;
@@ -97,7 +93,7 @@ public class VideoServiceImpl implements VideoService{
 
     @Override
     public String createVideo(VideoRequestDTO videoRequestDTO) {
-        Admin admin = adminRepository.findById(videoRequestDTO.getAdmin_id())
+        Staff staff = staffRepository.findById(videoRequestDTO.getStaff_id())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 아이디 입니다."));
 
         MultipartFile[] files = videoRequestDTO.getFiles();
@@ -105,7 +101,7 @@ public class VideoServiceImpl implements VideoService{
         MultipartFile jsonFile =  files[1];
         UploadFileDTO uploadFileDTO = uploadFileToS3(videoFile, jsonFile);
 
-        Video video = videoRequestDTO.toVideo(admin, uploadFileDTO);
+        Video video = videoRequestDTO.toVideo(staff, uploadFileDTO);
         videoRepository.save(video);
 
         return "Success create Video";

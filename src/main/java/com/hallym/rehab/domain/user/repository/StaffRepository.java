@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.admin.repository;
+package com.hallym.rehab.domain.user.repository;
 
 import com.hallym.rehab.domain.admin.entity.Admin;
 import com.hallym.rehab.domain.user.entity.Member;
@@ -13,6 +13,6 @@ public interface AdminRepository extends JpaRepository<Admin, String> {
 
     @Modifying
     @Transactional
-    @Query("update Member m set m.password =:password where m.mid =:mid")
+    @Query("update Staff m set m.password =:password where m.mid =:mid")
     void updatePassword(@Param("mid") String mid, @Param("password") String password);
 }

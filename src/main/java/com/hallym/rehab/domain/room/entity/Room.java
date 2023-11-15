@@ -1,21 +1,17 @@
 package com.hallym.rehab.domain.room.entity;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.room.dto.RoomResponseDTO;
-import com.hallym.rehab.domain.user.entity.Member;
+import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.mapping.Join;
 
 import javax.persistence.*;
 import java.util.UUID;
-import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -30,12 +26,12 @@ public class Room extends BaseTimeEntity {
     private UUID rno;
 
     @OneToOne
-    @JoinColumn(name = "admin_id", referencedColumnName = "mid")
-    private Admin admin;
+    @JoinColumn(name = "staff_id", referencedColumnName = "mid")
+    private Staff staff;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "mid")
-    private Member user;
+    @JoinColumn(name = "patient_id", referencedColumnName = "mid")
+    private Patient patient;
 
     @OneToOne
     @JoinColumn(name = "reservation_id", referencedColumnName = "rvno")
@@ -55,8 +51,8 @@ public class Room extends BaseTimeEntity {
     public RoomResponseDTO toRoomResponseDTO() {
         return RoomResponseDTO.builder()
                 .rno(this.getRno())
-                .admin_id(this.getAdmin().getMid())
-                .user_id(this.getUser().getMid())
+                .staff_id(this.getStaff().getMid())
+                .patient_id(this.getPatient().getMid())
                 .build();
     }
 }

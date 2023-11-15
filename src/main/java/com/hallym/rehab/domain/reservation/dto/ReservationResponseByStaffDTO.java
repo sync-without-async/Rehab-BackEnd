@@ -12,9 +12,9 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservationResponseByAdminDTO {
+public class ReservationResponseByStaffDTO {
     private String userName;
-    private String userId; // 환자 상세정보 보기 위한 Id
+    private String patientId; // 환자 상세정보 보기 위한 Id
     private UUID rno;
     private LocalDate date;
     private int index;

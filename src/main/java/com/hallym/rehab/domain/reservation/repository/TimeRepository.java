@@ -11,17 +11,17 @@ import java.util.Optional;
 
 public interface TimeRepository extends JpaRepository<Time, Long> {
 
-    @Query("SELECT t FROM Time t WHERE t.admin.mid = :admin_id")
-    List<Time> findByAdmin(@Param("admin_id") String admin_id);
+    @Query("SELECT t FROM Time t WHERE t.staff.mid = :staff_id")
+    List<Time> findByStaff(@Param("staff_id") String staff_id);
 
-    @Query("SELECT t FROM Time t WHERE t.admin.mid = :admin_id " +
+    @Query("SELECT t FROM Time t WHERE t.staff.mid = :staff_id " +
             "and t.date = :date and t.index = :index")
-    Optional<Time> findReservation(@Param("admin_id") String admin_id,
+    Optional<Time> findReservation(@Param("staff_id") String staff_id,
                              @Param("date") LocalDate localDate,
                              @Param("index") int index);
 
-    @Query("SELECT t FROM Time t WHERE t.admin.mid = :admin_id " +
+    @Query("SELECT t FROM Time t WHERE t.staff.mid = :staff_id " +
             "and t.date = :date")
-    List<Time> findAvailableTimeOfDayByAdmin(@Param("admin_id") String admin_id,
+    List<Time> findAvailableTimeOfDayByStaff(@Param("staff_id") String staff_id,
                                              @Param("date") LocalDate localDate);
 }

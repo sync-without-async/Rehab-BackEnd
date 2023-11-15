@@ -1,7 +1,7 @@
 package com.hallym.rehab.domain.reservation.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.user.entity.Staff;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,14 +29,14 @@ public class Time {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mid", nullable = false)
-    private Admin admin;
+    private Staff staff;
 
-    public void setAdmin(Admin admin) {
+    public void setStaff(Staff staff) {
         // 기존 관계 제거
-        if (this.admin != null) {
-            this.admin.getTimeList().remove(this);
+        if (this.staff != null) {
+            this.staff.getTimeList().remove(this);
         }
-        this.admin = admin;
-        admin.getTimeList().add(this);
+        this.staff = staff;
+        staff.getTimeList().add(this);
     }
 }

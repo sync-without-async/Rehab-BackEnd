@@ -24,39 +24,42 @@ import java.util.stream.Collectors;
 @Log4j2
 public class APIUserServiceImpl implements APIUserService{
 
-    private final MemberRepository memberRepository;
+    private final PatientRepository patientRepository;
+    private final StaffRepository staffRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     public String getRoleSetByMid(String mid) {
-        Member member = memberRepository.findById(mid)
+        Staff staff = staffRepository.findById(mid)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 아이디는 없는 사용자입니다."));
-        String role = String.join(",", member.getRoleSet().stream().map(MemberRole::getValue).collect(Collectors.toList()));
+        String role = String.join(",", staff.getRoleSet().stream().map(StaffRole::getValue).collect(Collectors.toList()));
 
         log.info("해당 유저는 " + role + " 권한을 가지고 있습니다.");
 
-        if (member != null) {
+        if (staff != null) {
             return role;
         } else {
             return "member 정보를 제대로 가져오지 못했습니다";
         }
     }
 
-    public void changePassword(String mid, PasswordChangeDTO passwordChangeDTO) throws IncorrectPasswordException {
-        Member member = memberRepository.findById(mid)
+    public void changePassword(String mid, PasswordChangeDTO passwordChangeDTO){
+        Staff staff = staffRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("해당 아이디는 없는 사용자입니다."));
-        if (!passwordEncoder.matches(passwordChangeDTO.getCurrentPassword(), member.getPassword())) {
+
+        if (!passwordEncoder.matches(passwordChangeDTO.getCurrentPassword(), staff.getPassword())) {
             throw new IncorrectPasswordException();
         }
-        member.changePassword(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
-        memberRepository.updatePassword(mid, member.getPassword());
+
+        staff.changePassword(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
+        staffRepository.updatePassword(mid, staff.getPassword());
     }
 
     public void registerUser(MemberJoinDTO memberJoinDTO) throws MidExistsException {
 
         String mid = memberJoinDTO.getMid();
 
-        boolean exists = memberRepository.existsById(mid);
+        boolean exists = staffRepository.existsById(mid);
 
         if(exists) {
             throw new MidExistsException();

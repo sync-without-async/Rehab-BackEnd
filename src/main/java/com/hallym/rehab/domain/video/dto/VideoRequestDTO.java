@@ -1,6 +1,6 @@
 package com.hallym.rehab.domain.video.dto;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
+import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoRequestDTO {
-    private String admin_id;
+    private String staff_id;
     private String title;
     private String description; // 동작 설명
     private Tag tag; // 동작 태그
@@ -23,9 +23,9 @@ public class VideoRequestDTO {
     @Builder.Default
     private MultipartFile[] files = new MultipartFile[2];
 
-    public Video toVideo(Admin admin, UploadFileDTO uploadFileDTO) {
+    public Video toVideo(Staff staff, UploadFileDTO uploadFileDTO) {
         return Video.builder()
-                    .admin(admin)
+                    .staff(staff)
                     .title(title)
                     .description(description)
                     .tag(tag)
