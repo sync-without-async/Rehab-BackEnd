@@ -25,7 +25,7 @@ public class PatientRepositoryTests {
     private StaffRepository staffRepository;
 
     @Test
-    void registerMember() throws Exception {
+    void registerMember() {
 
         Patient patient = Patient.builder()
                 .mid("testuser")
