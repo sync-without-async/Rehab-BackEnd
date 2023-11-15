@@ -1,9 +1,9 @@
 package com.hallym.rehab.domain.reservation.service;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByAdminDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.entity.Time;
@@ -13,8 +13,8 @@ import com.hallym.rehab.domain.room.entity.Audio;
 import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.service.RoomService;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +39,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final RoomService roomService;
     private final TimeRepository timeRepository;
-    private final AdminRepository adminRepository;
+    private final StaffRepository staffRepository;
     private final AudioRepository audioRepository;
-    private final MemberRepository memberRepository;
+    private final PatientRepository patientRepository;
     private final ReservationRepository reservationRepository;
 
 
     @Override
-    public PageResponseDTO<ReservationResponseByAdminDTO> getListByAdmin(String mid, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ReservationResponseByStaffDTO> getListByStaff(String mid, PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0 ? 0 :
                         pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
@@ -54,12 +54,12 @@ public class ReservationServiceImpl implements ReservationService {
 
         Page<Reservation> result = reservationRepository.findByMid(mid, pageable);
 
-        List<ReservationResponseByAdminDTO> dtoList = result.getContent()
+        List<ReservationResponseByStaffDTO> dtoList = result.getContent()
                 .stream()
                 .map(Reservation::toAdminDTO)
                 .collect(Collectors.toList());
 
-        return PageResponseDTO.<ReservationResponseByAdminDTO>withAll()
+        return PageResponseDTO.<ReservationResponseByStaffDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(dtoList)
                 .total((int) result.getTotalElements())
@@ -88,42 +88,42 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Time> getReservedTime(String adminId, LocalDate date) {
-        adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
+    public List<Time> getReservedTime(String staffId, LocalDate date) {
+        staffRepository.findById(staffId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
 
-        return timeRepository.findAvailableTimeOfDayByAdmin(adminId, date);
+        return timeRepository.findAvailableTimeOfDayByStaff(staffId, date);
     }
 
     @Override
     public String createReservation(ReservationRequestDTO requestDTO) {
-        String adminId = requestDTO.getAdmin_id();
-        String userId = requestDTO.getUser_id();
+        String staffId = requestDTO.getStaff_id();
+        String patientId = requestDTO.getPatient_id();
         String content = requestDTO.getContent();
         LocalDate date = requestDTO.getDate();
         int index = requestDTO.getIndex();
 
-        Optional<Time> timeOptional = timeRepository.findReservation(adminId, date, index);
+        Optional<Time> timeOptional = timeRepository.findReservation(staffId, date, index);
         if (timeOptional.isPresent()) {
             return "already reserved time";
         }
 
-        Admin admin = adminRepository.findById(adminId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
-        Member user = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("사용자 아이디가 일치하지 않습니다."));
+        Staff staff = staffRepository.findById(staffId).orElseThrow(() -> new RuntimeException("관리자 아이디가 일치하지 않습니다."));
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("사용자 아이디가 일치하지 않습니다."));
 
-        Room room = roomService.registerRoom(adminId, userId);
+        Room room = roomService.registerRoom(staffId, patientId);
 
         Time time = Time.builder()
                 .date(date)
                 .index(index)
                 .build();
 
-        time.setAdmin(admin);
+        time.setStaff(staff);
         timeRepository.saveAndFlush(time);
-        adminRepository.saveAndFlush(admin);
+        staffRepository.saveAndFlush(staff);
 
         Reservation reservation = Reservation.builder()
-                .admin(admin)
-                .user(user)
+                .staff(staff)
+                .patient(patient)
                 .content(content)
                 .date(date)
                 .index(index)
@@ -153,17 +153,17 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = byId.get();
         reservation.setDelete(true);
 
-        Admin admin = reservation.getAdmin();
+        Staff staff = reservation.getStaff();
         LocalDate date = reservation.getDate();
         int index = reservation.getIndex();
 
-        Optional<Time> optionalTime = timeRepository.findReservation(admin.getMid(), date, index);
+        Optional<Time> optionalTime = timeRepository.findReservation(staff.getMid(), date, index);
         if (optionalTime.isEmpty()) {
             return "exists rvno, but time doesn't exist";
         }
 
         Time time = optionalTime.get();
-        admin.getTimeList().remove(time);
+        staff.getTimeList().remove(time);
         timeRepository.delete(time); // 어드민에게 예약 추가된 시간 삭제
 
         return "success";

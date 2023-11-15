@@ -5,14 +5,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum MemberRole {
+public enum StaffRole {
 
-    USER("ROLE_USER"),
-    ADMIN("ROLE_ADMIN"), ;
+    DOCTOR("ROLE_DOCTOR"),
+    THERAPIST ("ROLE_THERAPIST"), ;
 
     private String value;
 
-    MemberRole(String value) {
+    StaffRole(String value) {
         this.value = value;
     }
 

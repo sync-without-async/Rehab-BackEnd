@@ -73,7 +73,8 @@ dependencies {
 	//smtp 구현을 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.11'
 
-
+	/* Thumbnail 파일 처리를 위한 의존성 */
+	implementation 'net.coobird:thumbnailator:0.4.17'
 }
 
 tasks.named('test') {

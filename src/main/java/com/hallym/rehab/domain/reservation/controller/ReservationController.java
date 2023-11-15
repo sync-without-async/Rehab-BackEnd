@@ -1,7 +1,7 @@
 package com.hallym.rehab.domain.reservation.controller;
 
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByAdminDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
 import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.reservation.service.ReservationService;
@@ -21,9 +21,9 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/reservation-admin/{mid}")
-    public PageResponseDTO<ReservationResponseByAdminDTO> getReservationListByAdmin(@PathVariable(name = "mid") String mid,
+    public PageResponseDTO<ReservationResponseByStaffDTO> getReservationListByAdmin(@PathVariable(name = "mid") String mid,
                                                                                     PageRequestDTO pageRequestDTO) {
-        return reservationService.getListByAdmin(mid, pageRequestDTO);
+        return reservationService.getListByStaff(mid, pageRequestDTO);
     }
 
     @GetMapping("/reservation-user/{mid}")

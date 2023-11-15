@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationRequestDTO {
-    private String admin_id;
-    private String user_id;
+    private String staff_id;
+    private String patient_id;
     private String content; // 예약 희망 사유
     private LocalDate date;
     private int index;

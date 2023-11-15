@@ -1,8 +1,8 @@
 package com.hallym.rehab.domain.video.repository;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
-import com.hallym.rehab.domain.user.entity.MemberRole;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
+import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.domain.video.entity.Tag;
@@ -26,31 +26,33 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 class VideoRepositoryTest {
 
-    @Autowired AdminRepository adminRepository;
+    @Autowired
+    StaffRepository staffRepository;
     @Autowired VideoRepository videoRepository;
 
-    Admin admin;
+    Staff staff;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        adminRepository.save(admin);
+        staffRepository.save(staff);
     }
 
     @Test
 //    @Rollback(value = false)
     void videoSave() {
         Video video = Video.builder()
-                .admin(admin)
+                .staff(staff)
                 .title("동작 제목")
                 .description("동작 설명")
                 .tag(Tag.ARM)
@@ -75,7 +77,7 @@ class VideoRepositoryTest {
         // insert dummy video data
         for (int i = 0; i < 150; i++) {
             Video video = Video.builder()
-                    .admin(admin)
+                    .staff(staff)
                     .title("동작 제목" + i)
                     .description("동작 설명" + i)
                     .tag(Tag.ARM)

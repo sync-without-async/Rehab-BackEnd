@@ -1,11 +1,11 @@
 package com.hallym.rehab.domain.reservation.entity;
 
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByAdminDTO;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
 import com.hallym.rehab.domain.room.entity.Room;
-import com.hallym.rehab.domain.user.entity.Member;
+import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,12 +28,12 @@ public class Reservation extends BaseTimeEntity {
     private Long rvno;
 
     @OneToOne
-    @JoinColumn(name = "admin_id", referencedColumnName = "mid")
-    private Admin admin;
+    @JoinColumn(name = "staff_id", referencedColumnName = "mid")
+    private Staff staff;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "mid")
-    private Member user;
+    @JoinColumn(name = "patient_id", referencedColumnName = "mid")
+    private Patient patient;
 
     @OneToOne
     @JoinColumn(name = "room_id", referencedColumnName = "rno")
@@ -53,7 +53,7 @@ public class Reservation extends BaseTimeEntity {
         this.is_deleted = is_deleted;
     }
 
-    public static ReservationResponseByAdminDTO toAdminDTO(Reservation reservation) {
+    public static ReservationResponseByStaffDTO toAdminDTO(Reservation reservation) {
 
         String summary;
 
@@ -63,9 +63,9 @@ public class Reservation extends BaseTimeEntity {
             summary = reservation.getRoom().getAudio().getSummary();
         }
 
-        return ReservationResponseByAdminDTO.builder()
-                .userName(reservation.getUser().getName())
-                .userId(reservation.getUser().getMid())
+        return ReservationResponseByStaffDTO.builder()
+                .userName(reservation.getPatient().getName())
+                .patientId(reservation.getPatient().getMid())
                 .rno(reservation.getRoom().getRno())
                 .date(reservation.getDate())
                 .index(reservation.getIndex())
@@ -75,14 +75,23 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public static ReservationResponseByUserDTO toUserDTO(Reservation reservation) {
+
+        String summary;
+
+        if (reservation.getRoom().getAudio().getSummary() == null) {
+            summary = "";
+        } else {
+            summary = reservation.getRoom().getAudio().getSummary();
+        }
+
         return ReservationResponseByUserDTO.builder()
-                .adminName(reservation.getAdmin().getName())
+                .adminName(reservation.getStaff().getName())
                 .rno(reservation.getRoom().getRno())
                 .rvno(reservation.getRvno())
                 .date(reservation.getDate())
                 .index(reservation.getIndex())
                 .content(reservation.getContent())
-                .summary(reservation.getRoom().getAudio().getSummary())
+                .summary(summary)
                 .build();
     }
 }

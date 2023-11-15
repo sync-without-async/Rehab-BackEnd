@@ -1,16 +1,16 @@
 package com.hallym.rehab.domain.program.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.program.dto.MetricsUpdateRequestDTO;
 import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.ProgramDetail;
 import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.entity.VideoMetrics;
 import com.hallym.rehab.domain.video.repository.VideoMetricsRepository;
@@ -25,8 +25,8 @@ import java.util.Map;
 @Transactional
 @RequiredArgsConstructor
 public class ProgramServiceImpl implements ProgramService{
-    private final AdminRepository adminRepository;
-    private final MemberRepository memberRepository;
+    private final StaffRepository staffRepository;
+    private final PatientRepository patientRepository;
     private final VideoRepository videoRepository;
     private final VideoMetricsRepository videoMetricsRepository;
     private final ProgramRepository programRepository;
@@ -37,14 +37,14 @@ public class ProgramServiceImpl implements ProgramService{
         String adminId = requestDTO.getAdminId();
         String userId = requestDTO.getUserId();
 
-        Admin admin = adminRepository.findById(adminId)
+        Staff staff = staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for Id : " + adminId));
-        Member member = memberRepository.findById(userId)
+        Patient patient = patientRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("not found user for Id : " + userId));
 
         Program program = Program.builder()
-                .admin(admin)
-                .user(member)
+                .staff(staff)
+                .patient(patient)
                 .description(requestDTO.getDescription())
                 .build();
 
@@ -66,7 +66,7 @@ public class ProgramServiceImpl implements ProgramService{
             VideoMetrics videoMetrics = VideoMetrics.builder()
                     .programDetail(programDetail)
                     .metrics(0)
-                    .user(member)
+                    .patient(patient)
                     .build();
 
             VideoMetrics savedMetrics = videoMetricsRepository.save(videoMetrics);
@@ -82,9 +82,9 @@ public class ProgramServiceImpl implements ProgramService{
         String adminId = requestDTO.getAdminId();
         String userId = requestDTO.getUserId();
 
-        adminRepository.findById(adminId)
+        staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for adminId : " + adminId));
-        memberRepository.findById(userId)
+        patientRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("not found user for userId : " + userId));
         Program program = programRepository.findById(pno)
                 .orElseThrow(() -> new NotFoundException("not found for pno : " + pno));
@@ -118,7 +118,7 @@ public class ProgramServiceImpl implements ProgramService{
         int ord = metricsUpdateRequestDTO.getOrd();
         double metrics = metricsUpdateRequestDTO.getMetrics();
 
-        memberRepository.findById(userId)
+        patientRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("not found user for Id : " + userId));
 
         programRepository.findById(pno)

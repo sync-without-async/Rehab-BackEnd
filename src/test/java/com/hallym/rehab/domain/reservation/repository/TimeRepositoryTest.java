@@ -1,9 +1,9 @@
 package com.hallym.rehab.domain.reservation.repository;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.entity.Time;
-import com.hallym.rehab.domain.user.entity.MemberRole;
+import com.hallym.rehab.domain.user.entity.StaffRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +20,24 @@ import static org.assertj.core.api.Assertions.*;
 class TimeRepositoryTest {
 
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
     TimeRepository timeRepository;
-    Admin admin;
+    Staff staff;
     @BeforeEach
     void setUpAdmin() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        adminRepository.save(admin);
+        staffRepository.save(staff);
     }
 
     @Test
@@ -51,13 +52,13 @@ class TimeRepositoryTest {
                 .index(3)
                 .build();
 
-        time.setAdmin(admin);
-        time2.setAdmin(admin);
+        time.setStaff(staff);
+        time2.setStaff(staff);
 
         timeRepository.save(time);
         timeRepository.save(time2);
 
-        assertThat(admin.getTimeList().size()).isEqualTo(2);
-        assertThat(time.getAdmin()).isEqualTo(admin);
+        assertThat(staff.getTimeList().size()).isEqualTo(2);
+        assertThat(time.getStaff()).isEqualTo(staff);
     }
 }

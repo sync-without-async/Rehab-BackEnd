@@ -12,15 +12,15 @@ import java.util.UUID;
 
 public interface RoomRepository extends JpaRepository<Room, UUID> {
 
-    @Query("SELECT r FROM Room r WHERE r.admin.mid = :admin_id AND r.user.mid = :user_id")
-    Optional<Room> findByAdminAndUser(
-            @Param("admin_id") String admin_id, @Param("user_id") String user_id);
+    @Query("SELECT r FROM Room r WHERE r.staff.mid = :staff_id AND r.patient.mid = :patient_id")
+    Optional<Room> findByStaffAndPatient(
+            @Param("staff_id") String staff_id, @Param("patient_id") String patient_id);
 
-    @Query("SELECT new com.hallym.rehab.domain.room.dto.RoomResponseDTO(r.rno, r.admin.mid, r.user.mid)" +
-            " FROM Room r WHERE r.admin.mid = :admin_id")
-    List<RoomResponseDTO> findByRoomListByAdmin(@Param("admin_id") String admin_id);
+    @Query("SELECT new com.hallym.rehab.domain.room.dto.RoomResponseDTO(r.rno, r.staff.mid, r.patient.mid)" +
+            " FROM Room r WHERE r.staff.mid = :staff_id")
+    List<RoomResponseDTO> findByRoomListByStaff(@Param("staff_id") String staff_id);
 
-    @Query("SELECT new com.hallym.rehab.domain.room.dto.RoomResponseDTO(r.rno, r.admin.mid, r.user.mid)" +
-            " FROM Room r WHERE r.user.mid = :user_id")
-    List<RoomResponseDTO> findByRoomListByUser(@Param("user_id") String user_id);
+    @Query("SELECT new com.hallym.rehab.domain.room.dto.RoomResponseDTO(r.rno, r.staff.mid, r.patient.mid)" +
+            " FROM Room r WHERE r.patient.mid = :patient_id")
+    List<RoomResponseDTO> findByRoomListByPatient(@Param("patient_id") String patient_id);
 }

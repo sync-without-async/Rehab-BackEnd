@@ -102,7 +102,7 @@ public class CustomSecurityConfig {
                 TokenCheckFilter.class);
 
 
-        http.csrf().disable(); //csrf 토큰 비활성화
+        http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable()); //csrf 토큰 비활성화
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); //세션을 사용하지 않음
 
         http.cors(httpSecurityCorsConfigurer -> { //CORS 구성
@@ -116,11 +116,14 @@ public class CustomSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() { //CorsConfigurationSource 인터페이스 구현
         CorsConfiguration configuration = new CorsConfiguration(); // Bean 생성
         configuration.setAllowedOriginPatterns(Arrays.asList("*")); //요청을 보내는 모든 도메인 허용
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE")); //허용할 요청 메소드 설정
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")); //허용할 요청 메소드 설정
+
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); //요청 허용할 헤더
         configuration.setAllowCredentials(true); //인증 정보를 담은 요청도 허용
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(); //CorsConfiguration 객체를 URL 패턴에 매핑하여 CORS 구성을 지원하는 클래스
         source.registerCorsConfiguration("/**", configuration); //모든 경로에 대한 CORS 설정을 위에서 만든 CorsConfiguration 객체로 등록
+
         return source;
     }
 

@@ -1,11 +1,11 @@
 package com.hallym.rehab.domain.reservation.repository;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -25,44 +24,44 @@ class ReservationRepositoryTest {
     @Autowired
     ReservationRepository reservationRepository;
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
-    MemberRepository memberRepository;
+    PatientRepository patientRepository;
 
-    Admin admin;
-    Member user;
+    Staff staff;
+    Patient patient;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        user = Member.builder()
+        patient = Patient.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password("1111")
-                .age(22)
+                .birth(LocalDate.of(2000, 12, 13))
                 .sex("Male")
                 .phone("01090594356")
-                .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        adminRepository.save(admin);
-        memberRepository.save(user);
+        staffRepository.save(staff);
+        patientRepository.save(patient);
     }
 
     @Test
     void createReservation() {
         Reservation reservation = Reservation.builder()
-                .admin(admin)
-                .user(user)
+                .staff(staff)
+                .patient(patient)
                 .content("개발하다가 마음이 아파졌어요..")
                 .build();
 

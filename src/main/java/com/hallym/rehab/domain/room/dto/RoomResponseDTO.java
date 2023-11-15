@@ -14,6 +14,6 @@ import java.util.UUID;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RoomResponseDTO {
     private UUID rno;
-    private String admin_id;
-    private String user_id;
+    private String staff_id;
+    private String patient_id;
 }

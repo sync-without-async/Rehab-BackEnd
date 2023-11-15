@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @Entity
-public class Member extends BaseTimeEntity {
+public class Patient extends BaseTimeEntity {
 
     @Id
     @Column(nullable = false, unique = true)
@@ -26,32 +27,23 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    private int age;
+    private LocalDate birth;
 
     private String sex;
 
     private String phone;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
-
     @ColumnDefault("false")
     private boolean is_deleted;
-
-    public void addRole(MemberRole memberRole){
-        this.roleSet.add(memberRole);
-    }
 
     public void changePassword(String password) {
         this.password = password;
     }
 
-    public void addUser(String mid, String password, String name, String phone, Set<MemberRole> roleSet) {
+    public void addUser(String mid, String password, String name, String phone) {
         this.mid = mid;
         this.password = password;
         this.name = name;
         this.phone = phone;
-        this.roleSet = roleSet;
     }
 }

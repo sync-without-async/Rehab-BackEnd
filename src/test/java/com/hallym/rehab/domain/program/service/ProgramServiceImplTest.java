@@ -1,14 +1,14 @@
 package com.hallym.rehab.domain.program.service;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.program.dto.MetricsUpdateRequestDTO;
 import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
 import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoMetricsRepository;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @SpringBootTest
@@ -28,9 +29,9 @@ import java.util.*;
 class ProgramServiceImplTest {
 
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
-    MemberRepository memberRepository;
+    PatientRepository patientRepository;
     @Autowired
     VideoRepository videoRepository;
     @Autowired
@@ -42,38 +43,38 @@ class ProgramServiceImplTest {
     @Autowired
     ProgramService programService;
 
-    Admin admin;
-    Member member;
+    Staff staff;
+    Patient patient;
     Video video;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        member = Member.builder()
+        patient = Patient.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password("1111")
-                .age(26)
+                .birth(LocalDate.of(2000, 12, 13))
                 .sex("Male")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        adminRepository.save(admin);
-        memberRepository.save(member);
+        staffRepository.save(staff);
+        patientRepository.save(patient);
 
         for (int i = 1; i <= 10; i++) {
             video = Video.builder()
-                    .admin(admin)
+                    .staff(staff)
                     .title("동작 제목" + i)
                     .description("동작 설명" + i)
                     .tag(Tag.ARM)
@@ -119,7 +120,7 @@ class ProgramServiceImplTest {
     @Rollback(value = false)
     void updateMetrics() {
         MetricsUpdateRequestDTO requestDTO = MetricsUpdateRequestDTO.builder()
-                .userId(member.getMid())
+                .userId(patient.getMid())
                 .pno(1L)
                 .vno(3L)
                 .ord(7)
