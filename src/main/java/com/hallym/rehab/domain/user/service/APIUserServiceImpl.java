@@ -61,8 +61,8 @@ public class APIUserServiceImpl implements APIUserService{
 
         boolean exists = staffRepository.existsById(mid);
 
-        if(exists) {
-            throw new MidExistsException();
+        if(exists){
+            throw new MidExistsException(mid);
         }
 
         Staff staff = Staff.builder()
