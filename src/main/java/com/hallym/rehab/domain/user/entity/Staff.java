@@ -28,9 +28,11 @@ public class Staff extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    private int age;
+    @Column(nullable = false)
+    private String hospital;
 
-    private String sex;
+    @Column(nullable = false)
+    private String department;
 
     @Column(nullable = false)
     private String email;
