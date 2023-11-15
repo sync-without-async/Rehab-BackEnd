@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum StaffRole {
 
-    USER("ROLE_USER"),
-    ADMIN("ROLE_ADMIN"), ;
+    DOCTOR("ROLE_DOCTOR"),
+    THERAPIST ("ROLE_THERAPIST"), ;
 
     private String value;
 
