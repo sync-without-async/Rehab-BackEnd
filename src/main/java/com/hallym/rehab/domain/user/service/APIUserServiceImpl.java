@@ -55,9 +55,9 @@ public class APIUserServiceImpl implements APIUserService{
         staffRepository.updatePassword(mid, staff.getPassword());
     }
 
-    public void registerUser(MemberJoinDTO memberJoinDTO) throws MidExistsException {
+    public void registerUser(StaffRequestDTO staffRequestDTO){
 
-        String mid = memberJoinDTO.getMid();
+        String mid = staffRequestDTO.getMid();
 
         boolean exists = staffRepository.existsById(mid);
 
@@ -65,17 +65,22 @@ public class APIUserServiceImpl implements APIUserService{
             throw new MidExistsException();
         }
 
-        Member member = Member.builder()
-                .mid(memberJoinDTO.getMid())
-                .name(memberJoinDTO.getName())
-                .password(memberJoinDTO.getPassword())
-                .age(memberJoinDTO.getAge())
-                .sex(memberJoinDTO.getSex())
-                .phone(memberJoinDTO.getPhone())
+        Staff staff = Staff.builder()
+                .mid(staffRequestDTO.getMid())
+                .name(staffRequestDTO.getName())
+                .password(staffRequestDTO.getPassword())
+                .hospital(staffRequestDTO.getHospital())
+                .department(staffRequestDTO.getDepartment())
+                .email(staffRequestDTO.getEmail())
+                .phone(staffRequestDTO.getPhone())
                 .build();
 
-        member.changePassword(passwordEncoder.encode(memberJoinDTO.getPassword()));
-        member.addRole(MemberRole.USER);
+        if(staffRequestDTO.getFileName() != null){
+            String[] arr = staffRequestDTO.getFileName().split("_");
+            staff.addImage(arr[0], arr[1]);
+        }
+
+        staff.changePassword(passwordEncoder.encode(staffRequestDTO.getPassword()));
 
         memberRepository.save(member);
     }

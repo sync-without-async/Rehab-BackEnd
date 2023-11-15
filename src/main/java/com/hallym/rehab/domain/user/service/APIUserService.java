@@ -14,6 +14,6 @@ public interface APIUserService {
 
     void changePassword(String mid, PasswordChangeDTO passwordChangeDTO) throws IncorrectPasswordException;
 
-    void registerUser(MemberJoinDTO memberJoinDTO) throws MidExistsException;
+    void registerUser(StaffRequestDTO staffRequestDTO);
 
 }
