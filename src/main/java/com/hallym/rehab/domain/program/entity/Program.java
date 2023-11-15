@@ -1,9 +1,8 @@
 package com.hallym.rehab.domain.program.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
-import com.hallym.rehab.domain.user.entity.Member;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
 
@@ -24,13 +23,13 @@ public class Program extends BaseTimeEntity {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin; // 물리치료사 연관관계
+    @JoinColumn(name = "staff_id", nullable = false)
+    private Staff staff; // 물리치료사 연관관계
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private Member user;
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
 
     private String description; // 과제 설명
 

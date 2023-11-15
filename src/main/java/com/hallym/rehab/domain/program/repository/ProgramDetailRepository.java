@@ -3,7 +3,6 @@ package com.hallym.rehab.domain.program.repository;
 import com.hallym.rehab.domain.program.dto.ProgramResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.ProgramDetail;
-import com.hallym.rehab.domain.user.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

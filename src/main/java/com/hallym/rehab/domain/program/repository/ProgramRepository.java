@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 
-    @Query("SELECT p from Program p where p.user.mid = :userId")
+    @Query("SELECT p from Program p where p.patient.mid = :userId")
     Optional<Program> findByUserId(@Param("userId") String userId);
 }
