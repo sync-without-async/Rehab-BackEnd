@@ -3,6 +3,8 @@ package com.hallym.rehab.domain.chart.controller;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.service.ChartService;
+import com.hallym.rehab.global.pageDTO.PageRequestDTO;
+import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,7 @@ public class ChartController {
     @GetMapping("/{cno}")
     public ChartResponseDTO getChartOne(@PathVariable Long cno) {
 
-        ChartResponseDTO chartOne = chartService.getChartDetails(cno);
-
-        log.info("result----" + chartOne);
-
-        return chartOne;
+        return chartService.getChartDetails(cno);
     }
 
 
