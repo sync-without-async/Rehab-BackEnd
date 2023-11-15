@@ -40,6 +40,13 @@ public class Staff extends BaseTimeEntity {
     @Column(nullable = false)
     private String phone;
 
+    @OneToOne(mappedBy = "staff",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
+    private StaffImage staffImage;
+
+    @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private Set<StaffRole> roleSet = new HashSet<>(); //권한 정보
@@ -69,5 +76,23 @@ public class Staff extends BaseTimeEntity {
         this.name = name;
         this.phone = phone;
         this.roleSet = roleSet;
+    }
+
+    public void addImage(String uuid, String fileName){
+
+        this.staffImage = StaffImage.builder()
+                .uuid(uuid)
+                .fileName(fileName)
+                .staff(this) //양방향의 경우 참조 관계가 서로 일치하도록
+                .build();
+
+    }
+
+    public void clearImage() {
+        if (this.staffImage != null) {
+
+            this.staffImage.changeStaff(null);
+            this.staffImage = null;
+        }
     }
 }
