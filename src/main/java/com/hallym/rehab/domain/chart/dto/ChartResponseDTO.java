@@ -3,6 +3,7 @@ package com.hallym.rehab.domain.chart.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Getter
@@ -27,7 +28,7 @@ public class ChartResponseDTO {
 
     private String therapist_id; // 담당재활치료사
 
-    private String medicalRecord; //진료 기록
+    private List<RecordDTO> medicalRecords;
 
-    private String exerciseRequest; //운동요청서
+    private List<OnlineRecordDTO> OnlineRecords;
 }
