@@ -27,7 +27,7 @@ public class Patient extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    private int age;
+    private LocalDate birth;
 
     private String sex;
 
