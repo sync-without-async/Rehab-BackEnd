@@ -1,16 +1,16 @@
 package com.hallym.rehab.domain.reservation.service;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.reservation.repository.TimeRepository;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,48 +43,48 @@ class ReservationServiceImplTest {
     @Autowired
     ReservationRepository reservationRepository;
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
-    MemberRepository memberRepository;
+    PatientRepository patientRepository;
     @Autowired
     TimeRepository timeRepository;
     @Autowired
     AudioRepository audioRepository;
-    Admin admin;
-    Member user;
+    Staff staff;
+    Patient patient;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        user = Member.builder()
+        patient = Patient.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password("1111")
-                .age(22)
+                .birth(LocalDate.of(2000, 12, 13))
                 .sex("Male")
                 .phone("01090594356")
-                .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        adminRepository.save(admin);
-        memberRepository.save(user);
+        staffRepository.save(staff);
+        patientRepository.save(patient);
     }
 
     @Test
     @Rollback(value = false)
     void createReservation() {
         ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
-                .admin_id(admin.getMid())
-                .user_id(user.getMid())
+                .staff_id(staff.getMid())
+                .patient_id(patient.getMid())
                 .content("개발하다가 마음이 아파졌어요..")
                 .date(LocalDate.of(2023, 9, 20))
                 .index(3)
@@ -93,7 +93,7 @@ class ReservationServiceImplTest {
         String result = reservationService.createReservation(reservationRequestDTO);
         assertThat(result).isEqualTo("success");
 
-        List<Time> timeList = timeRepository.findByAdmin(admin.getMid());
+        List<Time> timeList = timeRepository.findByStaff(staff.getMid());
         assertThat(timeList.size()).isEqualTo(1);
 
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
@@ -105,7 +105,7 @@ class ReservationServiceImplTest {
                 pageRequestDTO.getSize(),
                 Sort.by("date", "index").ascending());
 
-        Page<Reservation> byMid = reservationRepository.findByMid(admin.getMid(), pageable);
+        Page<Reservation> byMid = reservationRepository.findByMid(staff.getMid(), pageable);
         List<Reservation> reservationList = byMid.getContent();
         Reservation reservation = reservationList.get(0);
         assertThat(reservation.getDate()).isEqualTo(LocalDate.of(2023, 9, 20));
@@ -118,8 +118,8 @@ class ReservationServiceImplTest {
     @Rollback(value = false)
     void cancleRservation() {
         ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
-                .admin_id(admin.getMid())
-                .user_id(user.getMid())
+                .staff_id(staff.getMid())
+                .patient_id(patient.getMid())
                 .content("개발하다가 마음이 아파졌어요..")
                 .date(LocalDate.of(2023, 9, 20))
                 .index(3)
@@ -137,14 +137,14 @@ class ReservationServiceImplTest {
                 pageRequestDTO.getSize(),
                 Sort.by("date", "index").ascending());
 
-        Page<Reservation> byMid = reservationRepository.findByMid(admin.getMid(), pageable);
+        Page<Reservation> byMid = reservationRepository.findByMid(staff.getMid(), pageable);
         List<Reservation> reservationList = byMid.getContent();
         Reservation reservation = reservationList.get(0);
 
         String result2 = reservationService.cancleReservation(reservation.getRvno());
         assertThat(result2).isEqualTo("success");
 
-        assertThat(timeRepository.findByAdmin(admin.getMid()).size()).isEqualTo(0);
+        assertThat(timeRepository.findByStaff(staff.getMid()).size()).isEqualTo(0);
     }
 
     @Test
@@ -153,8 +153,8 @@ class ReservationServiceImplTest {
     void createDummy() {
         for (int i = 0; i < 120; i++) {
             ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
-                    .admin_id(admin.getMid())
-                    .user_id(user.getMid())
+                    .staff_id(staff.getMid())
+                    .patient_id(patient.getMid())
                     .content("개발하다가 마음이 아파졌어요.."+i)
                     .date(LocalDate.of(2023, 9, 20))
                     .index(i)
@@ -168,8 +168,8 @@ class ReservationServiceImplTest {
     void getReservedTime() {
         //given
         ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO.builder()
-                .admin_id(admin.getMid())
-                .user_id(user.getMid())
+                .staff_id(staff.getMid())
+                .patient_id(patient.getMid())
                 .content("개발하다가 마음이 아파졌어요..")
                 .date(LocalDate.of(2023, 9, 20))
                 .index(1)

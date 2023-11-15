@@ -1,12 +1,12 @@
 package com.hallym.rehab.domain.program.repository;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.entity.ProgramDetail;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.entity.VideoMetrics;
@@ -18,15 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 @SpringBootTest
 class ProgramRepositoryTestWithDetail {
 
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
-    MemberRepository memberRepository;
+    PatientRepository patientRepository;
     @Autowired
     VideoRepository videoRepository;
     @Autowired
@@ -36,37 +37,37 @@ class ProgramRepositoryTestWithDetail {
     @Autowired
     ProgramDetailRepository programDetailRepository;
 
-    Admin admin;
-    Member member;
+    Staff staff;
+    Patient patient;
     Video video;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        member = Member.builder()
+        patient = Patient.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password("1111")
-                .age(26)
+                .birth(LocalDate.of(2000, 12, 13))
                 .sex("Male")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        adminRepository.save(admin);
-        memberRepository.save(member);
+        staffRepository.save(staff);
+        patientRepository.save(patient);
 
         video = Video.builder()
-                .admin(admin)
+                .staff(staff)
                 .title("동작 제목")
                 .description("동작 설명")
                 .tag(Tag.ARM)
@@ -85,8 +86,8 @@ class ProgramRepositoryTestWithDetail {
     @Rollback(value = false)
     void createProgramAndDetailAndMetrics() {
         Program program = Program.builder()
-                .admin(admin)
-                .user(member)
+                .staff(staff)
+                .patient(patient)
                 .description("몸이 안좋아요..")
                 .build();
 
@@ -101,7 +102,7 @@ class ProgramRepositoryTestWithDetail {
         programDetailRepository.save(programDetail);
 
         VideoMetrics videoMetrics = VideoMetrics.builder()
-                .user(member)
+                .patient(patient)
                 .programDetail(programDetail)
                 .metrics(80.3)
                 .build();

@@ -1,9 +1,9 @@
 package com.hallym.rehab.domain.video.service;
 
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
-import com.hallym.rehab.domain.user.entity.MemberRole;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
+import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoRepository;
@@ -26,22 +26,24 @@ import static org.assertj.core.api.Assertions.*;
 class VideoServiceTest {
     @Autowired VideoRepository videoRepository;
     @Autowired VideoService videoService;
-    @Autowired AdminRepository adminRepository;
+    @Autowired
+    StaffRepository staffRepository;
 
-    Admin admin;
+    Staff staff;
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        adminRepository.saveAndFlush(admin);
+        staffRepository.saveAndFlush(staff);
     }
 
     @Test
@@ -72,7 +74,7 @@ class VideoServiceTest {
         files[1] = jsonFile;
 
         VideoRequestDTO videoRequestDTO = VideoRequestDTO.builder()
-                .admin_id(admin.getMid())
+                .staff_id(staff.getMid())
                 .title("테스트 title")
                 .description("테스트 description")
                 .tag(Tag.SHOULDER)
@@ -113,7 +115,7 @@ class VideoServiceTest {
         files[1] = jsonFile;
 
         VideoRequestDTO videoRequestDTO = VideoRequestDTO.builder()
-                .admin_id(admin.getMid())
+                .staff_id(staff.getMid())
                 .title("테스트 title2")
                 .description("테스트 description2")
                 .tag(Tag.KNEE)

@@ -1,14 +1,14 @@
 package com.hallym.rehab.domain.room.service;
 
-import com.hallym.rehab.domain.admin.entity.Admin;
-import com.hallym.rehab.domain.admin.repository.AdminRepository;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.room.dto.AudioRequestDTO;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.room.repository.RoomRepository;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.Patient;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.*;
@@ -35,43 +36,43 @@ class AudioServiceImplTest {
     @Autowired
     RoomRepository roomRepository;
     @Autowired
-    AdminRepository adminRepository;
+    StaffRepository staffRepository;
     @Autowired
-    MemberRepository memberRepository;
+    PatientRepository patientRepository;
     @Autowired
     AudioRepository audioRepository;
 
 
-    Admin admin;
-    Member user;
+    Staff staff;
+    Patient patient;
 
     @BeforeEach
     void setUp() {
-        admin = Admin.builder()
+        staff = Staff.builder()
                 .mid("ldh2")
                 .name("이동헌")
                 .password("1111")
-                .age(26)
-                .sex("Male")
+                .hospital("강원대학교병원")
+                .department("재활의학과")
+                .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(MemberRole.ADMIN))
+                .roleSet(Collections.singleton(StaffRole.DOCTOR))
                 .build();
 
-        user = Member.builder()
+        patient = Patient.builder()
                 .mid("jyp2")
                 .name("박주영")
                 .password("1111")
-                .age(22)
+                .birth(LocalDate.of(2000, 12, 13))
                 .sex("Male")
                 .phone("01090594356")
-                .roleSet(Collections.singleton(MemberRole.USER))
                 .build();
 
-        adminRepository.save(admin);
-        memberRepository.save(user);
-        memberRepository.flush();
+        staffRepository.save(staff);
+        patientRepository.save(patient);
+        patientRepository.flush();
 
-        roomService.registerRoom(admin.getMid(), user.getMid());
+        roomService.registerRoom(staff.getMid(), patient.getMid());
         roomRepository.flush();
     }
 
@@ -99,7 +100,7 @@ class AudioServiceImplTest {
                 p_Bytes           // 바이트 배열로 읽은 MP4 파일 데이터
         );
 
-        Room room = roomRepository.findByAdminAndUser(admin.getMid(), user.getMid())
+        Room room = roomRepository.findByStaffAndPatient(staff.getMid(), patient.getMid())
                 .orElseThrow(() -> new RuntimeException("유저와 관리자에 의해 매칭된 방이 없습니다."));
 
         AudioRequestDTO user = AudioRequestDTO.builder()
