@@ -1,14 +1,14 @@
 package com.hallym.rehab.domain.user.service;
 
 import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
-import com.hallym.rehab.domain.user.dto.MemberJoinDTO;
+import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
+import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
 import com.hallym.rehab.global.exception.IncorrectPasswordException;
 
 
 public interface APIUserService {
-    class MidExistsException extends Exception {
 
-    }
+    StaffResponseDTO getStaffInfo(String mid);
 
     String getRoleSetByMid(String mid);
 

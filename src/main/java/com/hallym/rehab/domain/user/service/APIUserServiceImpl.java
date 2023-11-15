@@ -1,12 +1,16 @@
 package com.hallym.rehab.domain.user.service;
 
+import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
+import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
+import com.hallym.rehab.domain.user.entity.Staff;
+import com.hallym.rehab.domain.user.entity.StaffImage;
+import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
-import com.hallym.rehab.domain.user.entity.Member;
-import com.hallym.rehab.domain.user.dto.MemberJoinDTO;
-import com.hallym.rehab.domain.user.entity.MemberRole;
-import com.hallym.rehab.domain.user.repository.MemberRepository;
+import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.repository.PatientRepository;
 
 import com.hallym.rehab.global.exception.IncorrectPasswordException;
+import com.hallym.rehab.global.exception.MidExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,6 +32,30 @@ public class APIUserServiceImpl implements APIUserService{
     private final StaffRepository staffRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public StaffResponseDTO getStaffInfo(String mid) {
+
+        Staff staff = staffRepository.findByIdWithImages(mid);
+
+        StaffResponseDTO staffResponseDTO = StaffResponseDTO.builder()
+                .mid(staff.getMid())
+                .name(staff.getName())
+                .hospital(staff.getHospital())
+                .department(staff.getDepartment())
+                .email(staff.getEmail())
+                .phone(staff.getPhone())
+                .staffRole(staff.getRoleSet().toString())
+                .build();
+
+        if (staff.getStaffImage() != null) {
+            StaffImage staffImage = staff.getStaffImage();
+            String fileName = staffImage.getUuid() + "_" + staffImage.getFileName();
+            staffResponseDTO.setFileName(fileName);
+        }
+
+        return staffResponseDTO;
+    }
 
     public String getRoleSetByMid(String mid) {
         Staff staff = staffRepository.findById(mid)
