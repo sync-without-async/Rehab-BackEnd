@@ -14,4 +14,6 @@ public interface PatientRepository extends JpaRepository<Patient, String> {
     @Transactional
     @Query("update Patient m set m.password =:password where m.mid =:mid")
     void updatePassword(@Param("mid") String mid, @Param("password") String password);
+
+    boolean existsByMid(String mid);
 }
