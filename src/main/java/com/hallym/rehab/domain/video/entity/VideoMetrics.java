@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.video.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hallym.rehab.domain.program.entity.ProgramDetail;
-import com.hallym.rehab.domain.user.entity.Member;
+import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +24,8 @@ public class VideoMetrics extends BaseTimeEntity {
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private Member user;
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
 
     @OneToOne
     @JoinColumn(name = "pdno", referencedColumnName = "pdno")
