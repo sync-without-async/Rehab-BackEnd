@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.reservation.controller;
 
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByPatientDTO;
 import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.reservation.service.ReservationService;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
@@ -27,8 +27,8 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation-user/{mid}")
-    public PageResponseDTO<ReservationResponseByUserDTO> getReservationListByUser(@PathVariable(name = "mid") String mid,
-                                                                                  PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ReservationResponseByPatientDTO> getReservationListByUser(@PathVariable(name = "mid") String mid,
+                                                                                     PageRequestDTO pageRequestDTO) {
         return reservationService.getListByUser(mid, pageRequestDTO);
     }
 

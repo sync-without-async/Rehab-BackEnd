@@ -12,14 +12,15 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReservationResponseByUserDTO {
-    private String adminName;
+public class ReservationResponseByPatientDTO {
+    private String staffName;
     private UUID rno; // 화상채팅 룸 입장을 위한 room number
     private Long rvno; // 예약 취소를 위한 reservation number
     private LocalDate date;
     private int index;
     private String content; // 진료 희망 사유
     private String summary; // 오디오 요약
+
     // + role
     // + company
     // + 프로필 사진
