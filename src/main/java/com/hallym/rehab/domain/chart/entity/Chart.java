@@ -5,9 +5,12 @@ import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Builder
@@ -27,10 +30,13 @@ public class Chart extends BaseTimeEntity {
     @Column(nullable = false)
     private String patientName; //환자성함
 
+    @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = false)
     private String sex;
 
+    @Column(nullable = false)
     private LocalDate birth; //생년월일
 
     @JsonBackReference
@@ -43,14 +49,24 @@ public class Chart extends BaseTimeEntity {
     @JoinColumn(name = "therapist_mid", nullable = false)
     private Staff therapist; // 담당재활치료사
 
-    private String medicalRecord; //진료 기록
+    @Builder.Default
+    @OneToMany(mappedBy = "record_no", cascade = CascadeType.ALL)
+    private Set<Record> recordSet = new HashSet<>();;
 
-    private String exerciseRequest; //운동요청서
+    @ColumnDefault("false")
+    private boolean is_deleted;
 
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_mid", nullable = false)
     private Patient patient;
 
+    public void addPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public void addRecord(Record record){
+        recordSet.add(record);
+    }
 
 }

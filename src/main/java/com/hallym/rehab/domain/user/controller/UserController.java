@@ -3,6 +3,7 @@ package com.hallym.rehab.domain.user.controller;
 import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
 import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
 import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
+import com.hallym.rehab.domain.user.dto.TherapistDTO;
 import com.hallym.rehab.domain.user.service.APIUserService;
 import com.hallym.rehab.global.exception.IncorrectPasswordException;
 import com.hallym.rehab.global.exception.MidExistsException;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -47,6 +49,13 @@ public class UserController {
         apiUserService.changePassword(username, passwordChangeDTO);
 
         return ResponseEntity.ok("비밀번호 변경 완료");
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
+    @GetMapping("/auth/getTherapistList")
+    public List<TherapistDTO> getTherapistList() {
+
+        return apiUserService.getTherapistList();
     }
 
 }

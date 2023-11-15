@@ -27,7 +27,7 @@ public class CreateStaffAndUserTest {
     PatientRepository patientRepository;
 
     Staff doctor, therapist;
-    Patient user;
+    Patient patient;
 
     @Test
     @Rollback(value = false)
@@ -55,7 +55,7 @@ public class CreateStaffAndUserTest {
                 .roleSet(Collections.singleton(StaffRole.THERAPIST))
                 .build();
 
-        user = Patient.builder()
+        patient = Patient.builder()
                 .mid("jyp")
                 .name("박주영")
                 .password( passwordEncoder.encode("1111") )
@@ -66,6 +66,6 @@ public class CreateStaffAndUserTest {
 
         staffRepository.save(doctor);
         staffRepository.save(therapist);
-        patientRepository.save(user);
+        patientRepository.save(patient);
     }
 }

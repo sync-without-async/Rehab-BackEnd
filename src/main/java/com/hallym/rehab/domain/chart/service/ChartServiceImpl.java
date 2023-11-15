@@ -2,20 +2,28 @@ package com.hallym.rehab.domain.chart.service;
 
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
+import com.hallym.rehab.domain.chart.dto.RecordDTO;
 import com.hallym.rehab.domain.chart.entity.Chart;
+import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
+import com.hallym.rehab.domain.chart.repository.RecordRepository;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
+import com.hallym.rehab.global.pageDTO.PageRequestDTO;
+import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,8 +34,12 @@ public class ChartServiceImpl implements ChartService{
     private final ChartRepository chartRepository;
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
+    private final RecordRepository recordRepository;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * 환자 차트 정보 단일 조회
+     */
     @Override
     public ChartResponseDTO getChartDetails(Long cno) {
 
@@ -35,12 +47,59 @@ public class ChartServiceImpl implements ChartService{
 
         Chart chart = chartOne.orElseThrow();
 
-        ChartResponseDTO chartResponseDTO = entityToDTO(chart);
-
-        return chartResponseDTO;
+        return entityToDTO(chart);
     }
 
+    /**
+     * 환자 차트 최초 등록
+     */
+    @Override
+    public void registerChartDetails(ChartRequestDTO registerDTO) {
+
+        Chart chart = dtoToEntity(registerDTO);
+
+        chartRepository.save(chart);
+    }
+
+    /**
+     * 환자 차트 삭제
+     */
+    @Override
+    public void deleteChartDetails(Long cno) {
+
+        chartRepository.deleteById(cno);
+    }
+
+    /**
+     * 환자 차트 목록 조회
+     */
+    @Override
+    public PageResponseDTO<ChartResponseDTO> getChartList(String doctor_id, PageRequestDTO pageRequestDTO) {
+
+        Page<Chart> result = chartRepository.searchChartWithRecord(doctor_id, pageRequestDTO);
+
+        List<ChartResponseDTO> dtoList = result
+                .get()
+                .map(this::entityToDTO).collect(Collectors.toList());
+
+        PageResponseDTO<ChartResponseDTO> responseDTO =
+                PageResponseDTO.<ChartResponseDTO>withAll()
+                        .dtoList(dtoList)
+                        .pageRequestDTO(pageRequestDTO)
+                        .total(result.getNumberOfElements())
+                        .build();
+
+        return responseDTO;
+    }
+
+
     public ChartResponseDTO entityToDTO(Chart chart) {
+
+        List<Record> recordList = recordRepository.findRecordByChart(chart);
+
+        List<RecordDTO> recordDTOList = recordList.stream()
+                .map(RecordDTO::of)
+                .collect(Collectors.toList());
 
         ChartResponseDTO chartResponseDTO = ChartResponseDTO.builder()
                 .cno(chart.getCno())
@@ -49,10 +108,9 @@ public class ChartServiceImpl implements ChartService{
                 .phone(chart.getPhone())
                 .sex(chart.getSex())
                 .birth(chart.getBirth())
-                .medicalRecord(chart.getMedicalRecord())
-                .exerciseRequest(chart.getExerciseRequest())
                 .doctor_id(chart.getDoctor().getName())
                 .therapist_id(chart.getTherapist().getName())
+                .medicalRecords(recordDTOList)
                 .build();
 
            return chartResponseDTO;
@@ -83,39 +141,26 @@ public class ChartServiceImpl implements ChartService{
         Staff doctor = staffRepository.findByIdWithImages(doctor_id);
         Staff therapist = staffRepository.findByIdWithImages(therapist_id);
 
-        return Chart.builder()
+        Chart chart = Chart.builder()
                 .cd(chartRequestDTO.getCd())
                 .patientName(chartRequestDTO.getPatientName())
                 .phone(chartRequestDTO.getPhone())
                 .sex(chartRequestDTO.getSex())
                 .birth(chartRequestDTO.getBirth())
-                .medicalRecord(chartRequestDTO.getMedicalRecord())
-                .exerciseRequest(chartRequestDTO.getExerciseRequest())
                 .patient(newPatientDetail)
                 .doctor(doctor)
                 .therapist(therapist)
                 .build();
+
+        Record record = Record.builder()
+                .schedule(chartRequestDTO.getSchedule())
+                .treatmentRecord(chartRequestDTO.getTreatmentRecord())
+                .exerciseRequest(chartRequestDTO.getExerciseRequest())
+                .chart(chart)
+                .build();
+
+        chart.addRecord(record);
+
+        return chart;
     }
-
-
-    @Override
-    public void registerChartDetails(ChartRequestDTO registerDTO) {
-
-        Chart chart = dtoToEntity(registerDTO);
-
-        chartRepository.save(chart);
-
-    }
-
-    @Override
-    public String modifyChartDetails(ChartRequestDTO modifyDTO) {
-        return null;
-    }
-
-    @Override
-    public String deleteChartDetails(Long cno) {
-        return null;
-    }
-
-
 }

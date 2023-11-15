@@ -4,7 +4,7 @@ import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByPatientDTO;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.entity.Time;
 import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
@@ -67,7 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public PageResponseDTO<ReservationResponseByUserDTO> getListByUser(String mid, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ReservationResponseByPatientDTO> getListByUser(String mid, PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(pageRequestDTO.getPage() <= 0 ? 0 :
                         pageRequestDTO.getPage() - 1,
                 pageRequestDTO.getSize(),
@@ -75,12 +75,12 @@ public class ReservationServiceImpl implements ReservationService {
 
         Page<Reservation> result = reservationRepository.findByMid(mid, pageable);
 
-        List<ReservationResponseByUserDTO> dtoList = result.getContent()
+        List<ReservationResponseByPatientDTO> dtoList = result.getContent()
                 .stream()
                 .map(Reservation::toUserDTO)
                 .collect(Collectors.toList());
 
-        return PageResponseDTO.<ReservationResponseByUserDTO>withAll()
+        return PageResponseDTO.<ReservationResponseByPatientDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
                 .dtoList(dtoList)
                 .total((int) result.getTotalElements())

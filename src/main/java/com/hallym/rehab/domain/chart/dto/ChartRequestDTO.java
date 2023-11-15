@@ -28,7 +28,9 @@ public class ChartRequestDTO {
 
     private String therapist_id; // 담당재활치료사
 
-    private String medicalRecord; //진료 기록
+    private LocalDate schedule;
+
+    private String treatmentRecord; //진료 기록
 
     private String exerciseRequest; //운동요청서
 }

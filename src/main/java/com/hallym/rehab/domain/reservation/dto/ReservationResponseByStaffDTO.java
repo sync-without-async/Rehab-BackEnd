@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationResponseByStaffDTO {
-    private String userName;
+    private String patientName;
     private String patientId; // 환자 상세정보 보기 위한 Id
     private UUID rno;
     private LocalDate date;

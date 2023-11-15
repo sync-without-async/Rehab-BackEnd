@@ -3,7 +3,7 @@ package com.hallym.rehab.domain.reservation.entity;
 
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByUserDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByPatientDTO;
 import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
@@ -64,7 +64,7 @@ public class Reservation extends BaseTimeEntity {
         }
 
         return ReservationResponseByStaffDTO.builder()
-                .userName(reservation.getPatient().getName())
+                .patientName(reservation.getPatient().getName())
                 .patientId(reservation.getPatient().getMid())
                 .rno(reservation.getRoom().getRno())
                 .date(reservation.getDate())
@@ -74,7 +74,7 @@ public class Reservation extends BaseTimeEntity {
                 .build();
     }
 
-    public static ReservationResponseByUserDTO toUserDTO(Reservation reservation) {
+    public static ReservationResponseByPatientDTO toUserDTO(Reservation reservation) {
 
         String summary;
 
@@ -84,8 +84,8 @@ public class Reservation extends BaseTimeEntity {
             summary = reservation.getRoom().getAudio().getSummary();
         }
 
-        return ReservationResponseByUserDTO.builder()
-                .adminName(reservation.getStaff().getName())
+        return ReservationResponseByPatientDTO.builder()
+                .staffName(reservation.getStaff().getName())
                 .rno(reservation.getRoom().getRno())
                 .rvno(reservation.getRvno())
                 .date(reservation.getDate())
