@@ -47,6 +47,7 @@ public class VideoSearchImpl extends QuerydslRepositorySupport implements VideoS
                         video.tag, video.playTime, video.videoURL, video.thumbnailURL))
                 .from(video)
                 .where(builder)
+                .orderBy(video.vno.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
