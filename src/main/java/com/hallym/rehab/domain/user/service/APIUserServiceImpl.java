@@ -2,6 +2,7 @@ package com.hallym.rehab.domain.user.service;
 
 import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
 import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
+import com.hallym.rehab.domain.user.dto.TherapistDTO;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.entity.StaffImage;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -118,6 +120,16 @@ public class APIUserServiceImpl implements APIUserService{
         }
 
         staffRepository.save(staff);
+    }
+
+    @Override
+    public List<TherapistDTO> getTherapistList() {
+
+        List<Staff> therapistList = staffRepository.findTherapists(StaffRole.THERAPIST);
+
+        return therapistList.stream()
+                .map(staff -> new TherapistDTO(staff))
+                .collect(Collectors.toList());
     }
 
 }
