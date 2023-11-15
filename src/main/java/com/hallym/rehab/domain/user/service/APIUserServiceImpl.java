@@ -82,7 +82,14 @@ public class APIUserServiceImpl implements APIUserService{
 
         staff.changePassword(passwordEncoder.encode(staffRequestDTO.getPassword()));
 
-        memberRepository.save(member);
+        if(staffRequestDTO.getStaffRole().equals(StaffRole.DOCTOR.getValue())){
+            staff.addRole(StaffRole.DOCTOR);
+        }
+        else if(staffRequestDTO.getStaffRole().equals(StaffRole.THERAPIST.getValue())){
+            staff.addRole(StaffRole.THERAPIST);
+        }
+
+        staffRepository.save(staff);
     }
 
 }
