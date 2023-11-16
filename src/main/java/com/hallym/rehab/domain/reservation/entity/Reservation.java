@@ -92,6 +92,9 @@ public class Reservation extends BaseTimeEntity {
                 .index(reservation.getIndex())
                 .content(reservation.getContent())
                 .summary(summary)
+                .role(reservation.getStaff().getRoleSet().toString())
+                .hospital(reservation.staff.getHospital())
+                .profileUrl(reservation.staff.getStaffImage().getProfileUrl())
                 .build();
     }
 }
