@@ -1,8 +1,16 @@
 package com.hallym.rehab.domain.user.controller;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.GroupGrantee;
+import com.amazonaws.services.s3.model.Permission;
 import com.hallym.rehab.domain.user.dto.upload.UploadFileDTO;
 import com.hallym.rehab.domain.user.dto.upload.UploadResultDTO;
+import com.hallym.rehab.global.config.S3Client;
 import com.hallym.rehab.global.exception.IsNotImageFileException;
+import java.io.FileOutputStream;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,30 +31,25 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
+@RequiredArgsConstructor
 @Log4j2
 public class UploadController {
 
-    @Value("${com.hallym.rehab.upload.path}")
-    private String uploadPath;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+    private final S3Client s3Client;
 
     //post 방식으로 파일 등록
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public UploadResultDTO upload(UploadFileDTO uploadFileDTO) throws IOException {
 
-        log.info(uploadFileDTO.toString());
+        AmazonS3 s3 = s3Client.getAmazonS3();
 
         MultipartFile multipartFile = uploadFileDTO.getFile();
 
-        if(multipartFile != null){
+        String profileURL = null;
 
-            // 이미지 파일인지 확인
-            try {
-                ImageIO.read(multipartFile.getInputStream()).toString();
-                // 이미지가 아닌 경우, Exception 발생
-            } catch(Exception e) {
-                throw new IsNotImageFileException(multipartFile.getOriginalFilename());
-            }
-
+        if (multipartFile != null) {
             String originalName = multipartFile.getOriginalFilename();
             log.info(originalName);
 
@@ -55,24 +58,37 @@ public class UploadController {
             // "_" 제거
             originalName = originalName.replaceAll("_", "");
 
-            Path savePath = Paths.get(uploadPath, uuid+"_"+ originalName);
+            String originalFileName = uuid + "_" + originalName;
+            String thumbFileName = "s_" + originalFileName;
+
+            File originalFile = null;
+            File thumbFile = new File(thumbFileName);
 
             try {
-                multipartFile.transferTo(savePath);
+                originalFile = convertMultipartFileToFile(uploadFileDTO.getFile(), originalFileName);
+                Thumbnailator.createThumbnail(originalFile, thumbFile, 400, 400);
 
-                log.info("Saved file path: " + savePath);
+                String objectPath = "profile/" + thumbFileName;
 
-                File thumbFile = new File(uploadPath, "s_" + uuid+"_"+ originalName);
+                String baseUploadURL = "https://kr.object.ncloudstorage.com/" + bucketName + "/";
+                profileURL = baseUploadURL + objectPath;
+                log.info(profileURL);
 
-                Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 400,400);
+                s3.putObject(bucketName, objectPath, thumbFile);
+                setAcl(s3, objectPath);
+
 
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                assert originalFile != null;
+                assert thumbFile != null;
+                originalFile.delete();
+                thumbFile.delete();
             }
 
             return UploadResultDTO.builder()
-                    .uuid(uuid)
-                    .fileName(originalName)
+                    .profileUrl(profileURL)
                     .build();
 
         } else {
@@ -80,48 +96,19 @@ public class UploadController {
         }
     }
 
-
-    @GetMapping("/view/{fileName}")
-    public ResponseEntity<Resource> viewFileGET(@PathVariable String fileName){
-
-        Resource resource = new FileSystemResource(uploadPath+File.separator + fileName);
-
-        String resourceName = resource.getFilename();
-        HttpHeaders headers = new HttpHeaders();
-
-        try{
-            headers.add("Content-Type", Files.probeContentType( resource.getFile().toPath() ));
-        } catch(Exception e){
-            return ResponseEntity.internalServerError().build();
+    public File convertMultipartFileToFile(MultipartFile multipartFile, String fileName) {
+        File convertedFile = new File(fileName);
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(multipartFile.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return ResponseEntity.ok().headers(headers).body(resource);
+        return convertedFile;
     }
 
-    @DeleteMapping("/remove/{fileName}")
-    public Map<String,Boolean> removeFile(@PathVariable String fileName){
-
-        Resource resource = new FileSystemResource(uploadPath+File.separator + fileName);
-        String resourceName = resource.getFilename();
-
-        Map<String, Boolean> resultMap = new HashMap<>();
-        boolean removed = false;
-
-        try {
-            String contentType = Files.probeContentType(resource.getFile().toPath());
-            removed = resource.getFile().delete();
-
-            File thumbnailFile = new File(uploadPath+File.separator +"s_" + fileName);
-            thumbnailFile.delete();
-
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        resultMap.put("result", removed);
-
-        return resultMap;
+    public void setAcl(AmazonS3 s3, String objectPath) {
+        AccessControlList objectAcl = s3.getObjectAcl(bucketName, objectPath);
+        objectAcl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
+        s3.setObjectAcl(bucketName, objectPath, objectAcl);
     }
-
-
 }

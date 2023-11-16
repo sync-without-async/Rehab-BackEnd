@@ -13,17 +13,15 @@ import javax.persistence.OneToOne;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "staff")
-public class StaffImage{
+public class StaffImage {
 
     @Id
-    private String uuid;
-
-    private String fileName;
+    private String profileUrl;
 
     @OneToOne
     private Staff staff;
 
-    public void changeStaff(Staff staff ){
+    public void changeStaff(Staff staff) {
         this.staff = staff;
     }
 

@@ -32,6 +32,6 @@ public class StaffRequestDTO {
     @NonNull
     private String staffRole;
 
-    private String fileName;
+    private String profileUrl;
 
 }
