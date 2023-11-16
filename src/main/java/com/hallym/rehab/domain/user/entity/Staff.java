@@ -62,7 +62,7 @@ public class Staff extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean is_deleted;
 
-    public void addRole(MemberRole memberRole){
+    public void addRole(MemberRole memberRole) {
         this.roleSet.add(memberRole);
     }
 
@@ -78,11 +78,10 @@ public class Staff extends BaseTimeEntity {
         this.roleSet = roleSet;
     }
 
-    public void addImage(String uuid, String fileName){
+    public void addImage(String fileName) {
 
         this.staffImage = StaffImage.builder()
-                .uuid(uuid)
-                .fileName(fileName)
+                .profileUrl(fileName)
                 .staff(this) //양방향의 경우 참조 관계가 서로 일치하도록
                 .build();
 
