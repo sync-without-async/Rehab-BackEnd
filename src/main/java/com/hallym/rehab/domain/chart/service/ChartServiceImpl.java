@@ -132,12 +132,13 @@ public class ChartServiceImpl implements ChartService{
         ChartResponseDTO chartResponseDTO = ChartResponseDTO.builder()
                 .cno(chart.getCno())
                 .cd(chart.getCd())
-                .patientName(chart.getPatientName())
                 .phone(chart.getPhone())
                 .sex(chart.getSex())
                 .birth(chart.getBirth())
-                .doctor_id(chart.getDoctor().getName())
-                .therapist_id(chart.getTherapist().getName())
+                .patient_id(chart.getPatient().getMid())
+                .patient_name(chart.getPatientName())
+                .doctor_name(chart.getDoctor().getName())
+                .therapist_name(chart.getTherapist().getName())
                 .medicalRecords(recordDTOList)
                 .build();
 
