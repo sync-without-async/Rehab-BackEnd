@@ -38,7 +38,7 @@ public class AudioServiceImpl implements AudioService {
     @Override
     public String registerAudio(AudioRequestDTO audioRequestDTO) {
         UUID rno = audioRequestDTO.getRno();
-        boolean is_user = audioRequestDTO.getIs_user();
+        boolean is_user = audioRequestDTO.getIs_patient();
         MultipartFile audioFile = audioRequestDTO.getAudioFile();
 
         Optional<Room> roomOptional = roomRepository.findById(rno);
