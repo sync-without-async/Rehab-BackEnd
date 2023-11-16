@@ -1,9 +1,6 @@
 package com.hallym.rehab.domain.user.controller;
 
-import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
-import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
-import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
-import com.hallym.rehab.domain.user.dto.TherapistDTO;
+import com.hallym.rehab.domain.user.dto.*;
 import com.hallym.rehab.domain.user.service.APIUserService;
 import com.hallym.rehab.global.exception.IncorrectPasswordException;
 import com.hallym.rehab.global.exception.MidExistsException;
@@ -11,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,6 +35,13 @@ public class UserController {
 
         StaffResponseDTO staffResponseDTO = apiUserService.getStaffInfo(mid);
         return ResponseEntity.ok(staffResponseDTO);
+    }
+
+    @PreAuthorize("authentication.principal.username == #mid")
+    @GetMapping("/auth/patient/info/{mid}")
+    public PatientDTO getPatientInfo(@PathVariable String mid) {
+
+        return apiUserService.getPatientInfo(mid);
     }
 
     @PreAuthorize("authentication.principal.username == #passwordChangeDTO.mid")
