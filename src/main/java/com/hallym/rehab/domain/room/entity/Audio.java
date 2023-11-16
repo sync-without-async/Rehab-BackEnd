@@ -24,6 +24,7 @@ public class Audio {
     @OneToOne
     private Room room;
 
+    @Column(length = 1000)
     private String summary; // 인공지능이 만들어 낸 음성대화 요약본
 
     @Column(name = "adminAudioURL")

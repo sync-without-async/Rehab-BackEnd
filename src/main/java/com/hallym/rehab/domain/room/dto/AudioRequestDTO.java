@@ -14,6 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AudioRequestDTO {
     private UUID rno;
-    private Boolean is_user;
+    private Boolean is_patient;
     private MultipartFile audioFile;
 }

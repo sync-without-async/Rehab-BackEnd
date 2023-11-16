@@ -24,7 +24,7 @@ import java.util.Map;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProgramServiceImpl implements ProgramService {
+public class ProgramServiceImpl implements ProgramService{
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final VideoRepository videoRepository;
@@ -34,8 +34,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public String createProgramAndDetail(ProgramRequestDTO requestDTO) {
-        String adminId = requestDTO.getAdminId();
-        String userId = requestDTO.getUserId();
+        String adminId = requestDTO.getStaff_id();
+        String userId = requestDTO.getPatient_id();
 
         Staff staff = staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for Id : " + adminId));
@@ -79,8 +79,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public String updateProgramAndDetail(ProgramRequestDTO requestDTO, String patient_id) {
-        String adminId = requestDTO.getAdminId();
-        String userId = requestDTO.getUserId();
+        String adminId = requestDTO.getStaff_id();
+        String userId = requestDTO.getPatient_id();
 
         staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for adminId : " + adminId));

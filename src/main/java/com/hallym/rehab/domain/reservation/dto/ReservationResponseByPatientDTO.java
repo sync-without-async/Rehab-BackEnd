@@ -20,8 +20,7 @@ public class ReservationResponseByPatientDTO {
     private int index;
     private String content; // 진료 희망 사유
     private String summary; // 오디오 요약
-
-    // + role
-    // + company
-    // + 프로필 사진
+    private String role;
+    private String hospital;
+    private String profileUrl;
 }

@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.chart.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.dto.RecordDTO;
@@ -45,11 +46,23 @@ public class ChartServiceImpl implements ChartService{
      * @return Chart 엔티티를 변환한 ChartResponseDTO를 반환
      */
     @Override
-    public ChartResponseDTO getChartDetails(Long cno) {
+    public ChartResponseDTO getChartDetailByPatient(String patient_id) {
 
-        Optional<Chart> chartOne = chartRepository.findById(cno);
+        Chart chart = chartRepository.findByPatientMid(patient_id);
 
-        Chart chart = chartOne.orElseThrow();
+        if (chart == null) {
+            throw new NotFoundException("해당 환자의 차트를 찾을 수 없습니다.");
+        }
+
+        return entityToDTO(chart);
+    }
+
+    @Override
+    public ChartResponseDTO getChartDetailByStaff(Long cno) {
+
+        Optional<Chart> result = chartRepository.findById(cno);
+
+        Chart chart = result.orElseThrow();
 
         return entityToDTO(chart);
     }
@@ -119,12 +132,13 @@ public class ChartServiceImpl implements ChartService{
         ChartResponseDTO chartResponseDTO = ChartResponseDTO.builder()
                 .cno(chart.getCno())
                 .cd(chart.getCd())
-                .patientName(chart.getPatientName())
                 .phone(chart.getPhone())
                 .sex(chart.getSex())
                 .birth(chart.getBirth())
-                .doctor_id(chart.getDoctor().getName())
-                .therapist_id(chart.getTherapist().getName())
+                .patient_id(chart.getPatient().getMid())
+                .patient_name(chart.getPatientName())
+                .doctor_name(chart.getDoctor().getName())
+                .therapist_name(chart.getTherapist().getName())
                 .medicalRecords(recordDTOList)
                 .build();
 

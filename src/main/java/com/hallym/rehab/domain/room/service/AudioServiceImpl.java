@@ -38,7 +38,7 @@ public class AudioServiceImpl implements AudioService {
     @Override
     public String registerAudio(AudioRequestDTO audioRequestDTO) {
         UUID rno = audioRequestDTO.getRno();
-        boolean is_user = audioRequestDTO.getIs_user();
+        boolean is_user = audioRequestDTO.getIs_patient();
         MultipartFile audioFile = audioRequestDTO.getAudioFile();
 
         Optional<Room> roomOptional = roomRepository.findById(rno);
@@ -72,9 +72,9 @@ public class AudioServiceImpl implements AudioService {
             audio_check.put(rno, 0); // 다시 0으로 초기화
             Long ano = audio.getAno();
 
-//            RestTemplate restTemplate = new RestTemplate();
-//            return restTemplate.getForObject("http://59.29.102.247:58000/getSummary?ano=" + ano.toString(),
-//                    String.class);
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.getForObject("http://210.115.229.219:8000/getSummary?ano=" + ano.toString(),
+                    String.class);
         }
 
         log.info("size : " + audio_check.get(rno));
