@@ -7,6 +7,7 @@ import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.chart.repository.RecordRepository;
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +41,8 @@ public class ChartServiceImpl implements ChartService{
 
     /**
      * 환자 차트 정보 단일 조회
+     * @param cno chart의 pk
+     * @return Chart 엔티티를 변환한 ChartResponseDTO를 반환
      */
     @Override
     public ChartResponseDTO getChartDetails(Long cno) {
@@ -51,18 +55,26 @@ public class ChartServiceImpl implements ChartService{
     }
 
     /**
-     * 환자 차트 최초 등록
+     * 환자 차트 신규 등록
+     * @param registerDTO
      */
     @Override
-    public void registerChartDetails(ChartRequestDTO registerDTO) {
+    public String registerChartDetails(ChartRequestDTO registerDTO) {
 
         Chart chart = dtoToEntity(registerDTO);
 
+        String newPatientId = chart.getPatient().getMid();
+
+        log.info("---------" + newPatientId);
+
         chartRepository.save(chart);
+
+        return newPatientId;
     }
 
     /**
      * 환자 차트 삭제
+     * @param cno chart의 pk
      */
     @Override
     public void deleteChartDetails(Long cno) {
@@ -72,6 +84,9 @@ public class ChartServiceImpl implements ChartService{
 
     /**
      * 환자 차트 목록 조회
+     * @param doctor_id 담당 의사의 pk
+     * @param pageRequestDTO
+     * @return
      */
     @Override
     public PageResponseDTO<ChartResponseDTO> getChartList(String doctor_id, PageRequestDTO pageRequestDTO) {
@@ -131,6 +146,7 @@ public class ChartServiceImpl implements ChartService{
                 .sex(chartRequestDTO.getSex())
                 .phone(chartRequestDTO.getPhone())
                 .name(chartRequestDTO.getPatientName())
+                .roleSet(Collections.singleton(MemberRole.PATIENT))
                 .build();
 
         patientRepository.save(newPatientDetail);

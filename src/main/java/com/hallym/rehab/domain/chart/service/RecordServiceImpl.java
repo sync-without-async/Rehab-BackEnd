@@ -24,6 +24,9 @@ public class RecordServiceImpl implements RecordService {
     private final ChartRepository chartRepository;
 
 
+    /**
+     * 환자 진료 기록 단일 조회
+     */
     @Override
     public RecordDTO getRecordDetails(Long record_no) {
 
@@ -39,9 +42,11 @@ public class RecordServiceImpl implements RecordService {
                 .build();
     }
 
+    /**
+     * 진료 기록 추가
+     */
     @Override
-    public void registerRecordDetails(RecordDTO recordDTO, Long cno) {
-
+    public String registerRecordDetails(RecordDTO recordDTO, Long cno) {
         Chart chart = chartRepository.findById(cno).orElseThrow();
 
         log.info("Registering---" + chart);
@@ -53,10 +58,19 @@ public class RecordServiceImpl implements RecordService {
                 .chart(chart)
                 .build();
 
-        recordRepository.save(record);
-
+        try {
+            recordRepository.save(record);
+            return "진료기록 등록 성공";
+        } catch (Exception e) {
+            log.error("Failed to save record details.", e);
+            throw new RuntimeException("진료기록 등록에 실패했습니다.");
+        }
     }
 
+
+    /**
+     * 환자 진료 기록 목록 조회
+     */
     @Override
     public PageResponseDTO<RecordDTO> getRecordList(PageRequestDTO pageRequestDTO) {
         return null;

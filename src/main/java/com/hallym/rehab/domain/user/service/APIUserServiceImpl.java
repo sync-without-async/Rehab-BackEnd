@@ -3,11 +3,12 @@ package com.hallym.rehab.domain.user.service;
 import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
 import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
 import com.hallym.rehab.domain.user.dto.TherapistDTO;
+import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.entity.StaffImage;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
-import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 
 import com.hallym.rehab.global.exception.IncorrectPasswordException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -59,19 +61,30 @@ public class APIUserServiceImpl implements APIUserService{
         return staffResponseDTO;
     }
 
+    /**
+     * mid를 검색해서 role 정보를 가져오고 jwt 토큰 발행을 합니다.
+     * @param mid
+     * @return
+     */
     public String getRoleSetByMid(String mid) {
-        Staff staff = staffRepository.findById(mid)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 아이디는 없는 사용자입니다."));
-        String role = String.join(",", staff.getRoleSet().stream().map(StaffRole::getValue).collect(Collectors.toList()));
-
-        log.info("해당 유저는 " + role + " 권한을 가지고 있습니다.");
-
-        if (staff != null) {
+        Optional<Staff> staffOptional = staffRepository.findById(mid);
+        if (staffOptional.isPresent()) {
+            Staff staff = staffOptional.get();
+            String role = String.join(",", staff.getRoleSet().stream().map(MemberRole::getValue).collect(Collectors.toList()));
+            log.info("해당 유저는 " + role + " 권한을 가지고 있습니다.");
             return role;
         } else {
-            return "member 정보를 제대로 가져오지 못했습니다";
+            Optional<Patient> patientOptional = patientRepository.findById(mid);
+            if (patientOptional.isPresent()) {
+                Patient patient = patientOptional.get();
+                log.info("해당 유저는 일반 환자입니다.");
+                return "ROLE_PATIENT";
+            } else {
+                throw new UsernameNotFoundException("해당 아이디는 없는 사용자입니다.");
+            }
         }
     }
+
 
     public void changePassword(String mid, PasswordChangeDTO passwordChangeDTO){
         Staff staff = staffRepository.findById(mid)
@@ -112,11 +125,11 @@ public class APIUserServiceImpl implements APIUserService{
 
         staff.changePassword(passwordEncoder.encode(staffRequestDTO.getPassword()));
 
-        if(staffRequestDTO.getStaffRole().equals(StaffRole.DOCTOR.getValue())){
-            staff.addRole(StaffRole.DOCTOR);
+        if(staffRequestDTO.getStaffRole().equals(MemberRole.DOCTOR.getValue())){
+            staff.addRole(MemberRole.DOCTOR);
         }
-        else if(staffRequestDTO.getStaffRole().equals(StaffRole.THERAPIST.getValue())){
-            staff.addRole(StaffRole.THERAPIST);
+        else if(staffRequestDTO.getStaffRole().equals(MemberRole.THERAPIST.getValue())){
+            staff.addRole(MemberRole.THERAPIST);
         }
 
         staffRepository.save(staff);
@@ -125,7 +138,7 @@ public class APIUserServiceImpl implements APIUserService{
     @Override
     public List<TherapistDTO> getTherapistList() {
 
-        List<Staff> therapistList = staffRepository.findTherapists(StaffRole.THERAPIST);
+        List<Staff> therapistList = staffRepository.findTherapists(MemberRole.THERAPIST);
 
         return therapistList.stream()
                 .map(staff -> new TherapistDTO(staff))

@@ -1,9 +1,9 @@
 package com.hallym.rehab.domain.reservation.repository;
 
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.entity.Time;
-import com.hallym.rehab.domain.user.entity.StaffRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ class TimeRepositoryTest {
                 .department("재활의학과")
                 .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.DOCTOR))
+                .roleSet(Collections.singleton(MemberRole.DOCTOR))
                 .build();
 
         staffRepository.save(staff);

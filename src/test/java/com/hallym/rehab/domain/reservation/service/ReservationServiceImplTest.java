@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.reservation.service;
 
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
@@ -9,7 +10,6 @@ import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.reservation.repository.TimeRepository;
 import com.hallym.rehab.domain.room.repository.AudioRepository;
 import com.hallym.rehab.domain.user.entity.Patient;
-import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,7 @@ class ReservationServiceImplTest {
                 .department("재활의학과")
                 .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.DOCTOR))
+                .roleSet(Collections.singleton(MemberRole.DOCTOR))
                 .build();
 
         patient = Patient.builder()

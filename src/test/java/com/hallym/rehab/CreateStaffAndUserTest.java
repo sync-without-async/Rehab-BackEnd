@@ -1,9 +1,9 @@
 package com.hallym.rehab;
 
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.user.entity.Patient;
-import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ public class CreateStaffAndUserTest {
                 .department("재활의학과")
                 .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.DOCTOR))
+                .roleSet(Collections.singleton(MemberRole.DOCTOR))
                 .build();
 
         therapist = Staff.builder()
@@ -52,7 +52,7 @@ public class CreateStaffAndUserTest {
                 .department("정형외과")
                 .email("bestpapa@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.THERAPIST))
+                .roleSet(Collections.singleton(MemberRole.THERAPIST))
                 .build();
 
         patient = Patient.builder()

@@ -22,7 +22,7 @@ public class Chart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long cno;
+    private long cno; //chart의 고유번호
 
     @Column(nullable = false)
     private String cd; //질병분류기호

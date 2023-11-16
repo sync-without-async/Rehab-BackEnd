@@ -33,6 +33,11 @@ public class Patient extends BaseTimeEntity {
 
     private String phone;
 
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
+
     @ColumnDefault("false")
     private boolean is_deleted;
 
@@ -40,10 +45,11 @@ public class Patient extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void addUser(String mid, String password, String name, String phone) {
+    public void addUser(String mid, String password, String name, String phone, Set<MemberRole> roleSet) {
         this.mid = mid;
         this.password = password;
         this.name = name;
         this.phone = phone;
+        this.roleSet = roleSet;
     }
 }

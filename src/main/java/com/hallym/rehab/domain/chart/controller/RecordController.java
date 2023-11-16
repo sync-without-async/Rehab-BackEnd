@@ -6,6 +6,7 @@ import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,9 +24,9 @@ public class RecordController {
     }
 
     @PostMapping("/register/{vno}")
-    public void registerRecord(@RequestBody RecordDTO recordDTO, @PathVariable Long vno) {
+    public String registerRecord(@RequestBody RecordDTO recordDTO, @PathVariable Long vno) {
 
-        recordService.registerRecordDetails(recordDTO, vno);
+       return recordService.registerRecordDetails(recordDTO, vno);
     }
 
     @GetMapping("/list")
