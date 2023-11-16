@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.chart.service;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.dto.RecordDTO;
@@ -45,11 +46,13 @@ public class ChartServiceImpl implements ChartService{
      * @return Chart 엔티티를 변환한 ChartResponseDTO를 반환
      */
     @Override
-    public ChartResponseDTO getChartDetails(Long cno) {
+    public ChartResponseDTO getChartDetails(String patient_id) {
 
-        Optional<Chart> chartOne = chartRepository.findById(cno);
+        Chart chart = chartRepository.findByPatientMid(patient_id);
 
-        Chart chart = chartOne.orElseThrow();
+        if (chart == null) {
+            throw new NotFoundException("해당 환자의 차트를 찾을 수 없습니다.");
+        }
 
         return entityToDTO(chart);
     }

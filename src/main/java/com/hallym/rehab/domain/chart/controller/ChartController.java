@@ -21,10 +21,10 @@ public class ChartController {
 
     private final ChartService chartService;
 
-    @GetMapping("/{cno}")
-    public ChartResponseDTO getChartOne(@PathVariable Long cno) {
+    @GetMapping("/{mid}")
+    public ChartResponseDTO getChartOne(@PathVariable String mid) {
 
-        return chartService.getChartDetails(cno);
+        return chartService.getChartDetails(mid);
     }
 
 

@@ -7,7 +7,7 @@ import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 
 public interface ChartService {
 
-    ChartResponseDTO getChartDetails(Long cno);
+    ChartResponseDTO getChartDetails(String mid);
 
     String registerChartDetails(ChartRequestDTO registerDTO);
 
