@@ -67,6 +67,7 @@ public class Reservation extends BaseTimeEntity {
                 .patientName(reservation.getPatient().getName())
                 .patientId(reservation.getPatient().getMid())
                 .rno(reservation.getRoom().getRno())
+                .rvno(reservation.getRvno())
                 .date(reservation.getDate())
                 .index(reservation.getIndex())
                 .summary(summary)
