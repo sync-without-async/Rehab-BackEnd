@@ -1,13 +1,10 @@
 package com.hallym.rehab.domain.user.service;
 
-import com.hallym.rehab.domain.user.dto.StaffRequestDTO;
-import com.hallym.rehab.domain.user.dto.StaffResponseDTO;
-import com.hallym.rehab.domain.user.dto.TherapistDTO;
+import com.hallym.rehab.domain.user.dto.*;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.entity.StaffImage;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
-import com.hallym.rehab.domain.user.dto.PasswordChangeDTO;
 import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 
@@ -59,6 +56,27 @@ public class APIUserServiceImpl implements APIUserService {
         }
 
         return staffResponseDTO;
+    }
+
+    /**
+     * 환자 정보 단일 조회
+     * @param mid
+     * @return
+     */
+    @Override
+    public PatientDTO getPatientInfo(String mid) {
+
+        Optional<Patient> result = patientRepository.findById(mid);
+
+        Patient patient = result.orElseThrow();
+
+        return PatientDTO.builder()
+                .mid(patient.getMid())
+                .name(patient.getName())
+                .sex(patient.getSex())
+                .birth(patient.getBirth())
+                .phone(patient.getPhone())
+                .build();
     }
 
     /**
