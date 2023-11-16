@@ -1,10 +1,10 @@
 package com.hallym.rehab.domain.member;
 
 
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.user.entity.Patient;
-import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ public class PatientRepositoryTests {
                 .department("재활의학과")
                 .email("tyanior@naver.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.THERAPIST))
+                .roleSet(Collections.singleton(MemberRole.THERAPIST))
                 .build();
 
         staffRepository.save(staff);

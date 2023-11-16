@@ -2,7 +2,7 @@ package com.hallym.rehab.domain.video.repository;
 
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
-import com.hallym.rehab.domain.user.entity.StaffRole;
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.domain.video.entity.Tag;
@@ -42,7 +42,7 @@ class VideoRepositoryTest {
                 .department("재활의학과")
                 .email("tyawebnr@hallym.com")
                 .phone("01052112154")
-                .roleSet(Collections.singleton(StaffRole.DOCTOR))
+                .roleSet(Collections.singleton(MemberRole.DOCTOR))
                 .build();
 
         staffRepository.save(staff);

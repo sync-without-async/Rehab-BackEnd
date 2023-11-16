@@ -4,9 +4,9 @@ import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.chart.repository.RecordRepository;
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
-import com.hallym.rehab.domain.user.entity.StaffRole;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -62,7 +61,7 @@ public class ChartRepositoryTest {
                 .department("재활의학과")
                 .email("doctor1@hallym.com")
                 .phone("01012345678")
-                .roleSet(Collections.singleton(StaffRole.DOCTOR))
+                .roleSet(Collections.singleton(MemberRole.DOCTOR))
                 .build();
 
         Staff therapist = Staff.builder()
@@ -73,7 +72,7 @@ public class ChartRepositoryTest {
                 .department("정형외과")
                 .email("therapist3@hallym.com")
                 .phone("01098765432")
-                .roleSet(Collections.singleton(StaffRole.THERAPIST))
+                .roleSet(Collections.singleton(MemberRole.THERAPIST))
                 .build();
 
 
