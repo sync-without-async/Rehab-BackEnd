@@ -19,10 +19,10 @@ public class ProgramController {
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/program/{pno}")
+    @PutMapping("/program/{patient_id}")
     public ResponseEntity<String> updateProgramAndDetail(@RequestBody ProgramRequestDTO requestDTO,
-                                                         @PathVariable("pno") Long pno) {
-        String result = programService.updateProgramAndDetail(requestDTO, pno);
+                                                         @PathVariable("patient_id") String patient_id) {
+        String result = programService.updateProgramAndDetail(requestDTO, patient_id);
         return ResponseEntity.ok(result);
     }
 
