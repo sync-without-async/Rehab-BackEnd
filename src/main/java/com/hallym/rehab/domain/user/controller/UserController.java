@@ -27,14 +27,10 @@ public class UserController {
     }
 
     @PreAuthorize("authentication.principal.username == #mid")
-    @GetMapping("/auth/user/info/{mid}")
-    public ResponseEntity<StaffResponseDTO> getStaffInfo(@PathVariable String mid) {
-        String securityContextHolder = SecurityContextHolder.getContext().getAuthentication().getName();
+    @GetMapping("/auth/staff/info/{mid}")
+    public StaffResponseDTO getStaffInfo(@PathVariable String mid) {
 
-        log.info("----getname-" + securityContextHolder);
-
-        StaffResponseDTO staffResponseDTO = apiUserService.getStaffInfo(mid);
-        return ResponseEntity.ok(staffResponseDTO);
+        return apiUserService.getStaffInfo(mid);
     }
 
     @PreAuthorize("authentication.principal.username == #mid")
