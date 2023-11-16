@@ -22,6 +22,7 @@ public class RecordController {
         return recordService.getRecordDetails(record_no);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @PostMapping("/register/{vno}")
     public void registerRecord(@RequestBody RecordDTO recordDTO, @PathVariable Long vno) {
 
