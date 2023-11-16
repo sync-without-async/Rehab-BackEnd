@@ -146,6 +146,7 @@ public class ChartServiceImpl implements ChartService{
                 .sex(chartRequestDTO.getSex())
                 .phone(chartRequestDTO.getPhone())
                 .name(chartRequestDTO.getPatientName())
+                .roleSet(Collections.singleton(MemberRole.PATIENT))
                 .build();
 
         patientRepository.save(newPatientDetail);
