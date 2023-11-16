@@ -83,7 +83,7 @@ public class ChartServiceImpl implements ChartService{
     }
 
     /**
-     * 환자 차트 목록 조회
+     * 나의 담당 환자 차트 목록 조회
      * @param doctor_id 담당 의사의 pk
      * @param pageRequestDTO
      * @return
