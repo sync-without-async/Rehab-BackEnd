@@ -8,7 +8,7 @@ public interface RecordService {
 
     RecordDTO getRecordDetails(Long record_no);
 
-    void registerRecordDetails(RecordDTO recordDTO, Long cno);
+    String registerRecordDetails(RecordDTO recordDTO, Long cno);
 
 //    void modifyRecordDetails(RecordDTO recordDTO);
 

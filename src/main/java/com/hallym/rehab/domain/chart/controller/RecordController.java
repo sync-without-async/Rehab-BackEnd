@@ -23,11 +23,10 @@ public class RecordController {
         return recordService.getRecordDetails(record_no);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @PostMapping("/register/{vno}")
-    public void registerRecord(@RequestBody RecordDTO recordDTO, @PathVariable Long vno) {
+    public String registerRecord(@RequestBody RecordDTO recordDTO, @PathVariable Long vno) {
 
-        recordService.registerRecordDetails(recordDTO, vno);
+       return recordService.registerRecordDetails(recordDTO, vno);
     }
 
     @GetMapping("/list")

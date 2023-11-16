@@ -40,8 +40,7 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public void registerRecordDetails(RecordDTO recordDTO, Long cno) {
-
+    public String registerRecordDetails(RecordDTO recordDTO, Long cno) {
         Chart chart = chartRepository.findById(cno).orElseThrow();
 
         log.info("Registering---" + chart);
@@ -53,7 +52,14 @@ public class RecordServiceImpl implements RecordService {
                 .chart(chart)
                 .build();
 
-        recordRepository.save(record);
+        try {
+            recordRepository.save(record);
+            return "진료기록 등록 성공";
+        } catch (Exception e) {
+            log.error("Failed to save record details.", e);
+            throw new RuntimeException("진료기록 등록에 실패했습니다.");
+        }
+    }
 
     }
 
