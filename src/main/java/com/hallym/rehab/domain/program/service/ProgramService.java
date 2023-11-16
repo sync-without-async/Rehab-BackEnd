@@ -5,6 +5,8 @@ import com.hallym.rehab.domain.program.dto.ProgramRequestDTO;
 
 public interface ProgramService {
     String createProgramAndDetail(ProgramRequestDTO programRequestDTO);
-    String updateProgramAndDetail(ProgramRequestDTO programRequestDTO, Long pno);
+
+    String updateProgramAndDetail(ProgramRequestDTO programRequestDTO, String patient_id);
+
     String updateMetrics(MetricsUpdateRequestDTO metricsUpdateRequestDTO);
 }

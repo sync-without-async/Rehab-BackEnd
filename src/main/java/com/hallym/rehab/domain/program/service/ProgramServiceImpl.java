@@ -24,7 +24,7 @@ import java.util.Map;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProgramServiceImpl implements ProgramService{
+public class ProgramServiceImpl implements ProgramService {
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final VideoRepository videoRepository;
@@ -78,7 +78,7 @@ public class ProgramServiceImpl implements ProgramService{
     }
 
     @Override
-    public String updateProgramAndDetail(ProgramRequestDTO requestDTO, Long pno) {
+    public String updateProgramAndDetail(ProgramRequestDTO requestDTO, String patient_id) {
         String adminId = requestDTO.getAdminId();
         String userId = requestDTO.getUserId();
 
@@ -86,8 +86,8 @@ public class ProgramServiceImpl implements ProgramService{
                 .orElseThrow(() -> new NotFoundException("not found admin for adminId : " + adminId));
         patientRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("not found user for userId : " + userId));
-        Program program = programRepository.findById(pno)
-                .orElseThrow(() -> new NotFoundException("not found for pno : " + pno));
+        Program program = programRepository.findByUserId(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found for patient_id : " + patient_id));
 
         program.changeDescription(requestDTO.getDescription()); // change description
         programRepository.save(program);
@@ -99,7 +99,7 @@ public class ProgramServiceImpl implements ProgramService{
             Video video = videoRepository.findById(vno)
                     .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
 
-            ProgramDetail programDetail = programDetailRepository.findByPnoAndOrd(pno, ord)
+            ProgramDetail programDetail = programDetailRepository.findByPnoAndOrd(program.getPno(), ord)
                     .orElseThrow(() -> new NotFoundException("Detail not found"));
 
             programDetail.changeOrd(ord, video); // change ord, vno

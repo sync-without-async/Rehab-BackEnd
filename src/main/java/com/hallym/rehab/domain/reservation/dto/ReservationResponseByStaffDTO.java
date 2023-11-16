@@ -16,6 +16,7 @@ public class ReservationResponseByStaffDTO {
     private String patientName;
     private String patientId; // 환자 상세정보 보기 위한 Id
     private UUID rno;
+    private Long rvno;
     private LocalDate date;
     private int index;
     private String content; // 진료 희망 사유
