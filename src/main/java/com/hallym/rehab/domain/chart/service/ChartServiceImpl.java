@@ -46,13 +46,23 @@ public class ChartServiceImpl implements ChartService{
      * @return Chart 엔티티를 변환한 ChartResponseDTO를 반환
      */
     @Override
-    public ChartResponseDTO getChartDetails(String patient_id) {
+    public ChartResponseDTO getChartDetailByPatient(String patient_id) {
 
         Chart chart = chartRepository.findByPatientMid(patient_id);
 
         if (chart == null) {
             throw new NotFoundException("해당 환자의 차트를 찾을 수 없습니다.");
         }
+
+        return entityToDTO(chart);
+    }
+
+    @Override
+    public ChartResponseDTO getChartDetailByStaff(Long cno) {
+
+        Optional<Chart> result = chartRepository.findById(cno);
+
+        Chart chart = result.orElseThrow();
 
         return entityToDTO(chart);
     }

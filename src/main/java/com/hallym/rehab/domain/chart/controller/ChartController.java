@@ -21,10 +21,16 @@ public class ChartController {
 
     private final ChartService chartService;
 
-    @GetMapping("/{mid}")
-    public ChartResponseDTO getChartOne(@PathVariable String mid) {
+    @GetMapping("/patient/{mid}")
+    public ChartResponseDTO getChartOneByPatient(@PathVariable String mid) {
 
-        return chartService.getChartDetails(mid);
+        return chartService.getChartDetailByPatient(mid);
+    }
+
+    @GetMapping("/staff/{cno}")
+    public ChartResponseDTO getChartOneByStaff(@PathVariable Long cno) {
+
+        return chartService.getChartDetailByStaff(cno);
     }
 
 
