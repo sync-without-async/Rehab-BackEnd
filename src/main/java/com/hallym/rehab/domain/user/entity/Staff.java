@@ -49,7 +49,7 @@ public class Staff extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
-    private Set<StaffRole> roleSet = new HashSet<>(); //권한 정보
+    private Set<MemberRole> roleSet = new HashSet<>(); //권한 정보
 
     @Builder.Default
     @OneToMany(mappedBy = "vno", cascade = CascadeType.ALL)
@@ -62,15 +62,15 @@ public class Staff extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean is_deleted;
 
-    public void addRole(StaffRole staffRole){
-        this.roleSet.add(staffRole);
+    public void addRole(MemberRole memberRole){
+        this.roleSet.add(memberRole);
     }
 
     public void changePassword(String password) {
         this.password = password;
     }
 
-    public void addStaff(String mid, String password, String name, String phone, Set<StaffRole> roleSet) {
+    public void addStaff(String mid, String password, String name, String phone, Set<MemberRole> roleSet) {
         this.mid = mid;
         this.password = password;
         this.name = name;

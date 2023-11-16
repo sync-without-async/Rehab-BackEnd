@@ -54,11 +54,17 @@ public class ChartServiceImpl implements ChartService{
      * 환자 차트 최초 등록
      */
     @Override
-    public void registerChartDetails(ChartRequestDTO registerDTO) {
+    public String registerChartDetails(ChartRequestDTO registerDTO) {
 
         Chart chart = dtoToEntity(registerDTO);
 
+        String newPatientId = chart.getPatient().getMid();
+
+        log.info("---------" + newPatientId);
+
         chartRepository.save(chart);
+
+        return newPatientId;
     }
 
     /**

@@ -30,10 +30,9 @@ public class ChartController {
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
     @PostMapping("/auth/register")
-    public ResponseEntity<String> registerChart(@Valid @RequestBody ChartRequestDTO chartRequestDTO) {
+    public String registerChart(@Valid @RequestBody ChartRequestDTO chartRequestDTO) {
 
-            chartService.registerChartDetails(chartRequestDTO);
-            return ResponseEntity.ok("차트 등록 완료");
+        return chartService.registerChartDetails(chartRequestDTO);
     }
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")

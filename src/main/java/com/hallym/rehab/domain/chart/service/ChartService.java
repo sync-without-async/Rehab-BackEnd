@@ -9,7 +9,7 @@ public interface ChartService {
 
     ChartResponseDTO getChartDetails(Long cno);
 
-    void registerChartDetails(ChartRequestDTO registerDTO);
+    String registerChartDetails(ChartRequestDTO registerDTO);
 
     void deleteChartDetails(Long cno);
 
