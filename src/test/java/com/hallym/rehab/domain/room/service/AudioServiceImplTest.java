@@ -106,7 +106,7 @@ class AudioServiceImplTest {
         AudioRequestDTO user = AudioRequestDTO.builder()
                 .audioFile(patientAudioFile)
                 .rno(room.getRno())
-                .is_user(true).build();
+                .is_patient(true).build();
 
         String result = audioService.registerAudio(user);
         assertThat(result).isEqualTo("Success create Audio");
@@ -114,7 +114,7 @@ class AudioServiceImplTest {
         AudioRequestDTO admin = AudioRequestDTO.builder()
                 .audioFile(doctorAudioFile)
                 .rno(room.getRno())
-                .is_user(false).build();
+                .is_patient(false).build();
 
         audioService.registerAudio(admin);
         assertThat(result).isEqualTo("Success create Audio");
