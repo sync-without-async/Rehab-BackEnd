@@ -64,7 +64,7 @@ jobs:
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin ${{ secrets.NCP_CONTAINER_REGISTRY }}
             
             latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
-            
+  
             echo "-----------------Latest tag found: ${{ secrets.LATEST_TAG }}"
             
             container_id=$(docker ps -aq)
