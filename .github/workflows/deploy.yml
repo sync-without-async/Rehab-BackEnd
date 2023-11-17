@@ -74,11 +74,15 @@ jobs:
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin ${{ secrets.NCP_CONTAINER_REGISTRY }}
             
             latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
-            docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
-
+  
             echo "-----------------Latest tag found: $latest_tag"
             
-            docker stop $(docker ps -a -q)
-            docker rm $(docker ps -a -q)
+            container_id=$(docker ps -aq)
+            
+            if [ ! -z "$container_id" ]; then
+              docker stop $container_id
+              docker rm $container_id
+            fi
+            
             docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
-            docker image prune -f 
+            docker image prune -f
