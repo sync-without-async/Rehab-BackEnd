@@ -75,8 +75,31 @@ jobs:
             
             latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
             docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest}
+
+            echo "-----------------Latest tag found: $latest_tag"
             
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
-            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest}
+            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${- name: Connect to Server and Pull from Container Registry
+  runs-on: ubuntu-latest
+  needs: push_to_registry
+  steps:
+    - name: Connect via SSH
+      uses: appleboy/ssh-action@v0.1.4
+      with:
+        host: ${{ secrets.NCP_SERVER_IP }}
+        username: ${{ secrets.NCP_SERVER_USERNAME }}
+        password: ${{ secrets.NCP_SERVER_PASSWORD }}
+        port: ${{ secrets.NCP_SERVER_PORT }}
+        script: |
+          docker login -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }} ${{ secrets.NCP_CONTAINER_REGISTRY }}
+          
+          latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
+          echo "Latest tag found: $latest_tag"
+          docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
+          
+          docker stop $(docker ps -a -q)
+          docker rm $(docker ps -a -q)
+          docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
+          docker image prune -f }
             docker image prune -f 
