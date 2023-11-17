@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+env:
+  RESOURCE_PATH: /home/runner/work/Rehab-Backend/Rehab-Backend/src/main/resources
+  PROJECT_NAME : rehab-server
+
 permissions:
   contents: read
   checks: write
@@ -28,6 +32,16 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+
+      - name: Decrypt application-secret yml
+        run: gpg --quiet --batch --yes --always-trust --decrypt --passphrase=${{ secrets.APPLICATION_SECRET_YML }} --output $RESOURCE_PATH/application.tar $RESOURCE_PATH/application.tar.gpg
+        shell: bash
+
+      - name: Unzip application.tar file to application-secret.yml
+        run: |
+          cd $RESOURCE_PATH 
+          tar xvf application.tar
+        shell: bash
 
       - name: Build with Gradle
         run: ./gradlew build -x test
