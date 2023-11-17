@@ -44,7 +44,7 @@ jobs:
 
       - name: Get current timestamp
         id: timestamp
-        run: echo "::set-output name=timestamp::$(date +%Y%m%d%H%M%S)"
+        run: echo "::set-env name=timestamp::$(date +%Y%m%d%H%M%S)"
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v3
