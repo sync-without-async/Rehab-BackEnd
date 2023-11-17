@@ -51,6 +51,8 @@ jobs:
       - name: Build with Gradle
         run: |
             cd ..
+            ls -a
+            whoami
             ./gradlew build -x test --project-dir ${{ env.RESOURCE_PATH }} --keystore ${{ env.RESOURCE_PATH }}/keystore.p12
 
       - name: Set up Docker Buildx
