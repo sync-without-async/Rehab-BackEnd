@@ -56,10 +56,14 @@ jobs:
 
       - name: Copy YAML files to the remote server
         run: |
-          sshpass -p ${{ secrets.NCP_SERVER_PASSWORD }} scp -r /home/ubuntu/yml_/ ${{ secrets.NCP_SERVER_USERNAME }}@${{ secrets.NCP_SERVER_IP }}:/home/ubuntu/yml_/
+          mkdir -p ~/.ssh
+          echo "${{ secrets.NCP_HOST_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.NCP_SERVER_IP }} >> ~/.ssh/known_hosts
+          scp -r /home/ubuntu/yml_/ ${{ secrets.NCP_SERVER_USERNAME }}@${{ secrets.NCP_SERVER_IP }}:/home/ubuntu/yml_/
 
       - name: Connect to Server and Pull from Container Registry
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
           username: ${{ secrets.NCP_SERVER_USERNAME }}
