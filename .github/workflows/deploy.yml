@@ -79,6 +79,6 @@ jobs:
               docker stop $container_id
               docker rm $container_id
             fi
-            
-            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server@${{ secrets.LATEST_TAG }}
+
+            docker run -d -p 443:443 -v /home/ubuntu/yml_/:/app/ ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server@${{ secrets.LATEST_TAG }}
             docker image prune -f
