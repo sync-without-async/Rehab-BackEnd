@@ -224,6 +224,12 @@ public class ChartServiceImpl implements ChartService {
         return chart;
     }
 
+    /**
+     * patient_id를 받아 Metrics들을 찾고 특정 한도를 넘는 것의 비율을 반환
+     *
+     * @param patient_id
+     * @return rate of over70
+     */
     private double getRateMetricsByPatientId(String patient_id) {
         List<VideoMetrics> metricsList = videoMetricsRepository.findMetricsByPatientId(patient_id);
 
