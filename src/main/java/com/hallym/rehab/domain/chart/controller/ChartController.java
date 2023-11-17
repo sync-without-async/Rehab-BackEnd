@@ -1,5 +1,6 @@
 package com.hallym.rehab.domain.chart.controller;
 
+import com.hallym.rehab.domain.chart.dto.AIRecordDTO;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.service.ChartService;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/chart")
@@ -21,16 +23,25 @@ public class ChartController {
 
     private final ChartService chartService;
 
-    @GetMapping("/patient/{mid}")
-    public ChartResponseDTO getChartOneByPatient(@PathVariable String mid) {
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    @GetMapping("/auth/patient/{patient_mid}")
+    public ChartResponseDTO getChartOneByPatient(@PathVariable String patient_mid) {
 
-        return chartService.getChartDetailByPatient(mid);
+        return chartService.getChartDetailByPatient(patient_mid);
     }
 
-    @GetMapping("/staff/{cno}")
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR') or hasAuthority('ROLE_THERAPIST')")
+    @GetMapping("/auth/staff/{cno}")
     public ChartResponseDTO getChartOneByStaff(@PathVariable Long cno) {
 
         return chartService.getChartDetailByStaff(cno);
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_DOCTOR') or hasAuthority('ROLE_THERAPIST') or hasAuthority('ROLE_PATIENT')")
+    @GetMapping("/auth/aiRecord/{patient_mid}")
+    public List<AIRecordDTO> getAIRecordList(@PathVariable String patient_mid) {
+
+        return chartService.getAIRecords(patient_mid);
     }
 
 

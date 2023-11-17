@@ -30,7 +30,8 @@ public class ChartResponseDTO {
 
     private String therapist_name; // 담당재활치료사
 
+    private LocalDate regDate;
+
     private List<RecordDTO> medicalRecords;
 
-    private List<OnlineRecordDTO> OnlineRecords;
 }

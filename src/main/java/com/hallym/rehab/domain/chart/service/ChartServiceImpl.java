@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.chart.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.hallym.rehab.domain.chart.dto.AIRecordDTO;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.dto.RecordDTO;
@@ -8,6 +9,8 @@ import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.chart.repository.RecordRepository;
+import com.hallym.rehab.domain.reservation.entity.Reservation;
+import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.user.entity.MemberRole;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
@@ -22,29 +25,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class ChartServiceImpl implements ChartService{
+public class ChartServiceImpl implements ChartService {
 
     private final ChartRepository chartRepository;
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final RecordRepository recordRepository;
+    private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * 환자 차트 정보 단일 조회
-     * @param cno chart의 pk
-     * @return Chart 엔티티를 변환한 ChartResponseDTO를 반환
-     */
     @Override
     public ChartResponseDTO getChartDetailByPatient(String patient_id) {
 
@@ -67,8 +64,32 @@ public class ChartServiceImpl implements ChartService{
         return entityToDTO(chart);
     }
 
+    @Override
+    public List<AIRecordDTO> getAIRecords(String patient_id) {
+        List<Reservation> reservations = reservationRepository.findAllByPatientMidWithSummary(patient_id);
+
+        List<AIRecordDTO> aiRecords = new ArrayList<>();
+
+        for (Reservation reservation : reservations) {
+            String staff_id = reservation.getStaff().getMid();
+            String summary = reservation.getRoom().getAudio().getSummary();
+            LocalDate summaryDate = LocalDate.from(reservation.getRoom().getRegDate());
+
+            AIRecordDTO aiRecord = AIRecordDTO.builder()
+                    .staff_id(staff_id)
+                    .summary(summary)
+                    .regDate(summaryDate)
+                    .build();
+
+            aiRecords.add(aiRecord);
+        }
+
+        return aiRecords;
+    }
+
     /**
      * 환자 차트 신규 등록
+     *
      * @param registerDTO
      */
     @Override
@@ -87,6 +108,7 @@ public class ChartServiceImpl implements ChartService{
 
     /**
      * 환자 차트 삭제
+     *
      * @param cno chart의 pk
      */
     @Override
@@ -97,7 +119,8 @@ public class ChartServiceImpl implements ChartService{
 
     /**
      * 나의 담당 환자 차트 목록 조회
-     * @param doctor_id 담당 의사의 pk
+     *
+     * @param doctor_id      담당 의사의 pk
      * @param pageRequestDTO
      * @return
      */
@@ -120,7 +143,6 @@ public class ChartServiceImpl implements ChartService{
         return responseDTO;
     }
 
-
     public ChartResponseDTO entityToDTO(Chart chart) {
 
         List<Record> recordList = recordRepository.findRecordByChart(chart);
@@ -129,7 +151,7 @@ public class ChartServiceImpl implements ChartService{
                 .map(RecordDTO::of)
                 .collect(Collectors.toList());
 
-        ChartResponseDTO chartResponseDTO = ChartResponseDTO.builder()
+        return ChartResponseDTO.builder()
                 .cno(chart.getCno())
                 .cd(chart.getCd())
                 .phone(chart.getPhone())
@@ -140,9 +162,8 @@ public class ChartServiceImpl implements ChartService{
                 .doctor_name(chart.getDoctor().getName())
                 .therapist_name(chart.getTherapist().getName())
                 .medicalRecords(recordDTOList)
+                .regDate(LocalDate.from(chart.getRegDate()))
                 .build();
-
-           return chartResponseDTO;
     }
 
     public Chart dtoToEntity(ChartRequestDTO chartRequestDTO) {
