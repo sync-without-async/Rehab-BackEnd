@@ -13,4 +13,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT r FROM Reservation r WHERE (r.patient.mid = :mid or r.staff.mid = :mid) and r.is_deleted = false")
     Page<Reservation> findByMid(@Param("mid") String mid, Pageable pageable);
+
+    @Query("SELECT r FROM Reservation r WHERE r.patient.mid = :patient_id ORDER BY r.room.regDate ASC")
+    List<Reservation> findAllByPatientMidWithSummary(@Param("patient_id") String patientId);
+
 }
