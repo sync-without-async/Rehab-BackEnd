@@ -53,6 +53,17 @@ jobs:
           cache-to: type=inline
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
+
+      - name: Copy YAML files to the remote server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.NCP_SERVER_IP }}
+          username: ${{ secrets.NCP_SERVER_USERNAME }}
+          password: ${{ secrets.NCP_SERVER_PASSWORD }}
+          port: ${{ secrets.NCP_SERVER_PORT }}
+          source: "/home/ubuntu/yml_/"
+          target: "/home/ubuntu/yml_/"
+
       - name: Connect to Server and Pull from Container Registry
         uses: appleboy/ssh-action@v0.1.4
         with:
@@ -62,17 +73,17 @@ jobs:
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin ${{ secrets.NCP_CONTAINER_REGISTRY }}
-            
+
             latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
             
             echo "-----------------Latest tag found: ${{ secrets.LATEST_TAG }}"
             
             container_id=$(docker ps -aq)
-            
+
             if [ ! -z "$container_id" ]; then
               docker stop $container_id
               docker rm $container_id
             fi
 
-            docker run -d -p 443:443 -v /home/ubuntu/yml_/ ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
+            docker run -d -p 443:443 -v /home/ubuntu/yml_/:/app/yml_/:ro ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
             docker image prune -f
