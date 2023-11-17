@@ -8,7 +8,7 @@ WORKDIR /app
 ARG JAR_NAME=rehab-0.0.1-SNAPSHOT.jar
 
 # 컨테이너의 파일시스템에 빌드된 jar파일 복사
-COPY build/libs/${JAR_NAME} ${JAR_NAME}
+COPY build/libs/${JAR_NAME} /app
 
 # 앱 실행을 위한 사용자 계정 생성
 RUN addgroup --system dockeruser && adduser --system --ingroup dockeruser dockeruser
@@ -23,4 +23,4 @@ USER dockeruser
 EXPOSE 443
 
 # always do command
-ENTRYPOINT ["java","-jar","/app/rehab-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/app/${JAR_NAME}"]
