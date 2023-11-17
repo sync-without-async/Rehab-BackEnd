@@ -13,7 +13,7 @@ permissions:
   checks: write
 
 jobs:
-  push_to_registry:
+  push_to_registry_and_Deploy:
     name: Push to NCP Container Registry
     runs-on: ubuntu-latest
     steps:
@@ -53,13 +53,7 @@ jobs:
           cache-to: type=inline
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
-
-  pull_from_registry:
-    name: Connect to Server and Pull from Container Registry
-    runs-on: ubuntu-latest
-    needs: push_to_registry
-    steps:
-      - name: Connect via SSH
+      - name: Connect to Server and Pull from Container Registry
         uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
@@ -70,8 +64,8 @@ jobs:
             echo "${{ secrets.NCP_SECRET_KEY }}" | docker login -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin ${{ secrets.NCP_CONTAINER_REGISTRY }}
             
             latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
-            
-            echo "-----------------Latest tag found: $latest_tag"
+  
+            echo "-----------------Latest tag found: ${{ secrets.LATEST_TAG }}"
             
             container_id=$(docker ps -aq)
             
@@ -80,5 +74,5 @@ jobs:
               docker rm $container_id
             fi
 
-            docker run -d -p 443:443 -v /home/ubuntu/yml_/ ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server@${{ secrets.LATEST_TAG }}
+            docker run -d -p 443:443 -v /home/ubuntu/yml_/:/app/ ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
             docker image prune -f
