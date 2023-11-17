@@ -22,6 +22,3 @@ EXPOSE 443
 
 # always do command
 ENTRYPOINT ["java","-jar","/app/rehab-0.0.1-SNAPSHOT.jar"]
-
-COPY application-email.yml /app/application-email.yml
-COPY application-secret.yml /app/application-secret.yml
