@@ -1,0 +1,16 @@
+.git
+.github
+scripts
+ .dockerignore
+ Dockerfile
+
+
+dbModeling.drawio
+docs/ObjectStorageGuide_EN.md
+docs/ObjectStorageGuide_KO.md
+README.md
+
+/src/main/resources/application-secret.yml
+/src/main/resources/application-email.yml
+/src/main/resources/application.tar
+/src/test/
