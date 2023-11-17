@@ -1,79 +1,26 @@
-name: auto deploy with NCP Registry
+#Base image
+FROM openjdk:11-jdk
+LABEL authors="이동헌"
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# 앱 디렉토리 생성
+WORKDIR /app
 
-permissions:
-  contents: read
-  checks: write
+ARG JAR_NAME=rehab-0.0.1-SNAPSHOT.jar
 
-jobs:
-  push_to_registry_and_Deploy:
-    name: Push to NCP Container Registry
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+# 컨테이너의 파일시스템에 빌드된 jar파일 복사
+COPY build/libs/${JAR_NAME} /app
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'temurin'
+# 앱 실행을 위한 사용자 계정 생성
+RUN addgroup --system dockeruser && adduser --system --ingroup dockeruser dockeruser
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+# /app 폴더 소유권을 신규 사용자 계정으로 변경
+RUN chown -R dockeruser:dockeruser /app
 
-      - name: Build with Gradle
-        run: ./gradlew build -x test
+# 사용자 계정으로 전환
+USER dockeruser
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+# 노출할 포트 명시
+EXPOSE 443
 
-      - name: Login to NCP Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ secrets.NCP_CONTAINER_REGISTRY }}
-          username: ${{ secrets.NCP_ACCESS_KEY }}
-          password: ${{ secrets.NCP_SECRET_KEY }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest
-          cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest
-          cache-to: type=inline
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
-
-      - name: Connect to Server and Pull from Container Registry
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.NCP_SERVER_IP }}
-          username: ${{ secrets.NCP_SERVER_USERNAME }}
-          password: ${{ secrets.NCP_SERVER_PASSWORD }}
-          port: ${{ secrets.NCP_SERVER_PORT }}
-          script: |
-            echo "${{ secrets.NCP_SECRET_KEY }}" | docker login -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin ${{ secrets.NCP_CONTAINER_REGISTRY }}
-            
-            latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
-  
-            echo "-----------------Latest tag found: ${{ secrets.LATEST_TAG }}"
-            
-            container_id=$(docker ps -aq)
-            
-            if [ ! -z "$container_id" ]; then
-              docker stop $container_id
-              docker rm $container_id
-            fi
-
-            docker run -d -p 443:443 -v /home/ubuntu/yml_/:/app/ ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
-            docker image prune -f
+# always do command
+ENTRYPOINT ["java","-jar","/app/${JAR_NAME}"]
