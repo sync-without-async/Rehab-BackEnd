@@ -23,4 +23,4 @@ USER dockeruser
 EXPOSE 443
 
 # always do command
-ENTRYPOINT ["java","-jar","/app/${JAR_NAME}"]
+ENTRYPOINT ["java","-jar","/app/rehab-0.0.1-SNAPSHOT.jar"]
