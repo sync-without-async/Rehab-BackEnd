@@ -52,8 +52,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ steps.timestamp.outputs.timestamp }}
-          cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ steps.timestamp.outputs.timestamp }}
+          tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest
+          cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest
           cache-to: type=inline
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
