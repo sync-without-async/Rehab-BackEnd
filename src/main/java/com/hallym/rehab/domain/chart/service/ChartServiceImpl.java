@@ -9,6 +9,8 @@ import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.chart.repository.RecordRepository;
+import com.hallym.rehab.domain.program.entity.Program;
+import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.user.entity.MemberRole;
@@ -16,6 +18,8 @@ import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
+import com.hallym.rehab.domain.video.entity.VideoMetrics;
+import com.hallym.rehab.domain.video.repository.VideoMetricsRepository;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +43,10 @@ public class ChartServiceImpl implements ChartService {
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final RecordRepository recordRepository;
+    private final VideoMetricsRepository videoMetricsRepository;
     private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public ChartResponseDTO getChartDetailByPatient(String patient_id) {
@@ -145,6 +151,8 @@ public class ChartServiceImpl implements ChartService {
 
     public ChartResponseDTO entityToDTO(Chart chart) {
 
+        double metrics_rate = getRateMetricsByPatientId(chart.getPatient().getMid());
+
         List<Record> recordList = recordRepository.findRecordByChart(chart);
 
         List<RecordDTO> recordDTOList = recordList.stream()
@@ -162,6 +170,7 @@ public class ChartServiceImpl implements ChartService {
                 .doctor_name(chart.getDoctor().getName())
                 .therapist_name(chart.getTherapist().getName())
                 .medicalRecords(recordDTOList)
+                .metrics_rate(metrics_rate)
                 .regDate(LocalDate.from(chart.getRegDate()))
                 .build();
     }
@@ -213,5 +222,21 @@ public class ChartServiceImpl implements ChartService {
         chart.addRecord(record);
 
         return chart;
+    }
+
+    private double getRateMetricsByPatientId(String patient_id) {
+        List<VideoMetrics> metricsList = videoMetricsRepository.findMetricsByPatientId(patient_id);
+
+        int allCount = metricsList.size();
+
+        if (allCount == 0) {
+            return 0;
+        }
+
+        int over70Count = (int) metricsList.stream()
+                .filter(metrics -> metrics.getMetrics() >= 70)
+                .count();
+
+        return (double) over70Count / allCount * 100;
     }
 }
