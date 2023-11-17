@@ -72,8 +72,11 @@ jobs:
           port: ${{ secrets.NCP_SERVER_PORT }}
           script: |
             docker login -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }} ${{ secrets.NCP_CONTAINER_REGISTRY }}
-            docker pull ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ steps.timestamp.outputs.timestamp }}
+            
+            latest_tag=$(docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:latest | grep -oP "(?<=digest: ).*")
+            docker pull --quiet ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
+            
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
-            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ steps.timestamp.outputs.timestamp }}
+            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${latest_tag}
             docker image prune -f 
