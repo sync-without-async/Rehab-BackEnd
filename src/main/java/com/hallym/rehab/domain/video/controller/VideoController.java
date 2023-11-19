@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 public class VideoController {
     private final VideoService videoService;
 
-    @GetMapping("/list/{userId}")
+    @GetMapping("/list/{patient_id}")
     public Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getListByUser(VideoPageRequestDTO pageRequestDTO,
-                                                                                @PathVariable("userId") String userId) {
-        return videoService.getVideoListByUser(pageRequestDTO, userId);
+                                                                                @PathVariable("patient_id") String patient_id) {
+        return videoService.getVideoListByUser(pageRequestDTO, patient_id);
     }
 
     @GetMapping("/list")

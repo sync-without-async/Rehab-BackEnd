@@ -68,9 +68,9 @@ public class VideoServiceImpl implements VideoService {
 
     @Override
     public Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getVideoListByUser(VideoPageRequestDTO requestDTO,
-                                                                                     String userId) {
-        Program program = programRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("not found program for userId : " + userId));
+                                                                                     String patient_id) {
+        Program program = programRepository.findByPatientId(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found program for patient_id : " + patient_id));
 
         Pageable pageable = requestDTO.getPageable();
 
