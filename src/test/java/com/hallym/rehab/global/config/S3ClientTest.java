@@ -3,14 +3,13 @@ package com.hallym.rehab.global.config;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.hallym.rehab.global.s3.S3Client;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class S3ClientTest {
@@ -28,11 +27,13 @@ class S3ClientTest {
             List<Bucket> buckets = s3.listBuckets();
             System.out.println("Bucket List: ");
             for (Bucket bucket : buckets) {
-                System.out.println("    name=" + bucket.getName() + ", creation_date=" + bucket.getCreationDate() + ", owner=" + bucket.getOwner().getId());
+                System.out.println(
+                        "    name=" + bucket.getName() + ", creation_date=" + bucket.getCreationDate() + ", owner="
+                                + bucket.getOwner().getId());
             }
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
-        } catch(SdkClientException e) {
+        } catch (SdkClientException e) {
             e.printStackTrace();
         }
     }
@@ -51,7 +52,7 @@ class S3ClientTest {
             System.out.format("Object %s has been created.\n", objectName);
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
-        } catch(SdkClientException e) {
+        } catch (SdkClientException e) {
             e.printStackTrace();
         }
     }
@@ -69,7 +70,7 @@ class S3ClientTest {
             System.out.format("Object %s has been deleted.\n", objectName);
         } catch (AmazonS3Exception e) {
             e.printStackTrace();
-        } catch(SdkClientException e) {
+        } catch (SdkClientException e) {
             e.printStackTrace();
         }
     }

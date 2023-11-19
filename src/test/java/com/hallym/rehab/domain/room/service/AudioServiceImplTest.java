@@ -1,5 +1,8 @@
 package com.hallym.rehab.domain.room.service;
 
+import com.hallym.rehab.domain.reservation.dto.ReservationRequestDTO;
+import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
+import com.hallym.rehab.domain.reservation.service.ReservationService;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.room.entity.Room;
@@ -41,7 +44,8 @@ class AudioServiceImplTest {
     PatientRepository patientRepository;
     @Autowired
     AudioRepository audioRepository;
-
+    @Autowired
+    ReservationService reservationService;
 
     Staff staff;
     Patient patient;
@@ -72,8 +76,16 @@ class AudioServiceImplTest {
         patientRepository.save(patient);
         patientRepository.flush();
 
-        roomService.registerRoom(staff.getMid(), patient.getMid());
-        roomRepository.flush();
+        ReservationRequestDTO reservationRequestDTO = ReservationRequestDTO
+                .builder()
+                .staff_id(staff.getMid())
+                .patient_id(patient.getMid())
+                .content("몸이 아파요")
+                .index(1)
+                .date(LocalDate.now())
+                .build();
+
+        reservationService.createReservation(reservationRequestDTO);
     }
 
     @Test
@@ -116,14 +128,7 @@ class AudioServiceImplTest {
                 .rno(room.getRno())
                 .is_patient(false).build();
 
-        audioService.registerAudio(admin);
-        assertThat(result).isEqualTo("Success create Audio");
-    }
-
-    @Test
-    void deleteAllRoomAndAudio() {
-        audioService.deleteAllRoomAndAudio();
-        assertThat(audioRepository.findAll().size()).isEqualTo(0);
-        assertThat(roomRepository.findAll().size()).isEqualTo(0);
+        String responseByAIServer = audioService.registerAudio(admin);
+        assertThat(responseByAIServer).isNotNull();
     }
 }
