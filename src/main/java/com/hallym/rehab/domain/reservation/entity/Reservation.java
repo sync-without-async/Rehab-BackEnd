@@ -1,9 +1,8 @@
 package com.hallym.rehab.domain.reservation.entity;
 
-
-import com.hallym.rehab.domain.user.entity.Staff;
-import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
 import com.hallym.rehab.domain.reservation.dto.ReservationResponseByPatientDTO;
+import com.hallym.rehab.domain.reservation.dto.ReservationResponseByStaffDTO;
+import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.room.entity.Room;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
@@ -53,49 +52,49 @@ public class Reservation extends BaseTimeEntity {
         this.is_deleted = is_deleted;
     }
 
-    public static ReservationResponseByStaffDTO toAdminDTO(Reservation reservation) {
+    public ReservationResponseByStaffDTO toAdminDTO() {
 
         String summary;
 
-        if (reservation.getRoom().getAudio().getSummary() == null) {
+        if (this.getRoom().getAudio().getSummary() == null) {
             summary = "";
         } else {
-            summary = reservation.getRoom().getAudio().getSummary();
+            summary = this.getRoom().getAudio().getSummary();
         }
 
         return ReservationResponseByStaffDTO.builder()
-                .patientName(reservation.getPatient().getName())
-                .patientId(reservation.getPatient().getMid())
-                .rno(reservation.getRoom().getRno())
-                .rvno(reservation.getRvno())
-                .date(reservation.getDate())
-                .index(reservation.getIndex())
+                .patientName(this.getPatient().getName())
+                .patientId(this.getPatient().getMid())
+                .rno(this.getRoom().getRno())
+                .rvno(this.getRvno())
+                .date(this.getDate())
+                .index(this.getIndex())
                 .summary(summary)
-                .content(reservation.getContent())
+                .content(this.getContent())
                 .build();
     }
 
-    public static ReservationResponseByPatientDTO toUserDTO(Reservation reservation) {
+    public ReservationResponseByPatientDTO toUserDTO() {
 
         String summary;
 
-        if (reservation.getRoom().getAudio().getSummary() == null) {
+        if (this.getRoom().getAudio().getSummary() == null) {
             summary = "";
         } else {
-            summary = reservation.getRoom().getAudio().getSummary();
+            summary = this.getRoom().getAudio().getSummary();
         }
 
         return ReservationResponseByPatientDTO.builder()
-                .staffName(reservation.getStaff().getName())
-                .rno(reservation.getRoom().getRno())
-                .rvno(reservation.getRvno())
-                .date(reservation.getDate())
-                .index(reservation.getIndex())
-                .content(reservation.getContent())
+                .staffName(this.getStaff().getName())
+                .rno(this.getRoom().getRno())
+                .rvno(this.getRvno())
+                .date(this.getDate())
+                .index(this.getIndex())
+                .content(this.getContent())
                 .summary(summary)
-                .role(reservation.getStaff().getRoleSet().toString())
-                .hospital(reservation.staff.getHospital())
-                .profileUrl(reservation.staff.getStaffImage().getProfileUrl())
+                .role(this.getStaff().getRoleSet().toString())
+                .hospital(this.staff.getHospital())
+                .profileUrl(this.staff.getStaffImage().getProfileUrl())
                 .build();
     }
 }
