@@ -106,8 +106,8 @@ class ProgramServiceImplTest {
         ord_map.put(10, 9L);
 
         ProgramRequestDTO programRequestDTO = ProgramRequestDTO.builder()
-                .adminId("ldh")
-                .userId("jyp")
+                .staff_id("ldh")
+                .patient_id("jyp")
                 .description("몸이 아프다구요!")
                 .ord_map(ord_map)
                 .build();
