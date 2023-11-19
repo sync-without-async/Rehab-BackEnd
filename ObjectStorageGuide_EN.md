@@ -9,33 +9,41 @@
 - Last Edit: 2023.10.02
 
 # outline
-  * [Why should I use it?](#Why-should-i-use-it)
-  * [Architecture](#Architecture)
-  * [Access-key and Secret-key issuance](#1-access-key-and-secret-key-issuance)
-  * [Create Object Storage bucket](#2-create-object-storage-bucket)
-  * [S3 sdk dependency injection through gradle](#3-s3-sdk-dependency-injection-through-gradle)
-  * [Fill in application.yml](#4-Fill-in-applicationyml)
-  * [Creating S3Client configuration file](#5-creating-s3client-configuration-file)
-  * [Description of API usage](#6-description-of-api-usage)
+
+* [Why should I use it?](#Why-should-i-use-it)
+* [Architecture](#Architecture)
+* [Access-key and Secret-key issuance](#1-access-key-and-secret-key-issuance)
+* [Create Object Storage bucket](#2-create-object-storage-bucket)
+* [S3 sdk dependency injection through gradle](#3-s3-sdk-dependency-injection-through-gradle)
+* [Fill in application.yml](#4-Fill-in-applicationyml)
+* [Creating S3Client configuration file](#5-creating-s3client-configuration-file)
+* [Description of API usage](#6-description-of-api-usage)
     - [Dependency Injection](#6-1-Dependency-Injection)
     - [upload implementation](#6-2-upload-implementation)
     - [delete implementation](#6-3-delete-implementation)
-  * [Starting S3 Client through Test Code](#7-starting-s3-client-through-test-code)
+* [Starting S3 Client through Test Code](#7-starting-s3-client-through-test-code)
     - [Dependency Injection](#7-1-Dependency-Injection)
     - [Bucket list search](#7-2-bucket-list-search)
     - [Upload files to bucket](#7-3-upload-files-to-bucket)
     - [Delete files from bucket](#7-4-delete-files-from-bucket)
 
 ## Why should I use it?
+
 The reasons for using Object Storage
-- **Efficient data management:** The open source we created exchanges data with both the client and the AI ​​server. If the files sent from the client to the BE server are stored in Object Storage, they can be used by the AI ​​Server and the client, reducing the number of API requests received from BE.
+
+- **Efficient data management:** The open source we created exchanges data with both the client and the AI ​​server. If
+  the files sent from the client to the BE server are stored in Object Storage, they can be used by the AI ​​Server and
+  the client, reducing the number of API requests received from BE.
 - **Reduced Latency:** Since files can be accessed in URL format, latency through file transfer is reduced.
-- **Server capacity and management efficiency:** When files are stored inside the server, server capacity increases and file management becomes difficult when the server is expanded. These problems can be solved through Object Storage.
-- **Consistent file management:** Like Redis' Global Cache, consistent data processing is possible by managing all files in one place.
+- **Server capacity and management efficiency:** When files are stored inside the server, server capacity increases and
+  file management becomes difficult when the server is expanded. These problems can be solved through Object Storage.
+- **Consistent file management:** Like Redis' Global Cache, consistent data processing is possible by managing all files
+  in one place.
 
 <br/>
 
 ## Architecture
+
 ![image](https://github.com/MotuS-Web/MotuS-Backend/assets/52206904/d218f932-a18e-41c9-a5c7-a22643d0653d)
 
 ## 1. Access-key and Secret-key issuance
@@ -43,7 +51,9 @@ The reasons for using Object Storage
 - Log in to NaverCloud -> My Page -> Authentication Key Management -> Create a new API authentication key
 
 ## 2. Create Object Storage bucket
+
 > [Object Storage Screen Guide](https://guide.ncloud-docs.com/docs/objectstorage-use-screen)
+
 - Console -> Services -> Object Storage -> Bucket Management -> Create Bucket
 - Create a new folder (create folders that will be used in the future)
 - in our case, create three folders called video, json, and thumbnail
@@ -52,13 +62,17 @@ The reasons for using Object Storage
 <br/>
 
 ## 3. S3 sdk dependency injection through gradle
+
 ```gradle
 implementation 'com.amazonaws:aws-java-sdk-s3:1.11.238'
 ```
 
 ## 4. Fill in application.yml
+
 - Enter the issued key information, region, bucket name, etc. in spring boot’s application.yml.
-- Since this is sensitive information, we use the method of creating a separate configuration file and loading it from the main yml.
+- Since this is sensitive information, we use the method of creating a separate configuration file and loading it from
+  the main yml.
+
 ```yml
 cloud:
   aws:
@@ -106,12 +120,16 @@ public class S3Client {
 ```
 
 ## 6. Description of API usage
+
 > [Video Service implementation code](https://github.com/MotuS-Web/MotuS-Backend/blob/main/src/main/java/com/hallym/rehab/domain/video/service/VideoServiceImpl.java)
+
 - Difference between Path and URL
 - Path is the path where files are actually stored in Object Storage, and when deleted, this is used to delete them.
-- URL is the URL used when the user actually wants to obtain the Object. This is not provided by the S3 SDK, but since the pattern is consistent, we create and store it ourselves.
+- URL is the URL used when the user actually wants to obtain the Object. This is not provided by the S3 SDK, but since
+  the pattern is consistent, we create and store it ourselves.
 
 ### 6-1 Dependency Injection
+
 ```java
 @Value("${cloud.aws.s3.bucket}")
 private String bucketName; // your bucketName
@@ -120,8 +138,10 @@ private final VideoRepository videoRepository;
 ```
 
 ### 6-2. upload implementation
+
 1. In the createVideo method part, receive files to upload as MultipartFile.
 2. Create an uploadFileToS3 method and pass video files and json files as parameters.
+
 ```java
 @Override
 public String createVideo(VideoRequestDTO videoRequestDTO) {
@@ -129,17 +149,20 @@ public String createVideo(VideoRequestDTO videoRequestDTO) {
 
     MultipartFile videoFile = files[0];
     MultipartFile jsonFile = files[1];
-    UploadFileDTO uploadFileDTO = uploadFileToS3(videoFile, jsonFile);
+    UploadFileDTO uploadVideoResponseDTO = uploadFileToS3(videoFile, jsonFile);
 
     ...The following codes are explained in number 8.
 }
 ```
 
 3. Create a singleton object using getAmazonS3 of the s3Client that received DI.
+
 ```java
 AmazonS3 s3 = s3Client.getAmazonS3();
 ```
+
 4. Convert MultipartFile to File object through the method that converts it to File object.
+
 ```java
 uploadVideoFile = convertMultipartFileToFile(videoFile, videoFileName);
 uploadJsonFile = convertMultipartFileToFile(jsonFile, jsonFileName);
@@ -159,14 +182,18 @@ public File convertMultipartFileToFile(MultipartFile multipartFile, String fileN
 ```
 
 5. Upload the file by specifying a path to the desired bucket using the s3.putObject method.
+
 ```java
 s3.putObject(bucketName, VideoObjectPath, uploadVideoFile);
 s3.putObject(bucketName, jsonObjectPath, uploadJsonFile);
 s3.putObject(bucketName, thumbnailObjectPath, uploadThumbnailFile);
 ```
+
 > [Object Storage Permission Management](https://guide.ncloud-docs.com/docs/storage-objectstorage-subaccount)
+
 6. When first creating files, The user's read access will be disabled.
 7. Implement the setACL method to make the files accessible to AllUsers.
+
 ```java
 // All Users can access Object
 setAcl(s3, VideoObjectPath);
@@ -181,7 +208,9 @@ public void setAcl(AmazonS3 s3, String objectPath) {
 }
 
 ```
+
 8. Create URL, Path, etc. and save the Video Entity.
+
 ```java
 @Override
 public String createVideo(VideoRequestDTO videoRequestDTO) {
@@ -189,9 +218,9 @@ public String createVideo(VideoRequestDTO videoRequestDTO) {
 
     MultipartFile videoFile = files[0];
     MultipartFile jsonFile = files[1];
-    UploadFileDTO uploadFileDTO = uploadFileToS3(videoFile, jsonFile);
+    UploadFileDTO uploadVideoResponseDTO = uploadFileToS3(videoFile, jsonFile);
 
-    Video video = videoRequestDTO.toVideo(uploadFileDTO);
+    Video video = videoRequestDTO.toVideo(uploadVideoResponseDTO);
     videoRepository.save(video);
 
     return "success";
@@ -199,8 +228,10 @@ public String createVideo(VideoRequestDTO videoRequestDTO) {
 ```
 
 ### 6-3 delete implementation
+
 1. Receive the PK of the video.
 2. Obtain the Video object using PK and get the path of the files.
+
 ```java
 @Override
 public String deleteVideo(Long vno) {
@@ -217,7 +248,9 @@ public String deleteVideo(Long vno) {
 }
 
 ```
+
 3. Create a deleteFileFromS3 method and delete it from Object Storage using Path.
+
 ```java
 @Override
 public void deleteFileFromS3(String videoPath, String jsonPath, String thumbnailPath) {
@@ -233,7 +266,9 @@ public void deleteFileFromS3(String videoPath, String jsonPath, String thumbnail
     }
 }
 ```
+
 4. Also delete the Video object.
+
 ```java
 @Override
 public String deleteVideo(Long vno) {
@@ -253,18 +288,25 @@ public String deleteVideo(Long vno) {
 ```
 
 ## 7. Starting S3 Client through Test Code
+
 > [Test Code](https://github.com/MotuS-Web/MotuS-Backend/blob/main/src/test/java/com/hallym/rehab/global/config/S3ClientTest.java)
+
 ### 7-1. dependency injection
+
 1. S3Client dependency injection
 2. bucketName declaration
+
 ```java
 @Autowired
 S3Client s3Client;
 @Value("${cloud.aws.s3.bucket}")
 private String bucketName; // your bucketName
 ```
+
 ### 7-2. Bucket list search
+
 1. List the buckets for the account set in s3Client.
+
 ```java
 @Test
 public void bucketList() {
@@ -283,9 +325,12 @@ public void bucketList() {
     }
 }
 ```
+
 ### 7-3. Upload files to bucket
+
 1. Upload the sample file located locally.
 2. Unlike service logic, you can directly create a File object using filePath.
+
 ```java
 @Test
 public void uploadFile() {
@@ -308,7 +353,9 @@ public void uploadFile() {
 ```
 
 ### 7-4. Delete files from bucket
+
 1. Delete the file from the bucket using objectPath.
+
 ```java
 @Test
 public void deleteFile() {

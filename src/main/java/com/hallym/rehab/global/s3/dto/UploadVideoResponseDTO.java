@@ -1,4 +1,4 @@
-package com.hallym.rehab.domain.video.dto;
+package com.hallym.rehab.global.s3.dto;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadFileDTO {
+public class UploadVideoResponseDTO {
     private String videoURL;
     private String jsonURL;
     private String thumbnailURL;
