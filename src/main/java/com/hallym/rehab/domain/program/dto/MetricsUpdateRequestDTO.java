@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MetricsUpdateRequestDTO {
-    private String userId;
+    private String patient_id;
     private Long pno;
     private Long vno;
     private int ord;

@@ -17,7 +17,7 @@ public interface VideoService {
     VideoPageResponseDTO<VideoResponseDTO> getVideoListByAdmin(VideoPageRequestDTO requestDTO);
 
     Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getVideoListByUser(VideoPageRequestDTO requestDTO,
-                                                                              String userId);
+                                                                              String patient_id);
 
     VideoDetailResponseDTO getVideo(Long vno);
 
