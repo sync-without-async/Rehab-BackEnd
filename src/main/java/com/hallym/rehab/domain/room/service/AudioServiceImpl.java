@@ -21,8 +21,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AudioServiceImpl implements AudioService {
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
     private final S3Util s3Util;
     private final RoomRepository roomRepository;
     private final AudioRepository audioRepository;
@@ -43,8 +41,7 @@ public class AudioServiceImpl implements AudioService {
 
         Room room = roomOptional.get();
         Audio audio = audioRepository.findByRoom(room)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 방"));
-
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 오디오"));
         UploadResponseDTO uploadResponseDTO = s3Util.uploadFileToS3(audioFile, "audio");
 
         if (is_user) { //dirty checking update
@@ -55,13 +52,14 @@ public class AudioServiceImpl implements AudioService {
             audioRepository.saveAndFlush(audio);
         }
 
-        Long ano = audio.getAno();
+        if (audio.getUserAudioURL() != null && audio.getAdminAudioURL() != null) {
+            Long ano = audio.getAno();
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.getForObject("http://210.115.229.219:8000/getSummary?ano=" + ano.toString(),
+                    String.class);
+        }
 
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject("http://210.115.229.219:8000/getSummary?ano=" + ano.toString(),
-                String.class);
-
-//        return "Success create Audio";
+        return "Success create Audio";
     }
 
 //    @Override
