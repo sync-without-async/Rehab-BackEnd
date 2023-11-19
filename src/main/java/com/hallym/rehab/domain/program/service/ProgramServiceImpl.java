@@ -24,7 +24,7 @@ import java.util.Map;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ProgramServiceImpl implements ProgramService{
+public class ProgramServiceImpl implements ProgramService {
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final VideoRepository videoRepository;
@@ -35,32 +35,26 @@ public class ProgramServiceImpl implements ProgramService{
     @Override
     public String createProgramAndDetail(ProgramRequestDTO requestDTO) {
         String adminId = requestDTO.getStaff_id();
-        String userId = requestDTO.getPatient_id();
+        String patient_id = requestDTO.getPatient_id();
 
         Staff staff = staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for Id : " + adminId));
-        Patient patient = patientRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("not found user for Id : " + userId));
+        Patient patient = patientRepository.findById(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found user for Id : " + patient_id));
 
         Program program = Program.builder()
                 .staff(staff)
                 .patient(patient)
-                .description(requestDTO.getDescription())
+                .description("")
                 .build();
 
         Program savedProgram = programRepository.save(program);
 
-        for (Map.Entry<Integer, Long> entry : requestDTO.getOrd_map().entrySet()) {
-            int ord = entry.getKey();
-            Long vno = entry.getValue();
-
-            Video video = videoRepository.findById(vno)
-                    .orElseThrow(() -> new RuntimeException("Video not found for Id : " + vno));
-
+        for (int i = 1; i <= 10; i++) {
             ProgramDetail programDetail = ProgramDetail.builder()
                     .program(savedProgram)
-                    .video(video)
-                    .ord(ord)
+                    .video(null)
+                    .ord(i)
                     .build();
 
             VideoMetrics videoMetrics = VideoMetrics.builder()
@@ -80,13 +74,12 @@ public class ProgramServiceImpl implements ProgramService{
     @Override
     public String updateProgramAndDetail(ProgramRequestDTO requestDTO, String patient_id) {
         String adminId = requestDTO.getStaff_id();
-        String userId = requestDTO.getPatient_id();
 
         staffRepository.findById(adminId)
                 .orElseThrow(() -> new NotFoundException("not found admin for adminId : " + adminId));
-        patientRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("not found user for userId : " + userId));
-        Program program = programRepository.findByUserId(patient_id)
+        patientRepository.findById(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found user for patient_id : " + patient_id));
+        Program program = programRepository.findByPatientId(patient_id)
                 .orElseThrow(() -> new NotFoundException("not found for patient_id : " + patient_id));
 
         program.changeDescription(requestDTO.getDescription()); // change description
@@ -112,14 +105,14 @@ public class ProgramServiceImpl implements ProgramService{
 
     @Override
     public String updateMetrics(MetricsUpdateRequestDTO metricsUpdateRequestDTO) {
-        String userId = metricsUpdateRequestDTO.getUserId();
+        String patient_id = metricsUpdateRequestDTO.getPatient_id();
         Long pno = metricsUpdateRequestDTO.getPno();
         Long vno = metricsUpdateRequestDTO.getVno();
         int ord = metricsUpdateRequestDTO.getOrd();
         double metrics = metricsUpdateRequestDTO.getMetrics();
 
-        patientRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("not found user for Id : " + userId));
+        patientRepository.findById(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found user for Id : " + patient_id));
 
         programRepository.findById(pno)
                 .orElseThrow(() -> new NotFoundException("not found for Id : " + pno));
