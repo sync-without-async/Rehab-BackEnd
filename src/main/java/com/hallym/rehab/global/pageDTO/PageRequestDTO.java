@@ -26,6 +26,7 @@ public class PageRequestDTO {
     private String type;
 
     private String keyword;
+    private String sortBy;
 
     public String[] getTypes(){
         if(type == null || type.isEmpty()){
@@ -35,7 +36,11 @@ public class PageRequestDTO {
     }
 
     public Pageable getPageable(String...props) {
-        return PageRequest.of(this.page -1, this.size, Sort.by(props).descending());
+        if ("oldest".equals(sortBy)) { // 수정: 정렬 방식에 따라 오름차순 또는 내림차순 정렬
+            return PageRequest.of(this.page -1, this.size, Sort.by(props).ascending());
+        } else {
+            return PageRequest.of(this.page -1, this.size, Sort.by(props).descending());
+        }
     }
 
     private String link;
@@ -65,7 +70,5 @@ public class PageRequestDTO {
 
         return link;
     }
-
-
 
 }

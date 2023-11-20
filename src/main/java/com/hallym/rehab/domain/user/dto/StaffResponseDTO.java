@@ -9,12 +9,16 @@ import lombok.*;
 @NoArgsConstructor
 public class StaffResponseDTO {
 
+    @NonNull
     private String mid;
 
+    @NonNull
     private String name;
 
+    @NonNull
     private String hospital;
 
+    @NonNull
     private String department;
 
     private String email;

@@ -43,7 +43,6 @@ jobs:
 
       - name: Unzip application.tar file to application-secret.yml
         run: |
-          whoami
           cd $RESOURCE_PATH 
           tar xvf application.tar
         shell: bash
@@ -74,7 +73,7 @@ jobs:
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
       - name: Connect to Server and Pull from Container Registry
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
           username: ${{ secrets.NCP_SERVER_USERNAME }}

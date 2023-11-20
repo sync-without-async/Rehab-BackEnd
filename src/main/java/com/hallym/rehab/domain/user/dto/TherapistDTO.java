@@ -1,10 +1,7 @@
 package com.hallym.rehab.domain.user.dto;
 
 import com.hallym.rehab.domain.user.entity.Staff;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -12,13 +9,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TherapistDTO {
 
+    @NonNull
     private String mid;
 
+    @NonNull
     private String name;
 
+    @NonNull
     private String hospital;
 
+    @NonNull
     private String department;
+
+//    @NonNull
+//    private String staffRole;
+//
+//    @NonNull
+//    private String phone;
+//
+//    private String fileName;
 
     public TherapistDTO(Staff staff) {
         this.mid = staff.getMid();

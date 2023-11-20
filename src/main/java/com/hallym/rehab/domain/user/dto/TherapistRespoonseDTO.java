@@ -2,13 +2,11 @@ package com.hallym.rehab.domain.user.dto;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientDTO {
+public class TherapistRespoonseDTO {
 
     @NonNull
     private String mid;
@@ -17,11 +15,8 @@ public class PatientDTO {
     private String name;
 
     @NonNull
-    private LocalDate birth;
+    private String hospital;
 
     @NonNull
-    private String sex;
-
-    @NonNull
-    private String phone;
+    private String department;
 }

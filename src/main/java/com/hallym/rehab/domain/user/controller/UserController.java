@@ -57,4 +57,11 @@ public class UserController {
         return apiUserService.getTherapistList();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_PATIENT')")
+    @GetMapping("/auth/myStaff/{patient_mid}")
+    public MyStaffDetailDTO getMyStaffInfo(@PathVariable String patient_mid) {
+
+        return apiUserService.getMyStaffInformation(patient_mid);
+    }
+
 }

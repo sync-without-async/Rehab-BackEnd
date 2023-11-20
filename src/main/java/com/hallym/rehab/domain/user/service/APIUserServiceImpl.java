@@ -1,5 +1,7 @@
 package com.hallym.rehab.domain.user.service;
 
+import com.hallym.rehab.domain.chart.entity.Chart;
+import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.user.dto.*;
 import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
@@ -31,7 +33,7 @@ public class APIUserServiceImpl implements APIUserService {
 
     private final PatientRepository patientRepository;
     private final StaffRepository staffRepository;
-
+    private final ChartRepository chartRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -158,9 +160,52 @@ public class APIUserServiceImpl implements APIUserService {
 
         List<Staff> therapistList = staffRepository.findTherapists(MemberRole.THERAPIST);
 
-        return therapistList.stream()
+        List<TherapistDTO> list = therapistList.stream()
                 .map(staff -> new TherapistDTO(staff))
                 .collect(Collectors.toList());
+
+        return list;
     }
+
+    @Override
+    public MyStaffDetailDTO getMyStaffInformation(String patient_id) {
+
+        Chart chart = chartRepository.findByPatientMid(patient_id);
+
+        Staff my_doctor = chart.getDoctor();
+        Staff my_therapist = chart.getTherapist();
+
+        MemberRole role_doctor = my_doctor.getRoleSet().iterator().next();
+        MemberRole role_therapist = my_therapist.getRoleSet().iterator().next();
+
+        StaffResponseDTO doctorInfo = StaffResponseDTO.builder()
+                .mid(my_doctor.getMid())
+                .name(my_doctor.getName())
+                .hospital(my_doctor.getHospital())
+                .department(my_doctor.getDepartment())
+                .phone(my_doctor.getPhone())
+                .email(my_doctor.getEmail())
+                .staffRole(role_doctor.getValue())
+                .fileName(my_doctor.getStaffImage().getProfileUrl())
+                .build();
+
+        StaffResponseDTO therapistInfo = StaffResponseDTO.builder()
+                .mid(my_therapist.getMid())
+                .name(my_therapist.getName())
+                .hospital(my_therapist.getHospital())
+                .department(my_therapist.getDepartment())
+                .phone(my_therapist.getPhone())
+                .email(my_therapist.getEmail())
+                .staffRole(role_therapist.getValue())
+                .fileName(my_therapist.getStaffImage().getProfileUrl())
+                .build();
+
+
+        return MyStaffDetailDTO.builder()
+                .doctor_info(doctorInfo)
+                .therapist_info(therapistInfo)
+                .build();
+    }
+
 
 }

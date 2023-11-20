@@ -1,12 +1,10 @@
 package com.hallym.rehab.domain.chart.repository.search;
 
-import com.hallym.rehab.domain.chart.entity.Chart;
-import com.hallym.rehab.global.pageDTO.PageRequestDTO;
+import com.hallym.rehab.domain.chart.dto.ChartListAllDTO;
+import com.hallym.rehab.domain.user.entity.MemberRole;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ChartSearch {
-
-    Page<Chart> search(PageRequestDTO pageRequestDTO);
-
-    Page<Chart> searchChartWithRecord(String doctor_id, PageRequestDTO pageRequestDTO);
+    Page<ChartListAllDTO> searchChartWithRecord(String mid, MemberRole role, String[] types, String keyword, String sortBy, Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.chart.service;
 
 import com.hallym.rehab.domain.chart.dto.AIRecordDTO;
+import com.hallym.rehab.domain.chart.dto.ChartListAllDTO;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
@@ -20,6 +21,6 @@ public interface ChartService {
 
     void deleteChartDetails(Long cno);
 
-    PageResponseDTO<ChartResponseDTO> getChartList(String doctor_id, PageRequestDTO pageRequestDTO);
+    PageResponseDTO<ChartListAllDTO> getChartList(String mid, PageRequestDTO pageRequestDTO);
 
 }

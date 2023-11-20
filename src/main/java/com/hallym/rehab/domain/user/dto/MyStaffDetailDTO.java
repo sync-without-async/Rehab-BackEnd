@@ -3,15 +3,16 @@ package com.hallym.rehab.domain.user.dto;
 import lombok.*;
 
 @Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StaffImageDTO {
+public class MyStaffDetailDTO {
 
     @NonNull
-    private String uuid;
+    private StaffResponseDTO doctor_info;
 
     @NonNull
-    private String fileName;
+    private StaffResponseDTO therapist_info;
 
 }

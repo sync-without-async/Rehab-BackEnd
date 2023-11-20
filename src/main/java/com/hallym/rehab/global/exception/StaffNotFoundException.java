@@ -11,7 +11,7 @@ public class StaffNotFoundException extends RuntimeException {
      *
      * @param mid 찾을 수 없는 Staff의 ID
      */
-    public StaffNotFoundException(String mid, Throwable cause) {
-        super("해당 Staff의 ID(" + mid + ")를 찾을 수 없습니다.", cause);
+    public StaffNotFoundException(String mid) {
+        super("해당 Staff의 ID(" + mid + ")를 찾을 수 없습니다.");
     }
 }
