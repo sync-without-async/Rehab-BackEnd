@@ -1,16 +1,12 @@
 package com.hallym.rehab.domain.chart.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.hallym.rehab.domain.chart.dto.AIRecordDTO;
-import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
-import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
-import com.hallym.rehab.domain.chart.dto.RecordDTO;
+import com.hallym.rehab.domain.chart.MetricsUtil;
+import com.hallym.rehab.domain.chart.dto.*;
 import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
 import com.hallym.rehab.domain.chart.repository.ChartRepository;
 import com.hallym.rehab.domain.chart.repository.RecordRepository;
-import com.hallym.rehab.domain.program.entity.Program;
-import com.hallym.rehab.domain.program.repository.ProgramRepository;
 import com.hallym.rehab.domain.reservation.entity.Reservation;
 import com.hallym.rehab.domain.reservation.repository.ReservationRepository;
 import com.hallym.rehab.domain.user.entity.MemberRole;
@@ -20,11 +16,13 @@ import com.hallym.rehab.domain.user.repository.PatientRepository;
 import com.hallym.rehab.domain.user.repository.StaffRepository;
 import com.hallym.rehab.domain.video.entity.VideoMetrics;
 import com.hallym.rehab.domain.video.repository.VideoMetricsRepository;
+import com.hallym.rehab.global.exception.StaffNotFoundException;
 import com.hallym.rehab.global.pageDTO.PageRequestDTO;
 import com.hallym.rehab.global.pageDTO.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +41,9 @@ public class ChartServiceImpl implements ChartService {
     private final StaffRepository staffRepository;
     private final PatientRepository patientRepository;
     private final RecordRepository recordRepository;
-    private final VideoMetricsRepository videoMetricsRepository;
     private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MetricsUtil metricsUtil;
 
 
     @Override
@@ -123,41 +121,49 @@ public class ChartServiceImpl implements ChartService {
         chartRepository.deleteById(cno);
     }
 
+
     /**
-     * 나의 담당 환자 차트 목록 조회
+     * 의료진은 나의 담당 환자 차트 목록을 조회할 수 있다.
      *
-     * @param doctor_id      담당 의사의 pk
+     * @param mid
      * @param pageRequestDTO
      * @return
      */
     @Override
-    public PageResponseDTO<ChartResponseDTO> getChartList(String doctor_id, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ChartListAllDTO> getChartList(String mid, PageRequestDTO pageRequestDTO) {
 
-        Page<Chart> result = chartRepository.searchChartWithRecord(doctor_id, pageRequestDTO);
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        String sortBy = pageRequestDTO.getSortBy();
+        Pageable pageable = pageRequestDTO.getPageable("cno");
 
-        List<ChartResponseDTO> dtoList = result
-                .get()
-                .map(this::entityToDTO).collect(Collectors.toList());
+        Staff staff = staffRepository.findByIdWithImages(mid);
 
-        PageResponseDTO<ChartResponseDTO> responseDTO =
-                PageResponseDTO.<ChartResponseDTO>withAll()
-                        .dtoList(dtoList)
-                        .pageRequestDTO(pageRequestDTO)
-                        .total(result.getNumberOfElements())
-                        .build();
+        if (staff == null) {
+            throw new StaffNotFoundException(mid);
+        }
 
-        return responseDTO;
+        MemberRole role = staff.getRoleSet().iterator().next();
+
+        Page<ChartListAllDTO> result = chartRepository.searchChartWithRecord(mid, role, types, keyword, sortBy, pageable);
+
+        return PageResponseDTO.<ChartListAllDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int)result.getTotalElements())
+                .build();
     }
 
-    public ChartResponseDTO entityToDTO(Chart chart) {
 
-        double metrics_rate = getRateMetricsByPatientId(chart.getPatient().getMid());
+    public ChartResponseDTO entityToDTO(Chart chart) {
 
         List<Record> recordList = recordRepository.findRecordByChart(chart);
 
         List<RecordDTO> recordDTOList = recordList.stream()
                 .map(RecordDTO::of)
                 .collect(Collectors.toList());
+
+        double metrics_rate = metricsUtil.getRateMetricsByPatientId(chart.getPatient().getMid());
 
         return ChartResponseDTO.builder()
                 .cno(chart.getCno())
@@ -219,30 +225,9 @@ public class ChartServiceImpl implements ChartService {
                 .chart(chart)
                 .build();
 
-        chart.addRecord(record);
+        recordRepository.save(record);
 
         return chart;
     }
 
-    /**
-     * patient_id를 받아 Metrics들을 찾고 특정 한도를 넘는 것의 비율을 반환
-     *
-     * @param patient_id
-     * @return rate of over70
-     */
-    private double getRateMetricsByPatientId(String patient_id) {
-        List<VideoMetrics> metricsList = videoMetricsRepository.findMetricsByPatientId(patient_id);
-
-        int allCount = metricsList.size();
-
-        if (allCount == 0) {
-            return 0;
-        }
-
-        int over70Count = (int) metricsList.stream()
-                .filter(metrics -> metrics.getMetrics() >= 70)
-                .count();
-
-        return (double) over70Count / allCount * 100;
-    }
 }
