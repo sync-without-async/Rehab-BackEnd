@@ -112,7 +112,7 @@ public class ProgramServiceImpl implements ProgramService{
 
     @Override
     public String updateMetrics(MetricsUpdateRequestDTO metricsUpdateRequestDTO) {
-        String userId = metricsUpdateRequestDTO.getUserId();
+        String userId = metricsUpdateRequestDTO.getPatient_id();
         Long pno = metricsUpdateRequestDTO.getPno();
         Long vno = metricsUpdateRequestDTO.getVno();
         int ord = metricsUpdateRequestDTO.getOrd();
