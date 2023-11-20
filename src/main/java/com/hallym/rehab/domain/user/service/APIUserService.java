@@ -19,4 +19,6 @@ public interface APIUserService {
     void registerUser(StaffRequestDTO staffRequestDTO);
 
     List<TherapistDTO> getTherapistList();
+
+    MyStaffDetailDTO getMyStaffInformation(String patientMid);
 }
