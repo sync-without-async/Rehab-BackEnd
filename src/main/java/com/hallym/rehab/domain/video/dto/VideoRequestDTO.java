@@ -3,6 +3,7 @@ package com.hallym.rehab.domain.video.dto;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.domain.video.entity.Tag;
 import com.hallym.rehab.domain.video.entity.Video;
+import com.hallym.rehab.global.s3.dto.UploadVideoResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,20 +24,20 @@ public class VideoRequestDTO {
     @Builder.Default
     private MultipartFile[] files = new MultipartFile[2];
 
-    public Video toVideo(Staff staff, UploadFileDTO uploadFileDTO) {
+    public Video toVideo(Staff staff, UploadVideoResponseDTO uploadVideoResponseDTO) {
         return Video.builder()
-                    .staff(staff)
-                    .title(title)
-                    .description(description)
-                    .tag(tag)
-                    .frame(frame)
-                    .playTime(playTime)
-                    .videoURL(uploadFileDTO.getVideoURL())
-                    .jsonURL(uploadFileDTO.getJsonURL())
-                    .videoPath(uploadFileDTO.getVideoPath())
-                    .jsonPath(uploadFileDTO.getJsonPath())
-                    .thumbnailURL(uploadFileDTO.getThumbnailURL())
-                    .thumbnailPath(uploadFileDTO.getThumbnailPath())
-                    .build();
+                .staff(staff)
+                .title(title)
+                .description(description)
+                .tag(tag)
+                .frame(frame)
+                .playTime(playTime)
+                .videoURL(uploadVideoResponseDTO.getVideoURL())
+                .jsonURL(uploadVideoResponseDTO.getJsonURL())
+                .videoPath(uploadVideoResponseDTO.getVideoPath())
+                .jsonPath(uploadVideoResponseDTO.getJsonPath())
+                .thumbnailURL(uploadVideoResponseDTO.getThumbnailURL())
+                .thumbnailPath(uploadVideoResponseDTO.getThumbnailPath())
+                .build();
     }
 }

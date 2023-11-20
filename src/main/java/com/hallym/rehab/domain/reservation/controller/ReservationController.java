@@ -21,14 +21,16 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/reservation-admin/{mid}")
-    public PageResponseDTO<ReservationResponseByStaffDTO> getReservationListByAdmin(@PathVariable(name = "mid") String mid,
-                                                                                    PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ReservationResponseByStaffDTO> getReservationListByAdmin(
+            @PathVariable(name = "mid") String mid,
+            PageRequestDTO pageRequestDTO) {
         return reservationService.getListByStaff(mid, pageRequestDTO);
     }
 
     @GetMapping("/reservation-user/{mid}")
-    public PageResponseDTO<ReservationResponseByPatientDTO> getReservationListByUser(@PathVariable(name = "mid") String mid,
-                                                                                     PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<ReservationResponseByPatientDTO> getReservationListByUser(
+            @PathVariable(name = "mid") String mid,
+            PageRequestDTO pageRequestDTO) {
         return reservationService.getListByUser(mid, pageRequestDTO);
     }
 

@@ -33,6 +33,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Load keystore
+        run: |
+          echo "${{ secrets.KEYSTORE }}" > ${{ env.RESOURCE_PATH }}/keystore.p12
+
       - name: Decrypt application-secret yml
         run: gpg --quiet --batch --yes --always-trust --decrypt --passphrase=${{ secrets.APPLICATION_SECRET_YML }} --output $RESOURCE_PATH/application.tar $RESOURCE_PATH/application.tar.gpg
         shell: bash
@@ -44,7 +48,8 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew build -x test
+        run: |
+            ./gradlew build -x test --project-dir /home/runner/work/Rehab-BackEnd/Rehab-BackEnd/ --keystore ${{ env.RESOURCE_PATH }}/keystore.p12
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2

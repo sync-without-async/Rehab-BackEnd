@@ -93,23 +93,9 @@ class ProgramServiceImplTest {
     @Test
     @Rollback(value = false)
     void createProgramAndDetail() {
-        Map<Integer, Long> ord_map = new HashMap<>();
-        ord_map.put(1, 10L);
-        ord_map.put(2, 10L);
-        ord_map.put(3, 3L);
-        ord_map.put(4, 3L);
-        ord_map.put(5, 1L);
-        ord_map.put(6, 1L);
-        ord_map.put(7, 3L);
-        ord_map.put(8, 6L);
-        ord_map.put(9, 6L);
-        ord_map.put(10, 9L);
-
         ProgramRequestDTO programRequestDTO = ProgramRequestDTO.builder()
-                .adminId("ldh")
-                .userId("jyp")
-                .description("몸이 아프다구요!")
-                .ord_map(ord_map)
+                .staff_id("ldh")
+                .patient_id("jyp")
                 .build();
 
         String result = programService.createProgramAndDetail(programRequestDTO);
@@ -120,10 +106,10 @@ class ProgramServiceImplTest {
     @Rollback(value = false)
     void updateMetrics() {
         MetricsUpdateRequestDTO requestDTO = MetricsUpdateRequestDTO.builder()
-                .userId(patient.getMid())
+                .patient_id(patient.getMid())
                 .pno(1L)
                 .vno(3L)
-                .ord(7)
+                .ord(2)
                 .metrics(83.2)
                 .build();
 

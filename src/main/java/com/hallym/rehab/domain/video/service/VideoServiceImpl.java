@@ -9,7 +9,8 @@ import com.hallym.rehab.domain.program.dto.ProgramResponseDTO;
 import com.hallym.rehab.domain.program.entity.Program;
 import com.hallym.rehab.domain.program.repository.ProgramDetailRepository;
 import com.hallym.rehab.domain.program.repository.ProgramRepository;
-import com.hallym.rehab.domain.video.dto.UploadFileDTO;
+import com.hallym.rehab.global.s3.S3Util;
+import com.hallym.rehab.global.s3.dto.UploadVideoResponseDTO;
 import com.hallym.rehab.domain.video.dto.VideoDetailResponseDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageRequestDTO;
 import com.hallym.rehab.domain.video.dto.VideoRequestDTO;
@@ -18,7 +19,7 @@ import com.hallym.rehab.domain.video.dto.VideoResponseDTO;
 import com.hallym.rehab.domain.video.dto.pagedto.VideoPageResponseDTO;
 import com.hallym.rehab.domain.video.entity.Video;
 import com.hallym.rehab.domain.video.repository.VideoRepository;
-import com.hallym.rehab.global.config.S3Client;
+import com.hallym.rehab.global.s3.S3Client;
 import com.hallym.rehab.global.util.AWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +45,11 @@ import java.util.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class VideoServiceImpl implements VideoService{
+public class VideoServiceImpl implements VideoService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-    private final S3Client s3Client;
+    private final S3Util s3Util;
     private final StaffRepository staffRepository;
     private final VideoRepository videoRepository;
     private final ProgramRepository programRepository;
@@ -61,14 +62,15 @@ public class VideoServiceImpl implements VideoService{
         return VideoPageResponseDTO.<VideoResponseDTO>withAll()
                 .pageRequestDTO(requestDTO)
                 .dtoList(result.getContent())
-                .total((int)result.getTotalElements())
+                .total((int) result.getTotalElements())
                 .build();
     }
 
     @Override
-    public Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getVideoListByUser(VideoPageRequestDTO requestDTO, String userId) {
-        Program program = programRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("not found program for userId : " + userId));
+    public Pair<String, VideoPageResponseDTO<ProgramResponseDTO>> getVideoListByUser(VideoPageRequestDTO requestDTO,
+                                                                                     String patient_id) {
+        Program program = programRepository.findByPatientId(patient_id)
+                .orElseThrow(() -> new NotFoundException("not found program for patient_id : " + patient_id));
 
         Pageable pageable = requestDTO.getPageable();
 
@@ -97,11 +99,11 @@ public class VideoServiceImpl implements VideoService{
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 아이디 입니다."));
 
         MultipartFile[] files = videoRequestDTO.getFiles();
-        MultipartFile videoFile =  files[0];
-        MultipartFile jsonFile =  files[1];
-        UploadFileDTO uploadFileDTO = uploadFileToS3(videoFile, jsonFile);
+        MultipartFile videoFile = files[0];
+        MultipartFile jsonFile = files[1];
+        UploadVideoResponseDTO uploadVideoResponseDTO = s3Util.uploadVideoAndJson(videoFile, jsonFile);
 
-        Video video = videoRequestDTO.toVideo(staff, uploadFileDTO);
+        Video video = videoRequestDTO.toVideo(staff, uploadVideoResponseDTO);
         videoRepository.save(video);
 
         return "Success create Video";
@@ -110,159 +112,19 @@ public class VideoServiceImpl implements VideoService{
     @Override
     public String deleteVideo(Long vno) {
         Optional<Video> byId = videoRepository.findById(vno);
-        if (byId.isEmpty()) return "Video not found for Id : " + vno;
+        if (byId.isEmpty()) {
+            return "Video not found for Id : " + vno;
+        }
 
         Video video = byId.get();
         String videoPath = video.getVideoPath();
         String jsonPath = video.getJsonPath();
 
-        deleteFileFromS3(videoPath, jsonPath);
+        s3Util.deleteFileFromS3(videoPath);
+        s3Util.deleteFileFromS3(jsonPath);
+
         videoRepository.delete(video);
 
         return "Success delete Video";
-    }
-
-
-    @Override
-    public File convertMultipartFileToFile(MultipartFile multipartFile, String fileName) {
-        File convertedFile = new File(fileName);
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(multipartFile.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return convertedFile;
-    }
-
-    @Override
-    public UploadFileDTO uploadFileToS3(MultipartFile videoFile, MultipartFile jsonFile) {
-        AmazonS3 s3 = s3Client.getAmazonS3();
-
-        UUID uuid_1 = UUID.randomUUID();
-        UUID uuid_2 = UUID.randomUUID();
-        UUID uuid_3 = UUID.randomUUID();
-
-        String videoFileName = uuid_1 + "_" + videoFile.getOriginalFilename();
-        String jsonFileName = uuid_2 + "_" + jsonFile.getOriginalFilename();
-        String thumbnailFileName = uuid_3 + "_" + videoFile.getOriginalFilename().split("\\.")[0] + ".png";
-
-        File uploadVideoFile = null;
-        File uploadJsonFile = null;
-        File uploadThumbnailFile = null;
-
-        try {
-            uploadVideoFile = convertMultipartFileToFile(videoFile, videoFileName);
-            uploadJsonFile = convertMultipartFileToFile(jsonFile, jsonFileName);
-
-            FileChannelWrapper channel = NIOUtils.readableChannel(uploadVideoFile);
-            FrameGrab grab = FrameGrab.createFrameGrab(channel);
-
-            // Get the first frame
-            Picture picture = grab.getNativeFrame();
-            // Convert the Picture object to a BufferedImage
-            BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-            // Now you can use the BufferedImage as needed. For example, write it to a file:
-            uploadThumbnailFile = new File(thumbnailFileName);
-            ImageIO.write(bufferedImage, "png", uploadThumbnailFile);
-
-            String guideVideoObjectPath = "video/" + videoFileName;
-            String jsonObjectPath = "json/" + jsonFileName;
-            String thumbnailObjectPath = "thumbnail/" + thumbnailFileName;
-
-            s3.putObject(bucketName, guideVideoObjectPath, uploadVideoFile);
-            s3.putObject(bucketName, jsonObjectPath, uploadJsonFile);
-            s3.putObject(bucketName, thumbnailObjectPath, uploadThumbnailFile);
-
-            String baseUploadURL = "https://kr.object.ncloudstorage.com/" + bucketName + "/";
-            String videoURL = baseUploadURL + guideVideoObjectPath;
-            String jsonURL = baseUploadURL + jsonObjectPath;
-            String thumbnailURL = baseUploadURL + thumbnailObjectPath;
-
-            log.info(videoURL);
-            log.info(jsonURL);
-            log.info(thumbnailURL);
-
-            setAcl(s3, guideVideoObjectPath);
-            setAcl(s3, jsonObjectPath);
-            setAcl(s3, thumbnailObjectPath);
-
-            // close readable channel to delete temp file
-            channel.close();
-
-            return UploadFileDTO.builder()
-                    .videoURL(videoURL)
-                    .jsonURL(jsonURL)
-                    .thumbnailURL(thumbnailURL)
-                    .videoPath(guideVideoObjectPath)
-                    .jsonPath(jsonObjectPath)
-                    .thumbnailPath(thumbnailObjectPath)
-                    .build();
-
-        } catch (AmazonS3Exception e) { // ACL Exception
-            log.info(e.getErrorMessage());
-            System.exit(1);
-            return null; // if error during upload, return null
-        } catch (JCodecException | IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            // Delete temporary files used when uploading
-            assert uploadJsonFile != null;
-            assert uploadVideoFile != null;
-            assert uploadThumbnailFile != null;
-
-            uploadVideoFile.delete();
-            uploadJsonFile.delete();
-            uploadThumbnailFile.delete();
-        }
-    }
-
-    @Override
-    public void deleteFileFromS3(String videoPath, String jsonPath) {
-        AmazonS3 s3 = s3Client.getAmazonS3();
-
-        try {
-            s3.deleteObject(bucketName, videoPath);
-            s3.deleteObject(bucketName, jsonPath);
-            log.info("Delete Object successfully");
-        } catch(SdkClientException e) {
-            e.printStackTrace();
-            log.info("Error deleteFileFromS3");
-        }
-    }
-
-    @Override
-    public void setAcl(AmazonS3 s3, String objectPath) {
-        AccessControlList objectAcl = s3.getObjectAcl(bucketName, objectPath);
-        objectAcl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
-        s3.setObjectAcl(bucketName, objectPath, objectAcl);
-    }
-
-    @Override
-    public void clearAllVideoAndJson() {
-        AmazonS3 s3 = s3Client.getAmazonS3();
-
-        ObjectListing videoObjectList = s3.listObjects(bucketName, "video/");
-        while (true) {
-            for (S3ObjectSummary summary : videoObjectList.getObjectSummaries()) {
-                if (!summary.getKey().equals("video/")) { // Exclude the folder itself
-                    s3.deleteObject(bucketName, summary.getKey());
-                }
-            }
-            if (!videoObjectList.isTruncated()) break;
-            videoObjectList = s3.listNextBatchOfObjects(videoObjectList);
-        }
-
-        ObjectListing jsonObjectList = s3.listObjects(bucketName, "json/");
-        while (true) {
-            for (S3ObjectSummary summary : jsonObjectList.getObjectSummaries()) {
-                if (!summary.getKey().equals("json/")) { // Exclude the folder itself
-                    s3.deleteObject(bucketName, summary.getKey());
-                }
-            }
-            if (!jsonObjectList.isTruncated()) break;
-            jsonObjectList = s3.listNextBatchOfObjects(jsonObjectList);
-        }
-
-        videoRepository.deleteAll();
     }
 }

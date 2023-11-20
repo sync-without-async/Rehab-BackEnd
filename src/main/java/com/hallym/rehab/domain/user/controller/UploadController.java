@@ -1,33 +1,23 @@
 package com.hallym.rehab.domain.user.controller;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.Permission;
 import com.hallym.rehab.domain.user.dto.upload.UploadFileDTO;
 import com.hallym.rehab.domain.user.dto.upload.UploadResultDTO;
-import com.hallym.rehab.global.config.S3Client;
-import com.hallym.rehab.global.exception.IsNotImageFileException;
+import com.hallym.rehab.global.s3.S3Client;
 import java.io.FileOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
