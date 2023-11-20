@@ -21,13 +21,13 @@ public class TherapistDTO {
     @NonNull
     private String department;
 
-    @NonNull
-    private String staffRole;
-
-    @NonNull
-    private String phone;
-
-    private String fileName;
+//    @NonNull
+//    private String staffRole;
+//
+//    @NonNull
+//    private String phone;
+//
+//    private String fileName;
 
     public TherapistDTO(Staff staff) {
         this.mid = staff.getMid();
