@@ -93,7 +93,7 @@ public class ChartController {
     @GetMapping("/auth/chart/list/{mid}")
     public PageResponseDTO<ChartListAllDTO> getChartList(PageRequestDTO pageRequestDTO, @PathVariable String mid){
 
-        return chartService.getChartList(doctor_id, pageRequestDTO);
+        return chartService.getChartList(mid, pageRequestDTO);
     }
 
 
