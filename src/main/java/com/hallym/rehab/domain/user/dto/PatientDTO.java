@@ -1,9 +1,6 @@
 package com.hallym.rehab.domain.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,9 +10,18 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PatientDTO {
 
+    @NonNull
     private String mid;
+
+    @NonNull
     private String name;
+
+    @NonNull
     private LocalDate birth;
+
+    @NonNull
     private String sex;
+
+    @NonNull
     private String phone;
 }

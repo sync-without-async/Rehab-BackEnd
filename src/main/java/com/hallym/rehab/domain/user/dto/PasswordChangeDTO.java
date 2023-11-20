@@ -1,9 +1,6 @@
 package com.hallym.rehab.domain.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -11,7 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PasswordChangeDTO {
 
+    @NonNull
     private String mid;
+
+    @NonNull
     private String currentPassword;
+
+    @NonNull
     private String newPassword;
 }
