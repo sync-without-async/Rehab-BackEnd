@@ -40,6 +40,8 @@ public class Chart extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate birth; //생년월일
 
+    private Double metrics_rate;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_mid", nullable = false)
