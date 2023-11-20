@@ -1,6 +1,7 @@
 package com.hallym.rehab.domain.chart.controller;
 
 import com.hallym.rehab.domain.chart.dto.AIRecordDTO;
+import com.hallym.rehab.domain.chart.dto.ChartListAllDTO;
 import com.hallym.rehab.domain.chart.dto.ChartRequestDTO;
 import com.hallym.rehab.domain.chart.dto.ChartResponseDTO;
 import com.hallym.rehab.domain.chart.service.ChartService;
@@ -16,7 +17,6 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/chart")
 @RequiredArgsConstructor
 @Slf4j
 public class ChartController {
@@ -31,14 +31,14 @@ public class ChartController {
     }
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR') or hasAuthority('ROLE_THERAPIST')")
-    @GetMapping("/auth/staff/{cno}")
+    @GetMapping("/auth/chart/{cno}")
     public ChartResponseDTO getChartOneByStaff(@PathVariable Long cno) {
 
         return chartService.getChartDetailByStaff(cno);
     }
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR') or hasAuthority('ROLE_THERAPIST') or hasAuthority('ROLE_PATIENT')")
-    @GetMapping("/auth/aiRecord/{patient_mid}")
+    @GetMapping("/auth/aiRecordList/{patient_mid}")
     public List<AIRecordDTO> getAIRecordList(@PathVariable String patient_mid) {
 
         return chartService.getAIRecords(patient_mid);
@@ -46,14 +46,14 @@ public class ChartController {
 
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
-    @PostMapping("/auth/register")
+    @PostMapping("/auth/chart/register")
     public String registerChart(@Valid @RequestBody ChartRequestDTO chartRequestDTO) {
 
         return chartService.registerChartDetails(chartRequestDTO);
     }
 
     @PreAuthorize("hasAuthority('ROLE_DOCTOR')")
-    @PostMapping("/auth/delete")
+    @PostMapping("/auth/chart/delete")
     public ResponseEntity<String> deleteChart(@PathVariable Long cno) {
 
         chartService.deleteChartDetails(cno);
