@@ -5,6 +5,7 @@ import com.hallym.rehab.domain.user.entity.Patient;
 import com.hallym.rehab.domain.user.entity.Staff;
 import com.hallym.rehab.global.baseEntity.BaseTimeEntity;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -49,7 +50,7 @@ public class Chart extends BaseTimeEntity {
     @JoinColumn(name = "therapist_mid", nullable = false)
     private Staff therapist; // 담당재활치료사
 
-    @Builder.Default
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "record_no", cascade = CascadeType.ALL)
     private Set<Record> recordSet = new HashSet<>();;
 
