@@ -16,6 +16,7 @@ public class RecordDTO {
     private LocalDate schedule; //외래 일정
     private String treatmentRecord; //진료 기록
     private String exerciseRequest; //운동요청서
+    private LocalDate regDate;
 
     public static RecordDTO of(Record record) {
         return RecordDTO.builder()
@@ -23,6 +24,7 @@ public class RecordDTO {
                 .treatmentRecord(record.getTreatmentRecord())
                 .exerciseRequest(record.getExerciseRequest())
                 .record_no(record.getRecord_no())
+                .regDate(LocalDate.from(record.getRegDate()))
                 .build();
     }
 }
