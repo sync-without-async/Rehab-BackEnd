@@ -26,6 +26,8 @@ public class PageRequestDTO {
     private String type;
 
     private String keyword;
+    private String sortBy;
+    private String metrics_rate;
 
     public String[] getTypes(){
         if(type == null || type.isEmpty()){
@@ -35,7 +37,20 @@ public class PageRequestDTO {
     }
 
     public Pageable getPageable(String...props) {
-        return PageRequest.of(this.page -1, this.size, Sort.by(props).descending());
+        Sort sort = Sort.unsorted();
+        if ("oldest".equals(sortBy)) {
+            sort = sort.and(Sort.by("cno").ascending());
+        } else {
+            sort = sort.and(Sort.by("cno").descending());
+        }
+
+        if ("high".equals(metrics_rate)) {
+            sort = sort.and(Sort.by("metrics_rate").descending());
+        } else if ("low".equals(metrics_rate)){
+            sort = sort.and(Sort.by("metrics_rate").ascending());
+        }
+
+        return PageRequest.of(this.page -1, this.size, sort);
     }
 
     private String link;
@@ -65,7 +80,5 @@ public class PageRequestDTO {
 
         return link;
     }
-
-
 
 }
