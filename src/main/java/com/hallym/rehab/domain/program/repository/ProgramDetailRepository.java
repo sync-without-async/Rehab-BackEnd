@@ -20,7 +20,7 @@ public interface ProgramDetailRepository extends JpaRepository<ProgramDetail, Lo
     Optional<ProgramDetail> findByPnoAndOrd(@Param("pno") Long pno, @Param("ord") int ord);
 
     @Query("SELECT new com.hallym.rehab.domain.program.dto." +
-            "ProgramResponseDTO(pd.video.title, pd.ord, pd.video.vno, pd.videoMetrics.metrics) " +
+            "ProgramResponseDTO(pd.video.title, pd.program.pno, pd.ord, pd.video.vno, pd.videoMetrics.metrics) " +
             "FROM ProgramDetail pd WHERE pd.program = :program ORDER BY pd.ord")
     Page<ProgramResponseDTO> findPageByProgram(@Param("program") Program program, Pageable pageable);
 }
