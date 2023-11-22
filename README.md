@@ -53,7 +53,7 @@ Backend 개발 언어는 JAVA를 사용하며, Spring-Boot 프레임워크로 Cl
 
 ### 3. Package Structure
 ```
-├── com.hallym.festival 
+├── com.hallym.rehab 
 │ ├── domain 
 │ |    ├── chart
 │ |    |    ├── controller
