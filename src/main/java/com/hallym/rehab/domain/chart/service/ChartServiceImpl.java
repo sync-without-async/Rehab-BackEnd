@@ -1,7 +1,6 @@
 package com.hallym.rehab.domain.chart.service;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.hallym.rehab.domain.chart.MetricsUtil;
 import com.hallym.rehab.domain.chart.dto.*;
 import com.hallym.rehab.domain.chart.entity.Chart;
 import com.hallym.rehab.domain.chart.entity.Record;
@@ -43,7 +42,7 @@ public class ChartServiceImpl implements ChartService {
     private final RecordRepository recordRepository;
     private final ReservationRepository reservationRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MetricsUtil metricsUtil;
+//    private final MetricsUtil metricsUtil;
 
 
     @Override
@@ -163,7 +162,7 @@ public class ChartServiceImpl implements ChartService {
                 .map(RecordDTO::of)
                 .collect(Collectors.toList());
 
-        double metrics_rate = metricsUtil.getRateMetricsByPatientId(chart.getPatient().getMid());
+//        double metrics_rate = metricsUtil.getRateMetricsByPatientId(chart.getPatient().getMid());
 
         return ChartResponseDTO.builder()
                 .cno(chart.getCno())
@@ -176,7 +175,7 @@ public class ChartServiceImpl implements ChartService {
                 .doctor_name(chart.getDoctor().getName())
                 .therapist_name(chart.getTherapist().getName())
                 .medicalRecords(recordDTOList)
-                .metrics_rate(metrics_rate)
+//                .metrics_rate(metrics_rate)
                 .regDate(LocalDate.from(chart.getRegDate()))
                 .build();
     }

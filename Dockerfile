@@ -18,7 +18,7 @@ RUN chown -R dockeruser:dockeruser /app
 USER dockeruser
 
 # 노출할 포트 명시
-EXPOSE 443
+EXPOSE 8081
 
 # always do command
 ENTRYPOINT ["java","-jar","/app/rehab-0.0.1-SNAPSHOT.jar"]

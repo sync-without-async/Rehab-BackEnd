@@ -1,6 +1,5 @@
 package com.hallym.rehab.domain.chart.repository.search;
 
-import com.hallym.rehab.domain.chart.MetricsUtil;
 import com.hallym.rehab.domain.chart.dto.ChartListAllDTO;
 import com.hallym.rehab.domain.chart.dto.RecordDTO;
 import com.hallym.rehab.domain.chart.entity.Chart;
@@ -21,11 +20,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ChartSearchImpl extends QuerydslRepositorySupport implements ChartSearch {
 
-    private final MetricsUtil metricsUtil;
 
-    public ChartSearchImpl(MetricsUtil metricsUtil) {
+    public ChartSearchImpl() {
         super(Chart.class);
-        this.metricsUtil = metricsUtil;
     }
 
     @Override
@@ -110,9 +107,9 @@ public class ChartSearchImpl extends QuerydslRepositorySupport implements ChartS
                             .map(RecordDTO::of)
                             .collect(Collectors.toList());
 
-                    double metrics = metricsUtil.getRateMetricsByPatientId(chart1.getPatient().getMid());
-
-                    log.info("metrics-----" + metrics);
+//                    double metrics = metricsUtil.getRateMetricsByPatientId(chart1.getPatient().getMid());
+//
+//                    log.info("metrics-----" + metrics);
 
                     ChartListAllDTO chartListAllDTO = ChartListAllDTO.builder()
                             .cno(chart1.getCno())
@@ -126,7 +123,6 @@ public class ChartSearchImpl extends QuerydslRepositorySupport implements ChartS
                             .therapist_name(chart1.getTherapist().getName())
                             .regDate(LocalDate.from(chart1.getRegDate()))
                             .medicalRecords(medicalRecords)
-                            .metrics_rate(metrics)
                             .build();
 
                     return chartListAllDTO;
