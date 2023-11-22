@@ -32,7 +32,7 @@ public class ChartListAllDTO {
 
     private String therapist_name; // 담당재활치료사
 
-    private double metrics_rate;
+//    private double metrics_rate;
 
     private LocalDate regDate;
 
