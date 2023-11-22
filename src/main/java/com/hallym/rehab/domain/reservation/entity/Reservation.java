@@ -71,6 +71,7 @@ public class Reservation extends BaseTimeEntity {
                 .index(this.getIndex())
                 .summary(summary)
                 .content(this.getContent())
+                .is_deleted(this.is_deleted())
                 .build();
     }
 
@@ -95,6 +96,7 @@ public class Reservation extends BaseTimeEntity {
                 .role(this.getStaff().getRoleSet().toString())
                 .hospital(this.staff.getHospital())
                 .profileUrl(this.staff.getStaffImage().getProfileUrl())
+                .is_deleted(this.is_deleted())
                 .build();
     }
 }
