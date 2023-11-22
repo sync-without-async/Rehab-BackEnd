@@ -8,10 +8,6 @@ on:
     branches:
       - main
 
-env:
-  RESOURCE_PATH: /home/runner/work/Rehab-BackEnd/Rehab-BackEnd/src/main/resources
-  PROJECT_NAME : rehab-server
-
 permissions:
   contents: read
   checks: write
@@ -33,23 +29,8 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Load keystore
-        run: |
-          echo "${{ secrets.KEYSTORE }}" > ${{ env.RESOURCE_PATH }}/keystore.p12
-
-      - name: Decrypt application-secret yml
-        run: gpg --quiet --batch --yes --always-trust --decrypt --passphrase=${{ secrets.APPLICATION_SECRET_YML }} --output $RESOURCE_PATH/application.tar $RESOURCE_PATH/application.tar.gpg
-        shell: bash
-
-      - name: Unzip application.tar file to application-secret.yml
-        run: |
-          cd $RESOURCE_PATH 
-          tar xvf application.tar
-        shell: bash
-
       - name: Build with Gradle
-        run: |
-            ./gradlew build -x test --project-dir /home/runner/work/Rehab-BackEnd/Rehab-BackEnd/ --keystore ${{ env.RESOURCE_PATH }}/keystore.p12
+        run: ./gradlew build -x test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -73,7 +54,7 @@ jobs:
           secrets: |
             GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
       - name: Connect to Server and Pull from Container Registry
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.NCP_SERVER_IP }}
           username: ${{ secrets.NCP_SERVER_USERNAME }}
@@ -93,5 +74,10 @@ jobs:
               docker rm $container_id
             fi
 
-            docker run -d -p 443:443 ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
+            docker run -d -p 443:443 -v /home/ubuntu/yml_/ 
+            -v /home/ubuntu/yml_/application-secret.yml:/app/application-secret.yml \
+            -v /home/ubuntu/yml_/application-email.yml:/app/application-email.yml \
+            ${{ secrets.NCP_CONTAINER_REGISTRY }}/rehab-server:${{ secrets.LATEST_TAG }}
+            
+            
             docker image prune -f
