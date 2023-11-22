@@ -1,4 +1,22 @@
-# ReHab-Backend
+# ReHab-BackEnd
+
+비대면 재활치료를 돕는 웹서비스, "Re:Hab" 백엔드 팀 개발 저장소입니다.
+
+## Deployment url
+
+[https://re-hab.website](https://re-hab.website/) <br>
+
+## 개발 기간
+2023.07 ~ 2023.11
+
+## Back-End Team ✨
+
+|                                   이동헌                                     |                                       박주영                                        |                                                                                       
+|:--------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------:|
+| <img width="160px" src="https://avatars.githubusercontent.com/u/80760160?v=4" /> | <img width="160px" src="https://avatars.githubusercontent.com/u/52206904?v=4" /> |
+|                 [@Sirius506775](https://github.com/Sirius506775)                 |                      [@jyp-on](https://github.com/jyp-on)                      |     
+|                                한림대학교 빅데이터전공  4학년                                 |   한림대학교 콘텐츠IT전공 3학년   |               
+
 
 
 ### 1.  usage skills
@@ -24,22 +42,13 @@
 - WebSocket
 - Lombok
 
-
 ---
 ### 2. Descriptions
+Backend 개발 언어는 JAVA를 사용하며, Spring-Boot 프레임워크로 Client, AI Server와 통신하는 API 서버를 구축한다.
 
-본 대회에서 Backend 개발 언어는 JAVA를 사용하며, Spring-Boot 프레임워크로 Client와 통신하는 API 서버를 구축한다. 
+### 3. Service Architecture
 
-API 서버의 주 목적은 Client가 AI-Server를 통해 전달 받은 output과 업로드한 Guide Data(mp4 & Json)를 DB 서버에 저장하고, 관리하여 사용자가 원하는 프로그램을 제공 받는 데에 있다.
+![Group 159](https://github.com/sync-without-async/Rehab-BackEnd/assets/52206904/113f970c-4615-4323-98d2-e2babdd4707d)
 
-주요 기능 정보는 아래와 같다. 
-
-- Spring Security와 JWT를 통한 Token 인증 방식의 로그인을 할 수 있다.
-- 사용자의 Role은 의료전문가(Provider)와 환자(Patient)로 구분할 수 있으며, 사용자 권한 정보에 따라 엔드포인트를 접근할 수 있다.
-- Provider는 Patient에게 처방해줄 재활 운동 프로그램을 등록하여, 관리할 수 있다.
-- 환자(Patient)가 수강하는 프로그램의 정보를 제공하고, 사용자의 수강 내역(History)을 저장한다.
-- Client와 FastAPI가 통신한 결과(Skeleton point와 metrics)를 전달 받아 핸들링할 수 있으며, Database(MariaDB)와 통신할 수 있다.
-- JPA를 이용하여 서버 내에서 데이터들을 영속성 컨텍스트에 관리하고, DataBase에 저장되어 있는 테이블과 엔티티 객체를 매핑하여 사용할 수 있다. 
-- QueryDsl를 이용한 동적쿼리 방식으로 Client에게 필요한 데이터를 전달할 수 있다.
 
 
