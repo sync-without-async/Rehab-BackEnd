@@ -23,4 +23,5 @@ public class ReservationResponseByPatientDTO {
     private String role;
     private String hospital;
     private String profileUrl;
+    private boolean is_deleted;
 }

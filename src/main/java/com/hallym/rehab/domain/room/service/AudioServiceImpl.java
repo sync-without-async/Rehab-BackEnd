@@ -61,25 +61,4 @@ public class AudioServiceImpl implements AudioService {
 
         return "Success create Audio";
     }
-
-//    @Override
-//    public void deleteAllRoomAndAudio() {
-//        AmazonS3 s3 = s3Client.getAmazonS3();
-//
-//        ObjectListing objectListing = s3.listObjects(bucketName, "audio/");
-//        while (true) {
-//            for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
-//                if (!summary.getKey().equals("audio/")) { // Exclude the folder itself
-//                    s3.deleteObject(bucketName, summary.getKey());
-//                }
-//            }
-//            if (!objectListing.isTruncated()) {
-//                break;
-//            }
-//            objectListing = s3.listNextBatchOfObjects(objectListing);
-//        }
-//
-//        audioRepository.deleteAll();
-//        roomRepository.deleteAll();
-//    }
 }
