@@ -4,7 +4,7 @@
 
 ## Deployment url
 
-[https://re-hab.website](https://re-hab.website/) <br>
+~~[https://re-hab.website](https://re-hab.website/)~~ <br>
 
 ## 개발 기간
 2023.07 ~ 2023.11
