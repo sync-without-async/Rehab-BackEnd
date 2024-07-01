@@ -61,6 +61,11 @@ dependencies {
 	/* 동적 쿼리를 사용한 페이징과 검색 처리를 위해 querydsl 의존성 추가*/
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 
+	/* 이메일 인증을 위한 redis 및 redis client (lettuce) */
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.3.2.RELEASE'
+
+
 	annotationProcessor(
 
 			"javax.persistence:javax.persistence-api",
