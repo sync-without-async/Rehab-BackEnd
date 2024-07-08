@@ -55,7 +55,7 @@ public class AudioServiceImpl implements AudioService {
         if (audio.getUserAudioURL() != null && audio.getAdminAudioURL() != null) {
             Long ano = audio.getAno();
             RestTemplate restTemplate = new RestTemplate();
-            return restTemplate.getForObject("http://210.115.229.219:8000/getSummary?ano=" + ano.toString(),
+            return restTemplate.getForObject("http://210.115.229.219:8080/getSummary?ano=" + ano.toString(),
                     String.class);
         }
 
